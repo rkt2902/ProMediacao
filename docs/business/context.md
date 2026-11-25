@@ -35,7 +35,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 
 ## 2. Modelo de receita e concorrentes
 
-- **Modelo de receita:** [decidido] fase 1 em uso interno, sem cobrar. Direção futura: mensalidade por mediador/escritório até X pedidos, e acima disso extra ou outro plano. Cobra-se só ao mediador/escritório. Valores por validar. Ver `docs/business/research/02-receita-concorrentes.md`.
+- **Modelo de receita:** [decidido] fase 1 em uso interno, sem cobrar. Direção futura: mensalidade por mediador/escritório até X pedidos, e acima disso extra ou outro plano. Cobra-se só ao mediador/escritório, nunca ao cliente final e sem comissão (nem por apólice, nem por leads, nem % do prémio). Valores por validar. Ver `docs/business/research/02-receita-concorrentes.md`.
 - **Concorrentes:** [proposto] analisados 7 em `docs/business/research/02-receita-concorrentes.md`. Não se encontrou portal português equivalente (a confirmar com colegas da APROSE). Diferenciação proposta: arquivo de documentos do cliente reutilizável e partilhável, com consentimento, com vários mediadores.
 
 ## 3. Restrições
