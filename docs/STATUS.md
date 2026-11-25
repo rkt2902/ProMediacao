@@ -8,7 +8,7 @@ Atualizado: 2026-11-25
 
 ## Próximos passos
 
-1. **Criar o projeto Supabase** e ligar o MCP em modo só leitura (ver `docs/cloud/CLOUD.md`).
+1. **Supabase:** projeto `aboducqavmsmlzslrseu` já existe e o MCP só leitura está no `.mcp.json`. Na primeira sessão, confirmar a ligação (pede login no Supabase).
 2. **Preencher `docs/business/context.md` e `docs/design/DESIGN.md`.** Correr `/ideias` ajuda a fechar o contexto de negócio.
 
 ## Em aberto
