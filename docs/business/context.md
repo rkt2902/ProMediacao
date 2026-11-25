@@ -54,6 +54,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 ## 4. Decisões tomadas
 
 - [decidido] Os dados são do cliente e partilhados por consentimento explícito, mediador a mediador (X, Y, Z...), com o cliente sempre ciente e a poder retirar. Condiciona o modelo de dados, o RLS e a validação RGPD.
+- [decidido] A partilha é do cliente para o **escritório**, tudo ou nada: todos os mediadores do escritório veem o arquivo, e o cliente vê e pode retirar cada escritório. O admin da plataforma **não** acede a documentos nem a dados dos clientes, só a metadados e agregados.
 - [decidido] Há três perfis: admin, mediador e cliente (particular ou empresa).
 - [decidido] O mediador cria um pedido por tipo de seguro, e a lista do que pedir é gerada automaticamente a partir do tipo.
 - [decidido] O mediador também pode preencher dados no perfil do cliente.
