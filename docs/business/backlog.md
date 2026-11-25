@@ -23,9 +23,9 @@ Estados: proposta / aprovada / em curso / feita / descartada. Tudo veio da threa
 | 2026-11-25 | Reutilização de documentos entre pedidos | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | Avisos de documentos a atualizar (por exemplo, morada com mais de 6 meses) | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | "Pedir alteração" e "Comparar preços" a partir de uma apólice | produto | | | aprovada (planeamento) | |
-| 2026-11-25 | Painel de admin: mediadores, clientes, pedidos e custo de IA | produto | | | aprovada (planeamento) | |
+| 2026-11-25 | Painel de admin: contagens de mediadores, clientes e pedidos, e custo de IA (sem dados pessoais) | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | Design responsivo (desktop, tablet e telemóvel) | produto | | | aprovada (planeamento) | |
-| 2026-11-25 | Fichas ajustadas ao formulário de cada seguradora | produto | | | proposta | |
+| 2026-11-25 | Fichas no formato dos templates de cada escritório (fase 2: carregar, mapear e preencher) | produto | | | proposta | |
 | 2026-11-25 | Módulo de empréstimos e crédito | produto | | | proposta | |
 | 2026-11-25 | Piloto com mediadores reais | produto | | | proposta | |
 | 2026-11-25 | Testar a extração com documentos reais e escolher o modelo mais barato que acerte | produto | | | proposta | |
