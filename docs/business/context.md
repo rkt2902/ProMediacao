@@ -35,8 +35,8 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 
 ## 2. Modelo de receita e concorrentes
 
-- **Modelo de receita:** [por decidir]. Não foi discutido. Hipóteses a avaliar: uso interno da mediação do Henrique, ou subscrição por mediador.
-- **Concorrentes:** [por decidir]. Não foram analisados.
+- **Modelo de receita:** [decidido] fase 1 em uso interno, sem cobrar. Direção futura: mensalidade por mediador/escritório até X pedidos, e acima disso extra ou outro plano. Cobra-se só ao mediador/escritório. Valores por validar. Ver `docs/business/research/02-receita-concorrentes.md`.
+- **Concorrentes:** [proposto] analisados 7 em `docs/business/research/02-receita-concorrentes.md`. Não se encontrou portal português equivalente (a confirmar com colegas da APROSE). Diferenciação proposta: arquivo de documentos do cliente reutilizável e partilhável, com consentimento, com vários mediadores.
 
 ## 3. Restrições
 
@@ -45,7 +45,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - **RGPD:** há dados pessoais e de **saúde**, que são uma categoria especial (art. 9.º). Isto implica:
   - consentimento explícito;
   - encriptação e alojamento na UE;
-  - acesso só do mediador responsável;
+  - acesso só dos mediadores a quem o cliente deu consentimento (ver secção 4);
   - poder apagar documentos a pedido do cliente.
 - **Distribuição de seguros:** é uma atividade regulada pela ASF (Lei n.º 7/2019). A app apoia o mediador e não deve parecer uma seguradora nem vender diretamente.
 - **Intermediação de crédito**, para a fase dos empréstimos: é regulada pelo Banco de Portugal (DL 81-C/2017) e exige registo próprio. Deve ser confirmado antes de lançar essa parte.
@@ -53,6 +53,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 
 ## 4. Decisões tomadas
 
+- [decidido] Os dados são do cliente e partilhados por consentimento explícito, mediador a mediador (X, Y, Z...), com o cliente sempre ciente e a poder retirar. Condiciona o modelo de dados, o RLS e a validação RGPD.
 - [decidido] Há três perfis: admin, mediador e cliente (particular ou empresa).
 - [decidido] O mediador cria um pedido por tipo de seguro, e a lista do que pedir é gerada automaticamente a partir do tipo.
 - [decidido] O mediador também pode preencher dados no perfil do cliente.
@@ -137,8 +138,8 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 ## 7. O que ficou por decidir
 
 1. ~~O nome final e a marca~~ **Decidido: ProDossier** (nome de trabalho). Pendente: o Henrique verifica o INPI e os domínios.
-2. O modelo de receita.
-3. Os concorrentes e o que diferencia a ProMediação.
+2. ~~O modelo de receita~~ **Decidido:** uso interno agora; mensalidade por mediador/escritório com escalões de pedidos no futuro.
+3. Os concorrentes e o que diferencia a ProDossier. Analisados; diferenciação proposta (dados do cliente partilháveis por consentimento) por confirmar.
 4. O backend da app Flutter (por exemplo Supabase ou Firebase, com alojamento na UE) e a autenticação dos clientes (link mágico, SMS ou palavra-passe).
 5. O modelo de dados: clientes, pedidos, documentos, apólices e mediadores.
 6. O formato final da ficha exportada e se é ajustado a cada seguradora.
