@@ -56,6 +56,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - [decidido] Os dados são do cliente e partilhados por consentimento explícito, mediador a mediador (X, Y, Z...), com o cliente sempre ciente e a poder retirar. Condiciona o modelo de dados, o RLS e a validação RGPD.
 - [decidido] A partilha é do cliente para o **escritório**, tudo ou nada: todos os mediadores do escritório veem o arquivo, e o cliente vê e pode retirar cada escritório. O admin da plataforma **não** acede a documentos nem a dados de pedidos: vê só contagens e agregados (sem nome nem email). O cliente pode ser criado pelo mediador ou registar-se sozinho. Sem encriptação por escritório na fase 1 (plano futuro).
 - [decidido] Há três perfis: admin, mediador e cliente (particular ou empresa).
+- [decidido] O cliente pode também iniciar pedidos na app, a vários escritórios, cada um com consentimento explícito; um escritório não vê os outros destinatários.
 - [decidido] O mediador cria um pedido por tipo de seguro, e a lista do que pedir é gerada automaticamente a partir do tipo.
 - [decidido] O mediador também pode preencher dados no perfil do cliente.
 - [decidido] O cliente pode enviar as condições particulares em vez dos documentos um a um.
@@ -144,7 +145,7 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 4. ~~O backend e a autenticação~~ **Decidido:** Supabase; cliente por link mágico por email, mediador/admin por palavra-passe. Pendente: plano de produção (decisão 8).
 5. ~~O modelo de dados~~ **Princípios decididos** (partilha por escritório, admin sem acesso a documentos, cliente autónomo ou criado pelo mediador). Tabelas e RLS: supabase-dev, na primeira feature.
 6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles. Haverá um catálogo inicial de templates da plataforma, gerido pelo admin, que cada escritório pode usar ou substituir pela sua versão.
-7. Como o cliente recebe o pedido (email, SMS ou WhatsApp).
+7. ~~Como o cliente recebe o pedido~~ **Decidido:** email com link seguro (e link copiável), pedido dentro da app, e o cliente pode pedir a vários escritórios. SMS/WhatsApp integrados fora da fase 1.
 8. A validação jurídica do RGPD (dados de saúde) e do registo para a intermediação de crédito.
 9. O âmbito e os documentos do módulo de empréstimos.
 10. O piloto: com que mediadores e clientes, e quando.
