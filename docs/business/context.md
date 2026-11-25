@@ -70,7 +70,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - [decidido] O design é responsivo em três tamanhos: desktop, tablet ou PC pequeno (até 1100 px) e telemóvel (até 640 px).
 - [decidido] A app vai incluir empréstimos no futuro, e por isso o nome não pode ser só de seguros.
 - [decidido] O trabalho continua no repositório `rkt2902/ProMediacao`, com uma app Flutter.
-- [proposto] A stack sugerida foi Next.js com Supabase na UE. Foi substituída pela decisão de usar Flutter, e falta escolher o backend.
+- [decidido] Stack: Flutter + **Supabase** (eu-west-1, projeto vazio). Auth: cliente por link mágico por email; mediador e admin por email e palavra-passe (2FA mais tarde). SMS só no futuro. Ver `docs/decisions.md`.
 - [decidido] O nome de trabalho é **ProDossier** (reserva: Reúne). O repositório e o package id `pt.promediacao` ficam como nome interno. Falta verificar a marca no INPI/TMview (classes 9, 42, 35) e os domínios antes de publicar nas lojas. Ver `docs/decisions.md`.
 
 ## 5. Backlog
@@ -140,7 +140,7 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 1. ~~O nome final e a marca~~ **Decidido: ProDossier** (nome de trabalho). Pendente: o Henrique verifica o INPI e os domínios.
 2. ~~O modelo de receita~~ **Decidido:** uso interno agora; mensalidade por mediador/escritório com escalões de pedidos no futuro.
 3. Os concorrentes e o que diferencia a ProDossier. Analisados; diferenciação proposta (dados do cliente partilháveis por consentimento) por confirmar.
-4. O backend da app Flutter (por exemplo Supabase ou Firebase, com alojamento na UE) e a autenticação dos clientes (link mágico, SMS ou palavra-passe).
+4. ~~O backend e a autenticação~~ **Decidido:** Supabase; cliente por link mágico por email, mediador/admin por palavra-passe. Pendente: plano de produção (decisão 8).
 5. O modelo de dados: clientes, pedidos, documentos, apólices e mediadores.
 6. O formato final da ficha exportada e se é ajustado a cada seguradora.
 7. Como o cliente recebe o pedido (email, SMS ou WhatsApp).
