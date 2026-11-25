@@ -14,7 +14,7 @@
 
 ## Estrutura
 - `lib/` app, `test/` testes, `supabase/migrations/` migrações .sql, `docs/` fonte de verdade.
-- Supabase: quando existir projeto, copiar `docs/cloud/supabase.mcp.json` para `.mcp.json` e trocar `<PROJECT_REF>`.
+- Supabase: projeto `aboducqavmsmlzslrseu` (org ProMediacao, eu-west-1), ligado em só leitura pelo `.mcp.json`.
 - Sessões cloud: ver `docs/cloud/CLOUD.md`.
 
 ## Papéis
