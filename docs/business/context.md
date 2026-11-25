@@ -70,7 +70,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - [decidido] A app vai incluir empréstimos no futuro, e por isso o nome não pode ser só de seguros.
 - [decidido] O trabalho continua no repositório `rkt2902/ProMediacao`, com uma app Flutter.
 - [proposto] A stack sugerida foi Next.js com Supabase na UE. Foi substituída pela decisão de usar Flutter, e falta escolher o backend.
-- [proposto] Os nomes sugeridos foram ProDossier, ProMediação e ProFinanças. O nome do repositório indica ProMediação, mas falta confirmar a marca.
+- [decidido] O nome de trabalho é **ProDossier** (reserva: Reúne). O repositório e o package id `pt.promediacao` ficam como nome interno. Falta verificar a marca no INPI/TMview (classes 9, 42, 35) e os domínios antes de publicar nas lojas. Ver `docs/decisions.md`.
 
 ## 5. Backlog
 
@@ -136,7 +136,7 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 
 ## 7. O que ficou por decidir
 
-1. O nome final e a marca (ProMediação?), e se o domínio .pt e o registo no INPI estão disponíveis.
+1. ~~O nome final e a marca~~ **Decidido: ProDossier** (nome de trabalho). Pendente: o Henrique verifica o INPI e os domínios.
 2. O modelo de receita.
 3. Os concorrentes e o que diferencia a ProMediação.
 4. O backend da app Flutter (por exemplo Supabase ou Firebase, com alojamento na UE) e a autenticação dos clientes (link mágico, SMS ou palavra-passe).
