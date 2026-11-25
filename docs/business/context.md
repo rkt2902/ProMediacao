@@ -48,7 +48,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
   - acesso só dos mediadores a quem o cliente deu consentimento (ver secção 4);
   - poder apagar documentos a pedido do cliente.
 - **Distribuição de seguros:** é uma atividade regulada pela ASF (Lei n.º 7/2019). A app apoia o mediador e não deve parecer uma seguradora nem vender diretamente.
-- **Intermediação de crédito**, para a fase dos empréstimos: é regulada pelo Banco de Portugal (DL 81-C/2017) e exige registo próprio. Deve ser confirmado antes de lançar essa parte.
+- **Intermediação de crédito**, para a fase dos empréstimos: é regulada pelo Banco de Portugal (DL 81-C/2017). Segundo o Henrique, o registo é do lado do mediador e a app só manipula documentos. O jurista confirma se a plataforma precisa de algum estatuto.
 - **Uso de IA:** a IA só extrai e sugere. As decisões e a validação dos dados ficam sempre com o mediador, através da revisão manual.
 
 ## 4. Decisões tomadas
@@ -146,6 +146,6 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 5. ~~O modelo de dados~~ **Princípios decididos** (partilha por escritório, admin sem acesso a documentos, cliente autónomo ou criado pelo mediador). Tabelas e RLS: supabase-dev, na primeira feature.
 6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles. Haverá um catálogo inicial de templates da plataforma, gerido pelo admin, que cada escritório pode usar ou substituir pela sua versão.
 7. ~~Como o cliente recebe o pedido~~ **Decidido:** email com link seguro (e link copiável), pedido dentro da app, e o cliente pode pedir a vários escritórios. SMS/WhatsApp integrados fora da fase 1.
-8. A validação jurídica do RGPD (dados de saúde) e do registo para a intermediação de crédito.
+8. ~~A validação jurídica~~ **Decidido:** parecer jurídico antes de qualquer cliente real; briefing em `docs/business/research/08-juridico.md`. Pendente: escolher o jurista.
 9. O âmbito e os documentos do módulo de empréstimos.
 10. O piloto: com que mediadores e clientes, e quando.
