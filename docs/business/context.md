@@ -143,7 +143,7 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 3. Os concorrentes e o que diferencia a ProDossier. Analisados; diferenciação proposta (dados do cliente partilháveis por consentimento) por confirmar.
 4. ~~O backend e a autenticação~~ **Decidido:** Supabase; cliente por link mágico por email, mediador/admin por palavra-passe. Pendente: plano de produção (decisão 8).
 5. ~~O modelo de dados~~ **Princípios decididos** (partilha por escritório, admin sem acesso a documentos, cliente autónomo ou criado pelo mediador). Tabelas e RLS: supabase-dev, na primeira feature.
-6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles.
+6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles. Haverá um catálogo inicial de templates da plataforma, gerido pelo admin, que cada escritório pode usar ou substituir pela sua versão.
 7. Como o cliente recebe o pedido (email, SMS ou WhatsApp).
 8. A validação jurídica do RGPD (dados de saúde) e do registo para a intermediação de crédito.
 9. O âmbito e os documentos do módulo de empréstimos.
