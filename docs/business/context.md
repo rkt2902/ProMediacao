@@ -54,7 +54,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 ## 4. Decisões tomadas
 
 - [decidido] Os dados são do cliente e partilhados por consentimento explícito, mediador a mediador (X, Y, Z...), com o cliente sempre ciente e a poder retirar. Condiciona o modelo de dados, o RLS e a validação RGPD.
-- [decidido] A partilha é do cliente para o **escritório**, tudo ou nada: todos os mediadores do escritório veem o arquivo, e o cliente vê e pode retirar cada escritório. O admin da plataforma **não** acede a documentos nem a dados de pedidos: vê só nome e email dos clientes e agregados. O cliente pode ser criado pelo mediador ou registar-se sozinho. Sem encriptação por escritório na fase 1 (plano futuro).
+- [decidido] A partilha é do cliente para o **escritório**, tudo ou nada: todos os mediadores do escritório veem o arquivo, e o cliente vê e pode retirar cada escritório. O admin da plataforma **não** acede a documentos nem a dados de pedidos: vê só contagens e agregados (sem nome nem email). O cliente pode ser criado pelo mediador ou registar-se sozinho. Sem encriptação por escritório na fase 1 (plano futuro).
 - [decidido] Há três perfis: admin, mediador e cliente (particular ou empresa).
 - [decidido] O mediador cria um pedido por tipo de seguro, e a lista do que pedir é gerada automaticamente a partir do tipo.
 - [decidido] O mediador também pode preencher dados no perfil do cliente.
@@ -99,7 +99,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 | "Pedir alteração" e "Comparar preços" a partir de uma apólice | aprovada |
 | Painel de admin: mediadores, clientes, pedidos e custo de IA | aprovada |
 | Design responsivo (desktop, tablet e telemóvel) | aprovada |
-| Fichas ajustadas ao formulário de cada seguradora | proposta |
+| Fichas no formato dos templates de cada escritório (carregar template, mapear campos, preencher) | proposta (fase 2) |
 | Módulo de empréstimos e crédito | proposta |
 | Piloto com mediadores reais | proposta |
 | Testar a extração com documentos reais e escolher o modelo mais barato que acerte | proposta |
@@ -143,7 +143,7 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 3. Os concorrentes e o que diferencia a ProDossier. Analisados; diferenciação proposta (dados do cliente partilháveis por consentimento) por confirmar.
 4. ~~O backend e a autenticação~~ **Decidido:** Supabase; cliente por link mágico por email, mediador/admin por palavra-passe. Pendente: plano de produção (decisão 8).
 5. ~~O modelo de dados~~ **Princípios decididos** (partilha por escritório, admin sem acesso a documentos, cliente autónomo ou criado pelo mediador). Tabelas e RLS: supabase-dev, na primeira feature.
-6. O formato final da ficha exportada e se é ajustado a cada seguradora.
+6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles.
 7. Como o cliente recebe o pedido (email, SMS ou WhatsApp).
 8. A validação jurídica do RGPD (dados de saúde) e do registo para a intermediação de crédito.
 9. O âmbito e os documentos do módulo de empréstimos.
