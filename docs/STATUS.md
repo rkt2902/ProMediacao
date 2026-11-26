@@ -56,7 +56,7 @@ Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de public
 
 ## Próximo passo exato (26/11, depois das correções do qa)
 
-1. **Henrique aplica a migração `supabase/migrations/20261126150000_001d_hardening.sql`** (o filtro de segurança do Claude Code bloqueou a aplicação pelo lead). Depois o lead verifica em só leitura (queries no handoff do supabase-dev, guardadas no README das funções) e volta a correr `supabase/tests/001_isolation_matrix.sql` (esperado 66 PASS, 0 FAIL, 1 RISCO X01).
+1. Feito: migração 001d aplicada pelo lead e verificada (matriz 66 PASS, 0 FAIL, 1 RISCO X01). Em curso: migração 001e para o bug 13 (opção A).
 2. Feito: bugs 2, 3, 4, 5, 6, 11 e total de clientes na app (275 testes a passar); bug 5 e bug 7 no backend (função republicada; 001d escrita); bug 1 refutado; bug 9 e 12 na 001d.
-3. Por decidir pelo Henrique: bug 13 (nome do cliente já existente visível ao mediador) e bug 15 (o admin consegue saber se um email tem conta ao convidar). Fica para depois: bug 14 (aviso de offline só depois de um pedido falhar; precisa de plugin de rede).
+3. Decidido: bug 13 opção A (001e), bug 15 aceite. Fica para depois: bug 14 (aviso de offline só depois de um pedido falhar; precisa de plugin de rede).
 4. Reteste do qa (opus) nos bugs corrigidos e no resultado da matriz; depois tarefa 9 (designer: goldens, polimento e as pendências abaixo, incluindo a copy nova do bug 5); depois gate 4 (PR, merge do Henrique) e fecho da feature (chat novo).

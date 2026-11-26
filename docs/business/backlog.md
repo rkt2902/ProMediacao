@@ -30,3 +30,4 @@ Estados: proposta / aprovada / em curso / feita / descartada. Tudo veio da threa
 | 2026-11-25 | Módulo de empréstimos e crédito | produto | | | proposta | |
 | 2026-11-25 | Piloto com mediadores reais | produto | | | proposta | |
 | 2026-11-25 | Testar a extração com documentos reais e escolher o modelo mais barato que acerte | produto | | | proposta | |
+| 2026-11-26 | Notificações ao cliente de novos pedidos: no portal, push no telemóvel e na app (além do email) | produto | | | proposta (ideia do Henrique) | |
