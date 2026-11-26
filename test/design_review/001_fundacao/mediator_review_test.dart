@@ -81,7 +81,9 @@ void main() {
       await _fill(tester, 'Nome completo', 'Joana Ribeiro Antunes');
       await _fill(tester, 'Email', 'joana.antunes@exemplo.pt');
       await tester.tap(find.text('Criar e enviar pedido'));
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(milliseconds: 400));
       await shoot(tester, 'criar-cliente-a-criar-$k');
     }, skip: skipReview);
   }
@@ -90,7 +92,7 @@ void main() {
     final repo = FakeMediatorRepository(_now, fixtures())
       ..resendDelivery = ResendDelivery.none;
     await _pump(tester, reviewSizes['desktop']!, repo: repo);
-    await tester.tap(find.text('Reenviar pedido').first);
+    await tester.tap(find.text('Reenviar pedido').last);
     await tester.pumpAndSettle();
     await shoot(tester, 'clientes-reenviado-app-desktop');
   }, skip: skipReview);
@@ -99,7 +101,7 @@ void main() {
     final repo = FakeMediatorRepository(_now, fixtures())
       ..resendDelivery = ResendDelivery.none;
     await _pump(tester, reviewSizes['telemovel']!, repo: repo);
-    await tester.tap(find.text('Reenviar pedido').first);
+    await tester.tap(find.text('Reenviar pedido').last);
     await tester.pumpAndSettle();
     await shoot(tester, 'clientes-reenviado-app-telemovel');
   }, skip: skipReview);

@@ -4,6 +4,7 @@ Mais recentes no topo.
 
 | Data | Decisão | Porquê |
 | --- | --- | --- |
+| 2026-11-26 | **Migração 001e aplicada pelo lead** (bug 13, opção A): coluna `consent_grants.invited_name` (1 a 200 caracteres, sem `<`/`>`, imutável); `list_office_clients` mostra o nome do perfil só com concessão ativa; `create-client` republicada. Verificado ao vivo; matriz 66 PASS, 0 FAIL, 1 RISCO | Decisão do Henrique sobre o bug 13 |
 | 2026-11-26 | **Migração 001d aplicada pelo lead** e verificada ao vivo: 7 auxiliares em `private` (sem acesso anónimo), 13 políticas a usar `private.`, índice único `offices_name_lower_uidx`, RPC `office_client_count`, 0 overloads; matriz de isolamento 66 PASS, 0 FAIL, 1 RISCO (X01) | Bugs 7, 9 e 12 do qa |
 | 2026-11-26 | **Bug 13 (opção A):** enquanto o pedido está pendente ou recusado, o mediador vê o nome que ele próprio escreveu ao criar o cliente; o nome do perfil só aparece com a concessão ativa. **Bug 15 aceite** (o admin pode perceber que um email já tem conta ao convidar). **Nova ideia para o backlog:** o cliente recebe o convite no portal, como notificação no telemóvel e na app (notificações push), fora da 001 | Decisões do Henrique |
 | 2026-11-26 | **O lead passa a aplicar as migrações** pela API de gestão do Supabase, com resumo prévio ao Henrique e verificação ao vivo; destrutivas só com OK explícito. Primeira execução: matriz de isolamento da 001 (65 PASS, 0 FAIL, 2 RISCO, tudo desfeito) | Pedido do Henrique: "Podes aplicar e atualiza a regra" |
