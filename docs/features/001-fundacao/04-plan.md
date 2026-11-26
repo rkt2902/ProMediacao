@@ -22,6 +22,10 @@ Entradas comuns a todas as tarefas: `CLAUDE.md`, `docs/decisions.md`, `02-spec.m
 - **4** começa depois de **3**; **5, 6 e 7** depois do gate 3 e do **4**.
 - **8** e **9** no fim; correções devolvidas ao dono do ficheiro (máx. 2 ciclos).
 
+## Critério transversal: responsividade (decisão de 2026-11-26)
+
+A app é usada no navegador, sem instalação. Cada ecrã de **cliente e mediador** tem de estar desenhado e testado em telemóvel (≤640), tablet (≤1100) e desktop; o admin é desktop-first mas utilizável nos outros. Aplica-se às tarefas 4 a 9: widget tests e goldens nos três tamanhos; o `qa` verifica-o ecrã a ecrã. A publicação web e o alojamento (UE) ficam como decisão a abrir antes do gate 4.
+
 ## Riscos do plano
 
 - O QA precisa de executar a matriz com papéis de teste. O MCP do Supabase é só leitura e falhou nesta sessão: se não ligar, o `qa` escreve os scripts em `supabase/tests/` e o Henrique corre-os no SQL Editor e devolve o resultado.
