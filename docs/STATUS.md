@@ -32,12 +32,12 @@ Bloqueia a continuação da 001 (por ordem):
 - [x] 1. Aplicar no SQL Editor (confirmado ao vivo via MCP: 8 tabelas com RLS, funções 001c presentes), por ordem, `supabase/migrations/20261126120000_001_fundacao.sql`, `..._001b_send_throttle.sql` e `..._001c_declined_final.sql`; dizer "aplicada".
 - [x] 2. Criar o utilizador admin (1 perfil admin confirmado ao vivo) em Authentication > Users (Auto confirm) e correr `supabase/seed/001_first_admin.sql` com o UUID, nome e email trocados.
 - [x] 3. Alojamento decidido: Cloudflare Pages (opção A). Falta criar o projeto Cloudflare e ligar o repositório; o URL `*.pages.dev` serve de endereço provisório.
-- [ ] 4. Publicar as 3 funções e definir `ALLOWED_ORIGINS` e `AUTH_REDIRECT_URL` (guia passo a passo dado no chat de 26/11; resumo: `npx supabase login`, `functions deploy` x3 com `--project-ref aboducqavmsmlzslrseu`, ver `supabase/functions/README.md`); ajustar Redirect URLs e modelos de email no painel. Depende do ponto 3.
+- [x] 4. Funções `invite-mediator`, `create-client`, `resend-request` publicadas em 26/11 (ACTIVE, JWT obrigatório; sem sessão devolvem 401). Segredos `ALLOWED_ORIGINS` e `AUTH_REDIRECT_URL` definidos com o URL provisório `http://localhost:8080`: **trocar pelo URL final do Cloudflare Pages** (`supabase secrets set` + Auth > URL Configuration). Código não testado com chamadas reais autenticadas.
 - [x] 5. Colar `docs/cloud/setup-flutter.sh` no setup script do ambiente cloud (`docs/cloud/CLOUD.md`), para os chats novos terem o Flutter.
 - [x] 6. Reconectar o MCP do Supabase (liga em só leitura; confirmado) (token em Network secrets, `docs/cloud/CLOUD.md`); sem isto o qa dá queries para correres tu.
 
 Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de publicar:
-- [ ] 6b. No painel do Supabase (Authentication > Providers/Policies), definir palavra-passe mínima de 10 caracteres com maiúscula, minúscula, número e símbolo (e ativar a verificação de palavras-passe comprometidas, se o plano o permitir).
+- [x] 6b. Auth configurado em 26/11 via API: palavra-passe mínima 10 com minúscula, maiúscula, número e símbolo; registo público desativado (`disable_signup`); site_url e Redirect URL provisórios `http://localhost:8080`. Falta ativar a verificação de palavras-passe comprometidas (só em planos pagos) e trocar o URL.
 - [ ] 7. Fornecedor de email (SMTP): recomendado Brevo, plano gratuito (300 emails/dia), trocável depois; precisa de um domínio próprio para SPF/DKIM. Falta abrir conta e domínio para os links mágicos.
 - [ ] (depois) 8. Escolher o jurista e entregar `docs/business/research/08-juridico.md`.
 - [ ] (depois) 9. Verificar a marca ProDossier no INPI/TMview (classes 9, 42, 35) e os domínios .pt/.com.
@@ -46,3 +46,5 @@ Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de public
 - [ ] (depois) 10. Juntar `Dossier-Seguros-prototipo.html` a `docs/reference/prototipo/`.
 - [ ] (depois) 11. Juntar templates reais de seguradoras (sem dados de clientes) a `docs/reference/` para a fase 2 das fichas.
 - [ ] (depois) 12. Confirmar com colegas da APROSE que não há concorrente português equivalente.
+
+- [ ] 13. Revogar o token de acesso do Supabase em Account > Access Tokens (foi usado para publicar as funções; já não é preciso). A credencial `api.supabase.com` fica guardada no ambiente cloud: removê-la em Settings se quiseres.
