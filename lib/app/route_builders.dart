@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
-import 'placeholders/admin_home_placeholder.dart';
-import 'placeholders/client_home_placeholder.dart';
-import 'placeholders/consent_placeholder.dart';
+import '../features/admin/presentation/admin_home_page.dart';
+import '../features/consent/presentation/client_home_page.dart';
+import '../features/consent/presentation/consent_page.dart';
 import 'placeholders/mediator_home_placeholder.dart';
 
 /// Ecrãs por papel. Cada tarefa (5, 6, 7) troca o seu marcador por o ecrã
@@ -20,9 +20,9 @@ class RouteBuilders {
   final WidgetBuilder clientHome;
   final Widget Function(BuildContext context, String grantId) consent;
 
-  static Widget _admin(BuildContext c) => const AdminHomePlaceholder();
+  static Widget _admin(BuildContext c) => const AdminHomePage();
   static Widget _mediator(BuildContext c) => const MediatorHomePlaceholder();
-  static Widget _client(BuildContext c) => const ClientHomePlaceholder();
+  static Widget _client(BuildContext c) => const ClientHomePage();
   static Widget _consent(BuildContext c, String id) =>
-      ConsentPlaceholder(grantId: id);
+      ConsentPage(grantId: id);
 }

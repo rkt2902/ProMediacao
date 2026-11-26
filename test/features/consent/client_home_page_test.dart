@@ -140,10 +140,11 @@ void main() {
     await tester.tap(find.text(ConsentCopy.respond));
     await tester.pumpAndSettle();
     expect(find.byType(ConsentPage), findsNothing);
-    await tester.ensureVisible(find.text(ConsentCopy.withdraw));
-    await tester.tap(find.text(ConsentCopy.withdraw));
-    await tester.pumpAndSettle();
-    expect(find.byType(ConfirmSheet), findsNothing);
+    final withdraw = tester.widget<SecondaryButton>(
+      find.widgetWithText(SecondaryButton, ConsentCopy.withdraw),
+    );
+    expect(withdraw.onPressed, isNull);
+    expect(withdraw.disabledReason, ConsentCopy.offlineShort);
   });
 
   testWidgets('sem rede ao carregar: faixa e erro', (tester) async {

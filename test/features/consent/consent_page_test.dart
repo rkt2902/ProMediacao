@@ -137,10 +137,11 @@ void main() {
     final repo = FakeConsentRepository(grants: [pendingGrant()])
       ..writeFailure = const ConsentFailure(ConsentFailureKind.stateChanged);
     await pumpClientApp(tester, repo, location: _route);
+    final before = repo.calls.where((c) => c == 'list').length;
     await tester.tap(find.text('Aceitar'));
     await tester.pumpAndSettle();
     // Voltou a ler o servidor: continua pendente, por isso nada mudou.
-    expect(repo.calls.where((c) => c == 'list').length, 2);
+    expect(repo.calls.where((c) => c == 'list').length, before + 1);
     expect(find.text(ConsentCopy.respondFailed), findsOneWidget);
     expect(find.text('ATIVO'), findsNothing);
   });

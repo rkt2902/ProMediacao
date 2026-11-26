@@ -38,15 +38,32 @@ class _ClientHomePageState extends State<ClientHomePage> {
   String? _highlightId;
   final _noticeFocus = FocusNode(debugLabel: 'aviso');
   final _pendingFocus = FocusNode(debugLabel: 'pedidos');
-  bool _started = false;
+
+  /// O pedido (`/cliente/pedido/:id`) é uma rota filha: este ecrã fica por
+  /// baixo dele e é reutilizado ao voltar. Cada vez que volta a ser o ecrã
+  /// visível, lê o aviso, a concessão respondida e a lista de novo (nunca
+  /// mostra estado antigo); enquanto está tapado, não pede nada.
+  bool _current = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_started) return;
-    _started = true;
-    _notice = AppScope.of(context).session.takeNotice();
-    _highlightId = ConsentHandoff.take();
+    final current = ModalRoute.of(context)?.isCurrent ?? true;
+    if (current && !_current) {
+      _current = true;
+      _activate();
+    } else if (!current) {
+      _current = false;
+    }
+  }
+
+  void _activate() {
+    final notice = AppScope.of(context).session.takeNotice();
+    if (notice != null) {
+      _notice = notice;
+      _noticeKey++;
+    }
+    _highlightId = ConsentHandoff.take() ?? _highlightId;
     _load();
   }
 
