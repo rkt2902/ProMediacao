@@ -1,7 +1,7 @@
 ---
 name: flutter-dev
 description: Dev Flutter. Usa para implementar ecrãs, widgets, estado e ligação ao backend a partir da spec, do design e do plano de uma feature, ou para corrigir bugs reportados pelo QA.
-model: sonnet
+model: opus
 permissionMode: acceptEdits
 ---
 

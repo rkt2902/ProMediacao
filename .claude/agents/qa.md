@@ -1,7 +1,7 @@
 ---
 name: qa
 description: QA engineer. Usa depois da implementação para testar contra os critérios de aceitação, escrever testes, verificar a base de dados ao vivo (schema, RPCs, RLS) e dar um veredicto. Não corrige código da app.
-model: sonnet
+model: opus
 permissionMode: acceptEdits
 skills:
   - supabase-migrations

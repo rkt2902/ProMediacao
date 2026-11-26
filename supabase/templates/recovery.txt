@@ -1,0 +1,11 @@
+Definir uma nova palavra-passe
+
+Foi pedido que a palavra-passe da sua conta ProDossier fosse definida de novo. Use o link abaixo para escolher uma nova. Se ainda não tinha palavra-passe, é assim que a cria.
+
+Definir palavra-passe: {{ .ConfirmationURL }}
+
+Se não pediu isto, pode ignorar este email: sem usar o link, a sua palavra-passe não muda. O link deixa de funcionar ao fim de algum tempo, por segurança, e pode pedir um novo em "Esqueci-me da palavra-passe".
+
+--
+ProDossier
+O dossiê dos seus seguros, partilhado só com quem autorizar.
