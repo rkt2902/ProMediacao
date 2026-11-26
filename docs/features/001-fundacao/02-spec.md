@@ -8,10 +8,12 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 
 ## User stories
 
-1. Como mediador ou admin, quero entrar com email e palavra-passe e recuperar a palavra-passe, para aceder ao meu espaço.
-   - Dado um mediador com conta, Quando entra com credenciais corretas, Então vê o ecrã do seu escritório; com credenciais erradas vê "Email ou palavra-passe incorretos" sem indicar qual falhou.
+1. Como mediador, admin ou cliente com palavra-passe, quero entrar com email e palavra-passe e recuperá-la, para aceder ao meu espaço.
+   - Dado um mediador ou admin com conta, Quando entra com credenciais corretas, Então vê o seu ecrã inicial; com credenciais erradas vê "Email ou palavra-passe incorretos" sem indicar qual falhou. Mediador e admin não têm entrada por link mágico.
+   - Dado um cliente que já definiu palavra-passe, Quando entra com email e palavra-passe corretos, Então entra sem precisar de link; com dados errados vê a mesma mensagem genérica.
    - Dado um utilizador sem sessão, Quando pede qualquer dado, Então recebe 0 linhas.
-   - Dado "Esqueci-me da palavra-passe", Quando indica o email, Então recebe o email de recuperação do Supabase e a resposta é igual exista ou não a conta.
+   - Dado "Esqueci-me da palavra-passe" (todos os perfis), Quando indica o email, Então recebe o email de recuperação do Supabase e a resposta é igual exista ou não a conta; o pedido fica bloqueado 60 s após cada envio.
+   - Dado um cliente que ainda não tem palavra-passe, Quando usa "Esqueci-me da palavra-passe", Então pode defini-la por esse email.
 
 2. Como admin, quero criar escritórios, convidar mediadores e ver 3 contagens, para pôr a plataforma a funcionar sem ver dados pessoais.
    - Dado o admin, Quando cria um escritório e convida um mediador por email, Então o mediador fica ligado a esse único escritório e recebe o convite.
@@ -26,9 +28,15 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
    - Dado um link expirado ou perdido, Quando o mediador carrega "Reenviar pedido", Então o cliente recebe novo link; o botão fica bloqueado 60 s após cada envio.
    - Dado um email que já é cliente de outro escritório, Quando o mediador o cria, Então é criada só a concessão pendente para o seu escritório, sem revelar dados do cliente nem de outros escritórios.
 
-4. Como cliente, quero entrar pelo link mágico e aceitar ou recusar a partilha, para só dar acesso a quem eu escolho.
+4. Como cliente, quero entrar pelo link mágico (e, se quiser, passar a usar palavra-passe) e aceitar ou recusar a partilha, para só dar acesso a quem eu escolho.
    - Dado o link válido, Quando o cliente abre, Então vê o texto de consentimento (versão `v0-rascunho`), o nome do escritório e do mediador, e os botões "Aceitar" e "Recusar".
    - Dado um link expirado, Quando o cliente abre o ecrã de entrada e indica o email, Então pode pedir novo link, com resposta igual exista ou não a conta; o pedido fica bloqueado 60 s após cada envio.
+   - Dado um cliente sem palavra-passe, Quando pede link no ecrã de entrada, Então continua a entrar por link mágico, sempre.
+   - Dado a primeira entrada por link, Quando o cliente entra, Então é convidado a criar palavra-passe com "Criar palavra-passe" e "Agora não"; "Agora não" leva-o em frente sem bloqueio e o convite volta a aparecer no máximo na entrada seguinte por link.
+   - Dado o convite adiado, Quando o cliente abre a conta, Então encontra "Criar palavra-passe" (ou "Alterar palavra-passe" se já existir).
+   - Dado o convite ou a conta, Quando a palavra-passe tem menos de 8 caracteres, Então é recusada com mensagem de requisitos; palavra-passe e confirmação têm de coincidir.
+   - Dado um cliente com concessão pendente, Quando aceita ou recusa, Então a palavra-passe nunca é exigida, nem antes nem depois do consentimento.
+   - Dado um cliente com palavra-passe, Quando pede também um link mágico, Então entra por link na mesma conta, sem perder a palavra-passe.
    - Dado um cliente que já tem conta e uma concessão pendente, Quando entra na app, Então vê o convite (escritório, mediador, texto) e pode aceitar ou recusar dentro da app, sem depender de email nem de link; pode também pedir reenvio do link a partir da app.
    - Dado "Aceitar", Então a concessão passa a ativa, e fica um registo de auditoria com cliente, escritório, data/hora, ação e versão do texto aceite.
    - Dado "Recusar", Então a concessão fica recusada, o mediador continua sem acesso a dados do cliente, e fica registo.
@@ -76,7 +84,8 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 | --- | --- |
 | Vazio | Mediador sem clientes: mensagem e botão "Criar cliente". Cliente sem concessões: "Ainda não partilhas dados com nenhum escritório". Admin sem escritórios: botão "Criar escritório". Contagens a 0. |
 | A carregar | Indicador em listas e ações; botões desativados durante envio para evitar duplicados (criar cliente, aceitar, retirar). |
-| Erro | Copy em PT-PT com tratamento formal (ex.: "Introduza o seu email"). Mensagem com ação de repetir; link expirado ou inválido com explicação e pedido de novo link ao mediador; email duplicado; falha de envio de email. Nunca mostrar erros técnicos. |
+| Erro | Copy em PT-PT com tratamento formal (ex.: "Introduza o seu email"). Mensagem com ação de repetir; link expirado ou inválido com explicação e pedido de novo link; email duplicado; falha de envio de email. Palavra-passe errada: "Email ou palavra-passe incorretos", igual exista ou não a conta. Palavra-passe fraca (menos de 8 caracteres) ou confirmação diferente: mensagem junto ao campo. Nunca mostrar erros técnicos. |
+| Palavra-passe adiada | Cliente sem palavra-passe: entra por link; convite "Criar palavra-passe / Agora não" na entrada por link e sempre disponível na conta; nenhuma funcionalidade bloqueada. |
 | Offline | Sem ligação: aviso visível e ações de escrita bloqueadas; nunca mostrar como retirado ou aceite algo não confirmado pelo servidor. |
 | Sem permissão | Acesso a dados de outro escritório ou sem concessão devolve vazio ou "Sem acesso", sem revelar se o registo existe. Sessão do cliente com concessão retirada: mediador deixa de ver o cliente na lista. |
 | Conteúdo longo | Nomes e emails longos truncados com reticências sem partir o layout; texto de consentimento com scroll e botões sempre visíveis; listas paginadas. |
@@ -94,8 +103,11 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 | Texto de consentimento (versão, conteúdo) | Utilizadores autenticados | Admin/migração | Só leitura na app | Novo |
 | Contagens (escritórios, mediadores, clientes) | Admin | n/a | Função agregada sem dados pessoais; ver nota de risco com poucos escritórios | Novo |
 
+**Credenciais (Supabase Auth):** email e palavra-passe ficam no Auth, não em tabelas da app; cada pessoa só altera a sua palavra-passe, com sessão válida. Sem novas tabelas nem alterações à matriz de isolamento.
+
 ## Decisões tomadas (gate 1 aprovado)
 
+- Autenticação do cliente (decisão de 2026-11-26, altera a decisão 4): convite e primeira entrada por link mágico; depois, palavra-passe opcional (adiável) e entrada por palavra-passe ou link; mediador e admin só palavra-passe; "Esqueci-me da palavra-passe" para todos.
 - Autorregisto do cliente: adiar a interface, modelo preparado para os dois modos (diretório público de escritórios fica para a feature em que o cliente inicia pedidos).
 - Dados que o mediador escreveu no perfil do cliente: deixam de ser visíveis ao escritório quando o cliente retira o acesso.
 - Email: Supabase por defeito. Limites de envio e entrega podem afetar a métrica dos 10 minutos; rever se falhar.
