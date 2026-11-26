@@ -2,7 +2,7 @@
 name: pm
 description: Product manager. Usa para transformar uma ideia aprovada numa spec curta e testável (user stories, critérios de aceitação, fora de âmbito, estados, permissões) antes do design e do código.
 tools: Read, Grep, Glob, Write, Edit
-model: opus
+model: sonnet
 permissionMode: acceptEdits
 ---
 

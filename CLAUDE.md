@@ -41,6 +41,16 @@ O detalhe fica no ficheiro do pacote, não no resumo.
 - Numa tarefa, nenhum ficheiro tem dois donos.
 - Os agentes não fazem perguntas ao Henrique: escrevem a dúvida em DECISÕES EM ABERTO e o lead junta tudo no gate seguinte.
 
+## Gestão de agentes (regra do Henrique: eficiência sem sacrificar qualidade)
+- Poupar tokens importa, mas código limpo e sem bugs à primeira poupa mais a longo prazo: nunca se baixa o modelo numa tarefa onde um erro sai caro.
+- O lead escolhe o `model` em cada delegação, conforme a dificuldade (os defaults em `.claude/agents/` são só o ponto de partida: designer e supabase-dev em opus; bizdev, pm, flutter-dev e qa em sonnet):
+  - **opus**: esquema, RLS, auditoria, funções de servidor e tudo o que toca em segurança ou dados pessoais; autenticação, sessão, rotas e lógica com muitos estados; trabalho visual de julgamento (designer); veredicto do qa sobre isolamento e permissões; bugs cuja causa não é óbvia.
+  - **sonnet**: ecrãs e widgets seguindo uma spec e um design já claros, testes, ajustes e correções localizadas, specs e docs, pesquisa de negócio, revisões simples.
+  - **haiku**: só buscas e tarefas mecânicas triviais.
+- Não definir `effort` salvo pedido do Henrique.
+- Menos tokens sem perder qualidade: prompts com objetivo, ficheiros de entrada e de saída, critério de feito e o que não fazer; passar caminhos em vez de colar conteúdo; retomar um agente com SendMessage em vez de lançar outro do zero; um único agente por ficheiro; `flutter analyze` e `flutter test` só uma vez no fim de cada tarefa; regenerar só os renders afetados; o lead lê os handoffs, não os ficheiros.
+- Sempre que uma tarefa tiver partes de dificuldade diferente, divide-a: a parte crítica em opus e a rotineira em sonnet.
+
 ## Design primeiro (regra do Henrique)
 - Nenhum ecrã é implementado antes de o Henrique ver e aprovar uma referência visual dele (renders em PNG, ou página navegável, por ecrã e nos três tamanhos: telemóvel, tablet, desktop; admin só desktop e um tamanho pequeno). O texto do `03-design.md` não chega.
 - O designer produz primeiro as referências (em `docs/features/NNN-slug/renders/`), o lead mostra-as no gate 2, e só com aprovação o flutter-dev implementa. Mudanças pedidas voltam ao designer.

@@ -1,0 +1,15 @@
+{{ .Data.office_name }} pede acesso aos seus dados
+
+{{ if .Data.mediator_name }}{{ .Data.mediator_name }}, do escritório {{ .Data.office_name }}, pede-lhe{{ else }}O escritório {{ .Data.office_name }} pede-lhe{{ end }} acesso aos dados e documentos que guardar no ProDossier. Pode aceitar ou recusar. Nada é partilhado até responder.
+
+Escritório: {{ .Data.office_name }}
+{{ if .Data.mediator_name }}Pedido enviado por: {{ .Data.mediator_name }}
+{{ end }}
+Ver o pedido: {{ .ConfirmationURL }}
+
+Se não esperava este pedido, pode ignorar este email: sem usar o link, nenhum dado é partilhado. O link deixa de funcionar ao fim de algum tempo, por segurança, e pode pedir um novo na página de entrada.
+
+--
+ProDossier
+O dossiê dos seus seguros, partilhado só com quem autorizar.
+Enviado para {{ .Email }}

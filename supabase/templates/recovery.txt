@@ -9,3 +9,4 @@ Se não pediu isto, pode ignorar este email: sem usar o link, a sua palavra-pass
 --
 ProDossier
 O dossiê dos seus seguros, partilhado só com quem autorizar.
+Enviado para {{ .Email }}
