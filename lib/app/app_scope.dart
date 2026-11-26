@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../features/auth/application/client_link_controller.dart';
 import '../features/auth/application/session_controller.dart';
-import '../features/auth/data/entry_tab_store.dart';
+import '../features/auth/data/password_prompt_store.dart';
 import '../features/auth/domain/auth_repository.dart';
 import 'connectivity.dart';
 
@@ -10,18 +10,17 @@ import 'connectivity.dart';
 class AppServices {
   AppServices({
     required this.auth,
-    required this.tabStore,
+    PasswordPromptStore? prompts,
     SessionController? session,
     AppConnectivity? connectivity,
     ClientLinkController? clientLink,
   }) : connectivity = connectivity ?? AppConnectivity(probe: auth.isReachable),
-       session = session ?? SessionController(auth) {
+       session = session ?? SessionController(auth, prompts: prompts) {
     this.clientLink =
         clientLink ?? ClientLinkController(auth, this.connectivity);
   }
 
   final AuthRepository auth;
-  final EntryTabStore tabStore;
   final SessionController session;
   final AppConnectivity connectivity;
   late final ClientLinkController clientLink;

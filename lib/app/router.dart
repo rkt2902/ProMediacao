@@ -1,12 +1,15 @@
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/domain/auth_models.dart';
+import '../features/auth/presentation/create_password_page.dart';
 import '../features/auth/presentation/entry_page.dart';
 import '../features/auth/presentation/expired_link_page.dart';
 import '../features/auth/presentation/forgot_password_page.dart';
 import '../features/auth/presentation/session_gate_page.dart';
 import '../features/auth/presentation/set_password_page.dart';
+import 'page_transition.dart';
 import 'route_builders.dart';
 import 'routes.dart';
 
@@ -77,13 +80,24 @@ String? redirectFor(SessionController session, Uri uri) {
         final back = uri.queryParameters['de'];
         return back != null && back != '/' ? back : home;
       }
-      if (session.recovering) {
+      if (session.recovering || session.needsPasswordSetup) {
         return path == AppRoutes.setPassword ? null : AppRoutes.setPassword;
       }
       if (path == AppRoutes.setPassword) return null;
       final owner = _ownerOf(path);
       if (owner == null) return home; // entrada, "/" e rotas desconhecidas
       if (owner != role) return home; // rota de outro perfil: não existe
+      if (role == AppRole.cliente) {
+        // O convite para criar palavra-passe vem antes de "Com quem
+        // partilho", nunca antes nem durante o consentimento (o pedido tem
+        // rota própria e não passa por aqui).
+        if (path == AppRoutes.client && session.offerPassword) {
+          return AppRoutes.clientCreatePassword;
+        }
+        if (path == AppRoutes.clientCreatePassword && !session.offerPassword) {
+          return AppRoutes.client;
+        }
+      }
       return null;
   }
 }
@@ -101,43 +115,77 @@ GoRouter buildRouter(
       GoRoute(
         path: '/',
         redirect: (context, state) => null,
-        builder: (context, state) => const SessionGatePage(),
+        pageBuilder: (c, s) => fadePage(c, s, const SessionGatePage()),
       ),
       GoRoute(
         path: AppRoutes.gate,
-        builder: (context, state) => const SessionGatePage(),
+        pageBuilder: (c, s) => fadePage(c, s, const SessionGatePage()),
       ),
       GoRoute(
         path: AppRoutes.entry,
-        builder: (context, state) => const EntryPage(),
+        pageBuilder: (c, s) => fadePage(c, s, const EntryPage()),
       ),
       GoRoute(
         path: AppRoutes.recover,
-        builder: (context, state) => const ForgotPasswordPage(),
+        pageBuilder: (c, s) => fadePage(c, s, const ForgotPasswordPage()),
       ),
       GoRoute(
         path: AppRoutes.setPassword,
-        builder: (context, state) => const SetPasswordPage(),
+        pageBuilder: (c, s) => fadePage(c, s, const SetPasswordPage()),
       ),
       GoRoute(
         path: AppRoutes.expiredLink,
-        builder: (context, state) => ExpiredLinkPage(
-          forPassword: state.uri.queryParameters['tipo'] == 'palavra-passe',
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          ExpiredLinkPage(
+            forPassword: s.uri.queryParameters['tipo'] == 'palavra-passe',
+          ),
         ),
       ),
-      GoRoute(path: AppRoutes.admin, builder: (c, s) => builders.adminHome(c)),
+      GoRoute(
+        path: AppRoutes.admin,
+        pageBuilder: (c, s) =>
+            fadePage(c, s, Builder(builder: builders.adminHome)),
+      ),
       GoRoute(
         path: AppRoutes.mediator,
-        builder: (c, s) => builders.mediatorHome(c),
+        pageBuilder: (c, s) =>
+            fadePage(c, s, Builder(builder: builders.mediatorHome)),
+      ),
+      // Rotas de topo (não filhas de /cliente): sem o ecrã inicial por baixo,
+      // que ficaria com o estado antigo ao voltar.
+      GoRoute(
+        path: AppRoutes.clientCreatePassword,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          const CreatePasswordPage(mode: CreatePasswordMode.prompt),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientPassword,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          const CreatePasswordPage(mode: CreatePasswordMode.account),
+        ),
       ),
       GoRoute(
         path: AppRoutes.client,
-        builder: (c, s) => builders.clientHome(c),
+        pageBuilder: (c, s) =>
+            fadePage(c, s, Builder(builder: builders.clientHome)),
         routes: [
           GoRoute(
             path: 'pedido/:grantId',
-            builder: (c, s) =>
-                builders.consent(c, s.pathParameters['grantId'] ?? ''),
+            pageBuilder: (c, s) => fadePage(
+              c,
+              s,
+              Builder(
+                builder: (c) =>
+                    builders.consent(c, s.pathParameters['grantId'] ?? ''),
+              ),
+            ),
           ),
         ],
       ),

@@ -41,7 +41,13 @@ class Colophon extends StatefulWidget {
 
 class _ColophonState extends State<Colophon> {
   /// A linha só se anima se chegou depois (perfil a carregar).
-  late final bool _identityAtStart = widget.identity != null;
+  late final bool _identityAtStart;
+
+  @override
+  void initState() {
+    super.initState();
+    _identityAtStart = widget.identity != null;
+  }
 
   double _width(String text, TextStyle style, TextScaler scaler) {
     final p = TextPainter(
@@ -90,8 +96,13 @@ class _ColophonState extends State<Colophon> {
           children: [
             const AppRule(),
             const SizedBox(height: AppSpace.s16),
-            LayoutBuilder(
-              builder: (context, constraints) {
+            Builder(
+              builder: (context) {
+                // Sem LayoutBuilder: o `PageFrame` mede o colofão por
+                // intrínsecos (SliverFillRemaining). A largura é a da moldura.
+                final window = MediaQuery.sizeOf(context).width;
+                final available = (window - 2 * AppBreakpoints.margin(bp))
+                    .clamp(0.0, AppSize.larguraLista);
                 final scaler = MediaQuery.textScalerOf(context);
                 var oneLine = !compact;
                 if (oneLine) {
@@ -105,7 +116,7 @@ class _ColophonState extends State<Colophon> {
                   if (record != null) {
                     total += AppSpace.s16 + _width(record, recordStyle, scaler);
                   }
-                  oneLine = total <= constraints.maxWidth;
+                  oneLine = total <= available;
                 }
 
                 final identityText = identity == null

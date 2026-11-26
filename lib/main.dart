@@ -7,7 +7,7 @@ import 'app/app.dart';
 import 'app/app_scope.dart';
 import 'app/config_error_app.dart';
 import 'core/config/app_config.dart';
-import 'features/auth/data/entry_tab_store.dart';
+import 'features/auth/data/password_prompt_store.dart';
 import 'features/auth/data/supabase_auth_repository.dart';
 
 Future<void> main() async {
@@ -40,7 +40,10 @@ Future<void> main() async {
   );
   runApp(
     ProMediacaoApp(
-      services: AppServices(auth: auth, tabStore: SharedPrefsEntryTabStore()),
+      services: AppServices(
+        auth: auth,
+        prompts: SharedPrefsPasswordPromptStore(),
+      ),
     ),
   );
 }

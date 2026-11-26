@@ -60,9 +60,26 @@ void main() {
             : margin;
         final content = tester.getRect(find.byKey(const Key('c')));
         final bar = tester.getRect(find.byKey(const Key('bar')));
-        final brand = tester.getTopLeft(find.text('ProDossier'));
+        final tab = tester.getRect(find.byType(FolderTab));
         expect(content.left, frameLeft);
-        expect(brand.dx, frameLeft);
+        // Sem marca nem cabeçalho: o separador é a primeira linha.
+        expect(find.text('ProDossier'), findsNothing);
+        expect(tab.left, frameLeft);
+        expect(
+          tab.top,
+          bp == Breakpoint.compacto ? AppSpace.s16 : AppSpace.s24,
+        );
+        // "Sair" na linha do separador, centrado com ele.
+        final sair = tester.getRect(find.byType(AppPressable));
+        expect(sair.center.dy, closeTo(tab.center.dy, 0.5));
+        expect(sair.height, greaterThanOrEqualTo(AppSize.alvoMinimo));
+        // Régua por baixo do separador à largura da moldura.
+        final frameWidth = bp == Breakpoint.largo
+            ? AppSize.larguraLista
+            : w - 2 * margin;
+        final rule = tester.getRect(find.byType(AppRule).first);
+        expect(rule.top, tab.bottom);
+        expect(rule.width, frameWidth);
         expect(bar.left, content.left);
         expect(bar.width, content.width);
         expect(content.right, lessThanOrEqualTo(w - margin));
@@ -79,12 +96,13 @@ void main() {
       });
     }
 
-    testWidgets('largo: marca e conta nas pontas da moldura de 1040', (
+    testWidgets('largo: separador e conta nas pontas da moldura de 1040', (
       tester,
     ) async {
       await pumpApp(
         tester,
         PageFrame(
+          tabLabel: 'Ribeira Seguros',
           accountName: 'Ana Martins',
           onSignOut: () {},
           child: const SizedBox(height: 10),
@@ -92,6 +110,7 @@ void main() {
         width: 1280,
         height: 800,
       );
+      expect(tester.getTopLeft(find.byType(FolderTab)).dx, 120);
       final sair = tester.getRect(find.text('Sair'));
       expect(sair.right, lessThanOrEqualTo(120 + AppSize.larguraLista));
       expect(sair.right, greaterThan(120 + AppSize.larguraLista - 40));
@@ -103,6 +122,7 @@ void main() {
       Future<void> pump(double w) => pumpApp(
         tester,
         PageFrame(
+          tabLabel: 'Ribeira Seguros',
           accountName: 'Ana Martins',
           onSignOut: () {},
           child: const SizedBox(height: 10),
@@ -127,10 +147,63 @@ void main() {
       }
     });
 
+    for (final (name, w, h) in _sizes) {
+      testWidgets('$name: colofão encosta ao fundo quando o conteúdo é curto', (
+        tester,
+      ) async {
+        await pumpApp(
+          tester,
+          const PageFrame(
+            tabLabel: 'Acesso',
+            maxWidth: AppSize.larguraFormulario,
+            colophon: Colophon.signedOut(),
+            child: SizedBox(height: 10),
+          ),
+          width: w,
+          height: h,
+        );
+        expect(tester.takeException(), isNull);
+        final colophon = tester.getRect(find.byType(Colophon));
+        expect(colophon.bottom, h);
+        final bp = AppBreakpoints.of(w);
+        final frameWidth = bp == Breakpoint.largo
+            ? AppSize.larguraLista
+            : w - 2 * AppBreakpoints.margin(bp);
+        // Régua do colofão à largura da moldura, mesmo com coluna de 400.
+        final rule = tester.getRect(
+          find.descendant(
+            of: find.byType(Colophon),
+            matching: find.byType(AppRule),
+          ),
+        );
+        expect(rule.width, frameWidth);
+      });
+    }
+
+    testWidgets('colofão só no fim do scroll quando o conteúdo é longo', (
+      tester,
+    ) async {
+      await pumpApp(
+        tester,
+        const PageFrame(
+          tabLabel: 'Acesso',
+          colophon: Colophon.signedOut(),
+          child: SizedBox(height: 2000),
+        ),
+        width: 390,
+        height: 844,
+      );
+      expect(find.text(Colophon.signedOutLine), findsNothing);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -3000));
+      await tester.pumpAndSettle();
+      expect(find.text(Colophon.signedOutLine), findsOneWidget);
+    });
+
     testWidgets('altura baixa: barra com padding s8', (tester) async {
       await pumpApp(
         tester,
         const PageFrame(
+          tabLabel: 'Pedido de acesso',
           bottom: SizedBox(key: Key('bar'), height: 48),
           child: SizedBox(height: 10),
         ),

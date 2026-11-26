@@ -26,6 +26,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   String? _formError;
   bool _loading = false;
   bool _sent = false;
+  bool _initialised = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialised) return;
+    _initialised = true;
+    _email.text = AppScope.of(context).session.lastEmail;
+  }
 
   @override
   void dispose() {
@@ -66,30 +75,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final services = AppScope.of(context);
     return AuthLayout(
       offlineMessage: AuthCopy.offlineEntry,
-      tabs: const FolderTab(label: AuthCopy.tabOffice),
       children: [
-        const SizedBox(height: AppSpace.s32),
-        Semantics(
-          header: true,
-          child: Text(
-            AuthCopy.recoverTitle,
-            style: AppType.tituloPara(AppBreakpoints.fromContext(context)),
-          ),
-        ),
+        const AuthTitle(AuthCopy.recoverTitle),
         const SizedBox(height: AppSpace.s16),
         if (_sent)
           SentNotice(
             before: AuthCopy.recoverSent,
             children: [
-              const SizedBox(height: AppSpace.s8),
-              Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  start: AppSize.icone + AppSpace.s12,
-                ),
-                child: TextAction(
-                  label: AuthCopy.backToSignIn,
-                  onPressed: () => context.go(AppRoutes.entry),
-                ),
+              const SizedBox(height: AppSpace.s16),
+              TextAction(
+                label: AuthCopy.backToSignIn,
+                icon: Icons.arrow_back,
+                onPressed: () => context.go(AppRoutes.entry),
               ),
             ],
           )
@@ -114,6 +111,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     readOnly: _loading,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.send,
+                    autofocus: true,
                     autofillHints: const [AutofillHints.email],
                     errorText: _error,
                     onSubmitted: (_) => online && !_loading ? _submit() : null,
@@ -137,6 +135,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     alignment: AlignmentDirectional.centerStart,
                     child: TextAction(
                       label: AuthCopy.backToSignIn,
+                      icon: Icons.arrow_back,
                       onPressed: () => context.go(AppRoutes.entry),
                     ),
                   ),

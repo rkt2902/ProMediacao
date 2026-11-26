@@ -20,7 +20,7 @@ class PageFrame extends StatelessWidget {
   const PageFrame({
     super.key,
     required this.child,
-    required this.tabLabel,
+    this.tabLabel,
     this.trailing,
     this.accountName,
     this.onSignOut,
@@ -35,8 +35,9 @@ class PageFrame extends StatelessWidget {
   final Widget child;
 
   /// Texto do separador: "Acesso" sem sessão, "Os meus dados", o nome do
-  /// escritório, "Administração", "Pedido de acesso".
-  final String tabLabel;
+  /// escritório, "Administração", "Pedido de acesso". Nulo só no ecrã de
+  /// arranque (papel vazio com o colofão no fundo).
+  final String? tabLabel;
 
   /// Bloco da conta na linha do separador. Se [onSignOut] existir, é
   /// substituído por [AccountActions] (nome onde couber + "Sair").
@@ -74,6 +75,7 @@ class PageFrame extends StatelessWidget {
     Widget framed(Widget inner) => Padding(
       padding: EdgeInsets.symmetric(horizontal: margin),
       child: Center(
+        heightFactor: 1,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: AppSize.larguraLista),
           child: SizedBox(width: double.infinity, child: inner),
@@ -96,58 +98,71 @@ class PageFrame extends StatelessWidget {
 
     final tabRow = LayoutBuilder(
       builder: (context, c) {
-        final tabMax = compact
-            ? c.maxWidth -
-                  (account != null ? 2 * AppSize.alvoMinimo : AppSpace.s48)
-            : AppSize.larguraFormulario;
+        // Compacto: o separador deixa 2 × alvoMinimo para "Sair" (ou s48 sem
+        // conta). Médio/largo: separador até 400; a conta usa o resto.
+        final double tabMax;
+        final double accountMax;
+        if (compact) {
+          accountMax = 2 * AppSize.alvoMinimo;
+          tabMax = c.maxWidth - (account != null ? accountMax : AppSpace.s48);
+        } else {
+          tabMax = AppSize.larguraFormulario;
+          accountMax = c.maxWidth - tabMax - AppSpace.s16;
+        }
         return SizedBox(
           height: AppSize.separadorAltura,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: tabMax),
-                child: FolderTab(label: tabLabel, showRule: false),
+              Align(
+                alignment: AlignmentDirectional.bottomStart,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: tabMax),
+                  child: FolderTab(label: tabLabel!, showRule: false),
+                ),
               ),
-              if (account != null) ...[
-                const SizedBox(width: AppSpace.s16),
-                Expanded(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    // O alvo de "Sair" (48) excede o separador (40) 4 em cima
-                    // e 4 em baixo sem mexer na linha.
-                    child: OverflowBox(
-                      minHeight: AppSize.separadorAltura,
-                      maxHeight: AppSize.alvoMinimo,
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: account,
-                    ),
+              if (account != null)
+                // O alvo de "Sair" (48) excede o separador (40) 4 em cima e
+                // 4 em baixo, centrado com ele, sem mexer na linha.
+                PositionedDirectional(
+                  end: 0,
+                  top: (AppSize.separadorAltura - AppSize.alvoMinimo) / 2,
+                  height: AppSize.alvoMinimo,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: accountMax),
+                    child: Center(widthFactor: 1, child: account),
                   ),
                 ),
-              ],
             ],
           ),
         );
       },
     );
 
-    final head = framed(
-      Padding(
-        padding: EdgeInsets.only(top: compact ? AppSpace.s16 : AppSpace.s24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (topAction != null) ...[
-              Align(alignment: AlignmentDirectional.centerStart, child: topAction),
-              const SizedBox(height: AppSpace.s8),
-            ],
-            tabRow,
-            const AppRule(),
-          ],
-        ),
-      ),
-    );
+    final head = tabLabel == null
+        ? const SizedBox.shrink()
+        : framed(
+            Padding(
+              padding: EdgeInsets.only(
+                top: compact ? AppSpace.s16 : AppSpace.s24,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (topAction != null) ...[
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: topAction,
+                    ),
+                    const SizedBox(height: AppSpace.s8),
+                  ],
+                  tabRow,
+                  const AppRule(),
+                ],
+              ),
+            ),
+          );
 
     final content = framed(column(child));
 

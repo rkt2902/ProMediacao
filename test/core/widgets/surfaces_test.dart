@@ -97,7 +97,7 @@ void main() {
       // Moldura de 1040 centrada; a coluna de leitura alinha à esquerda dela.
       expect(wide.left, (1400 - AppSize.larguraLista) / 2);
       expect(wide.width, AppSize.larguraLeitura);
-      expect(find.text('ProDossier'), findsOneWidget);
+      expect(find.text('ProDossier'), findsNothing);
     });
 
     testWidgets('PageFrame mantém a barra fixa visível', (tester) async {

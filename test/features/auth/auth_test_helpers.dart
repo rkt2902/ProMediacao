@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:promediacao/app/app.dart';
 import 'package:promediacao/app/app_scope.dart';
 import 'package:promediacao/app/connectivity.dart';
-import 'package:promediacao/features/auth/data/entry_tab_store.dart';
+import 'package:promediacao/features/auth/data/password_prompt_store.dart';
 import 'package:promediacao/features/auth/domain/auth_models.dart';
 import 'package:promediacao/features/auth/domain/auth_repository.dart';
 
@@ -25,6 +25,7 @@ class FakeAuthRepository implements AuthRepository {
   final List<String> linkRequests = [];
   final List<String> resets = [];
   String? updatedPassword;
+  AuthFailure? updateFailure;
   int signOuts = 0;
 
   @override
@@ -46,7 +47,12 @@ class FakeAuthRepository implements AuthRepository {
     if (acc == null || acc.$1 != password) {
       throw const AuthFailure(AuthFailureKind.invalidCredentials);
     }
-    return session = AppSession(userId: 'u-${acc.$2.name}', role: acc.$2);
+    return session = AppSession(
+      userId: 'u-${acc.$2.name}',
+      role: acc.$2,
+      email: email,
+      method: SignInMethod.password,
+    );
   }
 
   @override
@@ -62,8 +68,23 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> updatePassword(String newPassword) async {
+  Future<AppSession?> updatePassword(String newPassword) async {
+    if (updateFailure != null) throw updateFailure!;
     updatedPassword = newPassword;
+    final s = session;
+    if (s == null) return null;
+    return session = AppSession(
+      userId: s.userId,
+      role: s.role,
+      email: s.email,
+      fullName: s.fullName,
+      createdAt: s.createdAt,
+      method: s.method,
+      signedInAt: s.signedInAt,
+      passwordSetAt: DateTime.utc(2026, 11, 26, 14, 32),
+      officeName: s.officeName,
+      officeJoinedAt: s.officeJoinedAt,
+    );
   }
 
   @override
@@ -76,12 +97,24 @@ class FakeAuthRepository implements AuthRepository {
   Future<bool> isReachable() async => reachable;
 }
 
-/// Larguras exigidas: telemóvel, tablet, desktop.
-const testWidths = <String, double>{
-  'telemóvel': 390,
-  'tablet': 900,
-  'desktop': 1280,
+/// Tamanhos exigidos: telemóvel, tablet, desktop (03-design.md).
+const testSizes = <String, Size>{
+  'telemóvel': Size(390, 844),
+  'tablet': Size(768, 1024),
+  'desktop': Size(1280, 800),
 };
+
+/// Cliente que entrou por link, sem palavra-passe (fixtures do 03-design).
+AppSession linkClient({DateTime? passwordSetAt}) => AppSession(
+  userId: 'u-cliente',
+  role: AppRole.cliente,
+  email: 'maria.figueiredo@exemplo.pt',
+  fullName: 'Maria do Carmo Figueiredo',
+  createdAt: DateTime.utc(2026, 11, 12, 10, 4),
+  method: SignInMethod.link,
+  signedInAt: DateTime.utc(2026, 11, 26, 14, 0),
+  passwordSetAt: passwordSetAt,
+);
 
 Future<AppServices> pumpAuthApp(
   WidgetTester tester,
@@ -89,7 +122,7 @@ Future<AppServices> pumpAuthApp(
   double width = 1280,
   double height = 900,
   String? location,
-  EntryTabStore? store,
+  PasswordPromptStore? prompts,
   AppConnectivity? connectivity,
 }) async {
   tester.view.physicalSize = Size(width, height);
@@ -97,7 +130,7 @@ Future<AppServices> pumpAuthApp(
   addTearDown(tester.view.reset);
   final services = AppServices(
     auth: repo,
-    tabStore: store ?? MemoryEntryTabStore(),
+    prompts: prompts ?? MemoryPasswordPromptStore(),
     connectivity: connectivity ?? AppConnectivity(probe: repo.isReachable),
   );
   await tester.pumpWidget(

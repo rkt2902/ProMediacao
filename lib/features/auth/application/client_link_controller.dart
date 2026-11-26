@@ -81,6 +81,15 @@ class ClientLinkController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Ao abrir um ecrã com o formulário: um envio anterior não o substitui.
+  /// Sem notificar (corre durante a construção do ecrã novo; o antigo está a
+  /// sair).
+  void resetForNewScreen() {
+    if (_status == ClientLinkStatus.sending) return;
+    _status = ClientLinkStatus.idle;
+    _failure = null;
+  }
+
   /// "Usar outro email": volta ao formulário.
   void useAnotherEmail() {
     _status = ClientLinkStatus.idle;
