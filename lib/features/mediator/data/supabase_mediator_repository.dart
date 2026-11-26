@@ -47,6 +47,19 @@ class SupabaseMediatorRepository implements MediatorRepository {
   }
 
   @override
+  Future<int?> countClients() async {
+    try {
+      final v = await _client.rpc('office_client_count');
+      if (v is num) return v.toInt();
+      if (v is String) return int.tryParse(v);
+      return null;
+    } on Object {
+      // Sem a RPC (migração 001d por aplicar) ou sem rede: sem total.
+      return null;
+    }
+  }
+
+  @override
   Future<void> createClient({
     required String fullName,
     required String email,

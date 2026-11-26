@@ -9,6 +9,10 @@ abstract interface class MediatorRepository {
     required int offset,
   });
 
+  /// Total de clientes que [listClients] lista (`office_client_count()`), ou
+  /// `null` se não for possível saber (nunca lança: a lista vive sem total).
+  Future<int?> countClients();
+
   /// Cria o cliente e o pedido pendente e envia-o. A resposta de sucesso é
   /// igual exista ou não a conta (nunca revela nada).
   Future<void> createClient({required String fullName, required String email});

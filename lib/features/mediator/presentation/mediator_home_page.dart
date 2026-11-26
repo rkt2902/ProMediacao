@@ -222,6 +222,7 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
                     .where((e) => e.status == ClientStatus.recusado)
                     .length,
                 partial: c.hasMore,
+                officeTotal: c.total,
               ),
               style: AppType.registo,
             ),

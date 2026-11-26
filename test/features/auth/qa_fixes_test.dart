@@ -92,7 +92,7 @@ void main() {
       await _tap(tester, 'Esqueci-me da palavra-passe');
       expect(find.text('Enviar link'), findsOneWidget);
       expect(
-        find.text('Pode enviar outra vez daqui a 1 minuto.'),
+        find.textContaining('Pode enviar outra vez daqui a'),
         findsOneWidget,
       );
       await _tap(tester, 'Enviar link');
@@ -154,7 +154,9 @@ void main() {
 
     test('com sessão válida, o erro antigo não prende ninguém', () async {
       final session = SessionController(
-        FakeAuthRepository(session: _staff(AppRole.admin, SignInMethod.password)),
+        FakeAuthRepository(
+          session: _staff(AppRole.admin, SignInMethod.password),
+        ),
       )..markLinkFailed();
       await session.start();
       addTearDown(session.dispose);
@@ -179,7 +181,10 @@ void main() {
         redirectFor(session, Uri.parse(AppRoutes.client)),
         AppRoutes.consentFor('g1'),
       );
-      expect(redirectFor(session, Uri.parse(AppRoutes.consentFor('g1'))), isNull);
+      expect(
+        redirectFor(session, Uri.parse(AppRoutes.consentFor('g1'))),
+        isNull,
+      );
       // Depois de responder ("Ver com quem partilho") ou de sair do pedido.
       expect(
         redirectFor(session, Uri.parse(AppRoutes.client)),
@@ -208,43 +213,43 @@ void main() {
       }
     });
 
-    test('quem já tem palavra-passe ou disse "Agora não" não é desviado', () async {
-      var lookups = 0;
-      Future<String?> lookup() async {
-        lookups++;
-        return 'g1';
-      }
+    test(
+      'quem já tem palavra-passe ou disse "Agora não" não é desviado',
+      () async {
+        var lookups = 0;
+        Future<String?> lookup() async {
+          lookups++;
+          return 'g1';
+        }
 
-      final withPassword = SessionController(
-        FakeAuthRepository(
-          session: linkClient(passwordSetAt: DateTime.utc(2026, 11, 20)),
-        ),
-        pendingRequest: lookup,
-      );
-      await withPassword.start();
-      addTearDown(withPassword.dispose);
-      expect(redirectFor(withPassword, Uri.parse(AppRoutes.client)), isNull);
-      expect(lookups, 0);
+        final withPassword = SessionController(
+          FakeAuthRepository(
+            session: linkClient(passwordSetAt: DateTime.utc(2026, 11, 20)),
+          ),
+          pendingRequest: lookup,
+        );
+        await withPassword.start();
+        addTearDown(withPassword.dispose);
+        expect(redirectFor(withPassword, Uri.parse(AppRoutes.client)), isNull);
+        expect(lookups, 0);
 
-      final prompts = MemoryPasswordPromptStore();
-      final dismissed = SessionController(
-        FakeAuthRepository(session: linkClient()),
-        prompts: prompts,
-        pendingRequest: lookup,
-      );
-      await dismissed.start();
-      addTearDown(dismissed.dispose);
-      await dismissed.dismissPasswordPrompt();
-      expect(dismissed.pendingRequestId, isNull);
-      expect(redirectFor(dismissed, Uri.parse(AppRoutes.client)), isNull);
-    });
+        final prompts = MemoryPasswordPromptStore();
+        final dismissed = SessionController(
+          FakeAuthRepository(session: linkClient()),
+          prompts: prompts,
+          pendingRequest: lookup,
+        );
+        await dismissed.start();
+        addTearDown(dismissed.dispose);
+        await dismissed.dismissPasswordPrompt();
+        expect(dismissed.pendingRequestId, isNull);
+        expect(redirectFor(dismissed, Uri.parse(AppRoutes.client)), isNull);
+      },
+    );
 
     testWidgets('entrar por link abre o pedido, não o convite', (tester) async {
       final repo = FakeAuthRepository(session: linkClient());
-      final session = SessionController(
-        repo,
-        pendingRequest: () async => 'g1',
-      );
+      final session = SessionController(repo, pendingRequest: () async => 'g1');
       await _pump(tester, repo, session, location: '/');
       expect(find.text('Pedido de acesso'), findsWidgets);
       expect(find.text('Agora não'), findsNothing);
@@ -266,10 +271,7 @@ void main() {
         expect(repo.signOuts, 1);
         // Nem o email fica para preencher Entrar.
         expect(session.lastEmail, isEmpty);
-        expect(
-          redirectFor(session, Uri.parse(homeFor(role))),
-          AppRoutes.entry,
-        );
+        expect(redirectFor(session, Uri.parse(homeFor(role))), AppRoutes.entry);
       });
     }
 

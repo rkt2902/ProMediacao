@@ -66,6 +66,11 @@ class ClientsController extends ChangeNotifier {
   ClientsLoad get load => _load;
   List<OfficeClient> get items => _items;
   bool get hasMore => _hasMore;
+
+  /// Total de clientes do escritório (`office_client_count()`), ou `null` se
+  /// não se conseguiu saber.
+  int? get total => _total;
+  int? _total;
   bool get loadingMore => _loadingMore;
   bool get loadMoreFailed => _loadMoreFailed;
   ClientsNotice? get notice => _notice;
@@ -125,6 +130,7 @@ class ClientsController extends ChangeNotifier {
       final rows = await _repo.listClients(limit: pageSize + 1, offset: 0);
       _connectivity.reportReachable();
       _applyFirstPage(rows, pageSize);
+      await _loadTotal();
       _load = ClientsLoad.ready;
     } on MediatorFailure catch (f) {
       _reportNetwork(f);
@@ -137,6 +143,15 @@ class ClientsController extends ChangeNotifier {
     _hasMore = rows.length > wanted;
     _items = _hasMore ? rows.sublist(0, wanted) : rows;
     _loadMoreFailed = false;
+  }
+
+  /// Falha silenciosa: sem total, a contagem é a do que está no ecrã.
+  Future<void> _loadTotal() async {
+    try {
+      _total = await _repo.countClients();
+    } on Object {
+      _total = null;
+    }
   }
 
   Future<void> loadMore() async {
@@ -177,6 +192,7 @@ class ClientsController extends ChangeNotifier {
       final rows = await _repo.listClients(limit: wanted + 1, offset: 0);
       _connectivity.reportReachable();
       _applyFirstPage(rows, wanted);
+      await _loadTotal();
       _load = ClientsLoad.ready;
       if (highlightId != null) {
         _highlight = highlightId;
@@ -253,7 +269,10 @@ class ClientsController extends ChangeNotifier {
       final message = delivery == ResendDelivery.none
           ? inAppMessage
           : sentMessage;
-      _setNotice(ClientsNoticeKind.info, message.replaceAll('{email}', c.email));
+      _setNotice(
+        ClientsNoticeKind.info,
+        message.replaceAll('{email}', c.email),
+      );
     } on MediatorFailure catch (f) {
       _sending.remove(c.grantId);
       _reportNetwork(f);

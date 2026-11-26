@@ -98,15 +98,20 @@ abstract final class MediatorCopy {
   }
 
   /// "12 clientes · 3 pendentes · 1 recusado" (partes a zero omitem-se).
-  /// Com mais por carregar, a contagem é só do que está no ecrã.
+  /// Com mais por carregar e [officeTotal] conhecido: "40 clientes · a
+  /// mostrar 25"; sem ele, a contagem é só do que está no ecrã.
   static String summary({
     required int total,
     required int pending,
     required int declined,
     bool partial = false,
+    int? officeTotal,
   }) {
     String plural(int n, String one, String many) =>
         n == 1 ? '$n $one' : '$n $many';
+    if (partial && officeTotal != null && officeTotal > total) {
+      return '${plural(officeTotal, 'cliente', 'clientes')} · a mostrar $total';
+    }
     final parts = [
       '${partial ? 'A mostrar ' : ''}${plural(total, 'cliente', 'clientes')}',
       if (pending > 0) plural(pending, 'pendente', 'pendentes'),

@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:go_router/go_router.dart';
+import 'package:promediacao/app/app.dart';
 import 'package:promediacao/app/app_scope.dart';
+import 'package:promediacao/app/route_builders.dart';
+import 'package:promediacao/app/routes.dart';
 import 'package:promediacao/app/connectivity.dart';
 import 'package:promediacao/core/design/app_theme.dart';
 import 'package:promediacao/core/design/tokens.dart';
@@ -29,6 +33,12 @@ class FakeMediatorRepository implements MediatorRepository {
   MediatorFailure? createFailure;
   MediatorFailure? resendFailure;
   ResendDelivery resendDelivery = ResendDelivery.sent;
+
+  /// `null` simula a RPC em falta (fallback sem total).
+  bool countWorks = false;
+
+  @override
+  Future<int?> countClients() async => countWorks ? items.length : null;
   final List<({String name, String email})> created = [];
   final List<String> resent = [];
   final List<({int limit, int offset})> listCalls = [];
@@ -398,6 +408,33 @@ void main() {
     });
   });
 
+  group('total de clientes (office_client_count)', () {
+    List<OfficeClient> many() => [
+      for (var i = 0; i < 30; i++)
+        client(
+          'x$i',
+          'Cliente $i',
+          'c$i@exemplo.pt',
+          ClientStatus.ativo,
+          DateTime(2026, 10, 1).add(Duration(hours: i)),
+        ),
+    ];
+
+    testWidgets('com a RPC: mostra o total do escritório', (tester) async {
+      final repo = repoWith(many())..countWorks = true;
+      await pumpMediator(tester, repo, clock: clock);
+      expect(find.text('30 clientes · a mostrar 25'), findsOneWidget);
+      expect(find.textContaining('A mostrar 25'), findsNothing);
+    });
+
+    testWidgets('sem a RPC: fallback silencioso, sem erro', (tester) async {
+      final repo = repoWith(many());
+      await pumpMediator(tester, repo, clock: clock);
+      expect(find.text('A mostrar 25 clientes'), findsOneWidget);
+      expect(find.textContaining('Não foi possível'), findsNothing);
+    });
+  });
+
   group('reenviar pedido (bloqueio de 60 s)', () {
     for (final e in testSizes.entries) {
       testWidgets('bloqueia 60 s com a razão escrita, ${e.key}', (
@@ -623,6 +660,54 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Nome completo'), findsNothing);
       expect(find.text('Clientes'), findsOneWidget);
+    });
+
+    testWidgets('QA bug 11: telemóvel abre "Criar cliente" numa rota do '
+        'GoRouter e o "voltar" fecha-o', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final repo = repoWith();
+      final services = AppServices(
+        auth: FakeAuthRepository(session: _mediator),
+        prompts: MemoryPasswordPromptStore(),
+      );
+      await tester.pumpWidget(
+        ProMediacaoApp(
+          services: services,
+          initialLocation: AppRoutes.mediator,
+          builders: RouteBuilders(
+            mediatorHome: (c) => MediatorHomePage(repository: repo, now: clock),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      addTearDown(() => tester.pumpWidget(const SizedBox.shrink()));
+      GoRouter router() =>
+          GoRouter.of(tester.element(find.byType(Navigator).first));
+      // Com `push`, o URL mostrado fica o de Clientes; a entrada nova no
+      // histórico é a última correspondência do router.
+      String location() =>
+          router().routerDelegate.currentConfiguration.last.matchedLocation;
+
+      await tester.tap(find.text('Criar cliente'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nome completo'), findsOneWidget);
+      // Entrada própria no histórico do router: o "voltar" do navegador
+      // volta a Clientes em vez de sair do ecrã.
+      expect(location(), AppRoutes.mediatorNewClient);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Nome completo'), findsNothing);
+      expect(location(), AppRoutes.mediator);
+      expect(find.text('Clientes'), findsOneWidget);
+
+      // Aberta diretamente (sem a lista por trás), volta a Clientes.
+      router().go(AppRoutes.mediatorNewClient);
+      await tester.pumpAndSettle();
+      expect(location(), AppRoutes.mediator);
+      expect(find.text('Nome completo'), findsNothing);
     });
 
     testWidgets('email que já é cliente: erro no campo, sem texto técnico', (
