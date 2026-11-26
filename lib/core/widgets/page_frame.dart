@@ -17,6 +17,10 @@ import 'folder_tab.dart';
 /// O [colophon] é o último elemento do scroll: encosta ao fundo da janela
 /// quando o conteúdo é curto e só aparece no fim quando é longo.
 class PageFrame extends StatelessWidget {
+  /// Espaço da linha do separador por cima dele: (alvo 48 - separador 40) / 2.
+  static const double _tabInset =
+      (AppSize.alvoMinimo - AppSize.separadorAltura) / 2;
+
   const PageFrame({
     super.key,
     required this.child,
@@ -109,24 +113,32 @@ class PageFrame extends StatelessWidget {
           tabMax = AppSize.larguraFormulario;
           accountMax = c.maxWidth - tabMax - AppSpace.s16;
         }
+        // A linha tem a altura do alvo de "Sair" (48), porque um filho fora
+        // da caixa do Stack não recebe toques. O separador fica encostado à
+        // régua (que se desenha no Stack), com `_tabInset` livres por cima.
         return SizedBox(
-          height: AppSize.separadorAltura,
+          height: AppSize.alvoMinimo,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Align(
-                alignment: AlignmentDirectional.bottomStart,
+              PositionedDirectional(
+                start: 0,
+                end: 0,
+                top: _tabInset + AppSize.separadorAltura,
+                child: const AppRule(),
+              ),
+              PositionedDirectional(
+                start: 0,
+                top: _tabInset,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: tabMax),
                   child: FolderTab(label: tabLabel!, showRule: false),
                 ),
               ),
               if (account != null)
-                // O alvo de "Sair" (48) excede o separador (40) 4 em cima e
-                // 4 em baixo, centrado com ele, sem mexer na linha.
                 PositionedDirectional(
                   end: 0,
-                  top: (AppSize.separadorAltura - AppSize.alvoMinimo) / 2,
+                  top: 0,
                   height: AppSize.alvoMinimo,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: accountMax),
@@ -143,8 +155,11 @@ class PageFrame extends StatelessWidget {
         ? const SizedBox.shrink()
         : framed(
             Padding(
+              // Menos `_tabInset`: o separador fica onde estava.
               padding: EdgeInsets.only(
-                top: compact ? AppSpace.s16 : AppSpace.s24,
+                top:
+                    (compact ? AppSpace.s16 : AppSpace.s24) -
+                    (topAction == null ? _tabInset : 0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,10 +170,9 @@ class PageFrame extends StatelessWidget {
                       alignment: AlignmentDirectional.centerStart,
                       child: topAction,
                     ),
-                    const SizedBox(height: AppSpace.s8),
+                    const SizedBox(height: AppSpace.s8 - _tabInset),
                   ],
                   tabRow,
-                  const AppRule(),
                 ],
               ),
             ),
