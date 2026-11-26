@@ -1,7 +1,7 @@
 # DESIGN.md: direção de arte
 
 > Fonte de verdade do agente designer. Os tokens e componentes vivem no design system; aqui fica a intenção, as regras e o que já foi rejeitado.
-> Estado: **aprovada no gate 2 da feature 001** (2026-11-26), incluindo as fontes. Os tokens abaixo ainda não existem em código; o flutter-dev cria-os nos caminhos indicados em "Design system". Até lá, nenhum ecrã usa valores soltos: se faltar um token, propõe-se aqui primeiro.
+> Estado: **aprovada no gate 2 da feature 001** (2026-11-26), incluindo as fontes. Revista no mesmo dia para a decisão **web-first e responsiva** (`docs/decisions.md`). Os tokens existem em `lib/core/design/`; os marcados "(proposto)" ainda não, e o flutter-dev cria-os. Nenhum ecrã usa valores soltos: se faltar um token, propõe-se aqui primeiro.
 
 ## Personalidade
 
@@ -16,9 +16,11 @@
 
 ## Para quem
 
-- **Mediadores** (desktop e tablet, horas seguidas, muitos clientes): densidade média, tabelas legíveis, ações onde o olho já está, teclado a funcionar (Tab, Enter, Esc).
-- **Clientes** particulares e empresas (sobretudo telemóvel; alguns com pouca destreza digital ou mais velhos): texto base 17, alvos de toque de 48 no mínimo e 56 nas ações principais, uma decisão por ecrã, nenhuma informação só por cor ou só por movimento, sem gestos escondidos (nada de swipe para retirar).
-- **Admin** (o Henrique, desktop): poucos números, nenhum dado pessoal no ecrã.
+Todos entram pelo navegador, sem instalar nada. Clientes e mediadores usam telemóvel, tablet e desktop e cada ecrã deles é desenhado nos três tamanhos com a mesma qualidade (ver "Responsividade (web)").
+
+- **Mediadores** (horas seguidas, muitos clientes; sobretudo desktop no escritório, mas também tablet e telemóvel na rua): densidade média, tabelas legíveis no desktop e no tablet, lista empilhada no telemóvel, ações onde o olho já está, teclado a funcionar (Tab, Enter, Esc).
+- **Clientes** particulares e empresas (muitas vezes telemóvel, abrindo o link do email; alguns com pouca destreza digital ou mais velhos): texto base 17, alvos de toque de 48 no mínimo e 56 nas ações principais em todos os tamanhos, uma decisão por ecrã, nenhuma informação só por cor ou só por movimento, sem gestos escondidos (nada de swipe para retirar).
+- **Admin** (o Henrique): desktop-first, mas utilizável em tablet e telemóvel (empilha, não esconde). Poucos números, nenhum dado pessoal no ecrã.
 - Tratamento: **formal na 3.ª pessoa** ("Pode retirar quando quiser"), nunca "tu". É o registo esperado em seguros em Portugal e o mais seguro para clientes mais velhos.
 
 ## Assinatura visual
@@ -63,6 +65,9 @@ Caminhos onde os tokens e widgets vão viver (o flutter-dev cria-os na feature 0
 | `erro` | #A3311C | Erros de campo, ação destrutiva ("Retirar acesso") | 6.3 sobre papel |
 | `sobreTinta` | = `papel` | Texto sobre botão cheio e faixa offline | 15.1 |
 | `esqueleto` | #ECE7DB | Blocos de skeleton | n/a |
+| `sombra` | #1B1E24 a 12% (0x1F1B1E24) | Cor da sombra `AppShadow.superficie` | n/a |
+| `veu` | #1B1E24 a 40% (0x661B1E24) | Véu atrás de diálogos, folhas inferiores e folhas laterais (`scrim`) | n/a |
+| `nenhuma` | transparente (0x00000000) | Ponto de partida/chegada ao animar um fundo (ex.: `realce` a desvanecer) e para anular tints, hover e highlight do Material. Nunca como "cor" visível | n/a |
 
 Regra: verde só para "Ativo". Ocre só para "Pendente" e avisos. Vermelho-lacre só para erro e retirar. Nenhuma outra cor entra sem passar por aqui.
 
@@ -89,10 +94,11 @@ A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima di
 
 - `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 48 entre grupos, 72 acima do título em largo.
 - `AppRadius`: `carimbo`=3, `controlo`=6 (botões, campos), `superficie`=10 (folhas, diálogos), `separador`=10 só nos cantos superiores. Listas e linhas não têm raio.
-- `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2.
-- `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente), `campo`=52, `larguraLeitura`=640 (texto de consentimento, formulários), `larguraLista`=1040, `folhaLateral`=440, `separadorAltura`=40.
-- `AppBreakpoints`: `compacto` < 640, `medio` 640 a 1100, `largo` > 1100. Margens laterais: 16 / 32 / 48.
-- Sombras: nenhuma, exceto diálogos e folhas laterais (`sombraSuperficie`: 0 8 24, tinta a 12%). Cartões com elevação estão proibidos.
+- `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2, `focoAfastamento`=2 (distância entre o controlo e o anel de foco).
+- `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente em todos os tamanhos; de mediador e admin em compacto), `campo`=52, `larguraLeitura`=640 (texto de consentimento, listas de leitura do cliente, diálogo só de leitura), `larguraLista`=1040 (também largura máxima da moldura em largo), `folhaLateral`=440, `separadorAltura`=40, `icone`=24 (ícones de interface: resumo do consentimento, spinner), `iconePequeno`=18 (ícones dentro de carimbos, campos, avisos e botões), `dialogo`=480 (diálogo de confirmação em médio/largo).
+- `AppSize` (proposto, para a feature 001): `larguraFormulario`=400 (coluna de Entrar, recuperar/definir palavra-passe, link expirado; largura máxima do separador de pasta em médio/largo), `textoMinimo`=240 (largura mínima da zona de texto de uma linha antes de passar ao layout seguinte, mais empilhado), `linhaTabela`=72 (altura mínima de linha de tabela), `colunaEstado`=140, `colunaData`=200 (também a coluna Estado + data da tabela em médio), `colunaAcao`=160.
+- `AppBreakpoints`: `compacto` < 640 (telemóvel), `medio` 640 a 1100 (tablet), `largo` > 1100 (desktop). 640 exato já é médio (a decisão diz "até 640"; 1 px sem efeito prático). Margens laterais: 16 / 32 / 48. Proposto: `alturaBaixa`=480 (altura da janela abaixo da qual as barras fixas encolhem: telemóvel deitado).
+- Sombras: nenhuma, exceto diálogos, folhas inferiores e folhas laterais (`AppShadow.superficie`: deslocamento 0 8, desfoque 24, cor `sombra`). Cartões com elevação estão proibidos.
 
 ## Motion
 
@@ -104,7 +110,9 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 | `AppMotion.base` | 200 ms | Mudança de carimbo, aparecer/desaparecer de faixas e mensagens inline |
 | `AppMotion.lento` | 320 ms | Folha lateral/inferior a entrar, linha a mudar de grupo |
 | `AppMotion.realce` | 1600 ms | Desvanecer do fundo `realce` de uma linha acabada de alterar |
-| `AppMotion.pulsar` | 1200 ms (ida e volta) | Opacidade do skeleton 1.0 a 0.55; nunca shimmer |
+| `AppMotion.pulsar` | 1200 ms (ida e volta) | Opacidade do skeleton 1.0 a `pulsarMinimo`; nunca shimmer |
+| `AppMotion.pulsarMinimo` | 0.55 | Opacidade mínima do skeleton |
+| `AppMotion.escalaDialogo` | 0.98 | Escala inicial do diálogo de confirmação (0.98 a 1.0, em `base`) |
 | `AppMotion.entrar` | `Curves.easeOutCubic` | Tudo o que aparece |
 | `AppMotion.sair` | `Curves.easeInCubic` | Tudo o que sai |
 | `AppMotion.mudar` | `Curves.easeInOutCubic` | Mudanças de estado e de posição |
@@ -118,7 +126,25 @@ A criar em `lib/core/widgets/` na feature 001:
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
 - `RuledList` / `RuledRow` (lista com réguas), `SkeletonRows`.
-- `OfflineBar` (faixa a tinta no topo), `InlineNotice` (mensagem dentro do fluxo, com ação), `ConfirmSheet` (folha inferior em compacto, diálogo em médio/largo).
+- `OfflineBar` (faixa a tinta no topo), `InlineNotice` (mensagem dentro do fluxo, com ação), `ConfirmSheet` (folha inferior em compacto, diálogo de `dialogo` 480 em médio/largo; variante só de leitura: folha alta em compacto, diálogo de `larguraLeitura` 640 em médio/largo).
+- `PageFrame` em largo: moldura de `larguraLista` 1040 centrada na janela; a barra fixa de baixo (`bottom`) tem o fundo à largura da janela e o conteúdo alinhado com a coluna do ecrã.
+
+## Responsividade (web)
+
+Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs de cliente e de mediador (o admin segue-as no "utilizável"):
+
+- **Três composições explícitas por ecrã** (compacto, médio, largo), escritas no `03-design.md` da feature com: colunas e larguras máximas, o que muda de sítio, alvos, rato, teclado e foco, conta e navegação, folhas e diálogos. Nenhum ecrã de cliente ou mediador tem um tamanho "primeiro"; não há "versão desktop esticada" nem "versão telemóvel encolhida".
+- **Largura lógica da janela decide**, não o tipo de aparelho: zoom de 200% num desktop dá compacto; tablet deitado dá largo. Largura mínima suportada 320 sem scroll horizontal.
+- **Moldura:** em largo, centrada com máximo `larguraLista`; dentro dela tudo alinha à esquerda (nada de colunas centradas). Colunas de leitura e formulários mantêm a sua largura máxima (`larguraLeitura`, `larguraFormulario`) e deixam o resto em `papel` vazio, sem encher com decoração.
+- **Layout por espaço disponível:** linhas e tabelas descem para uma forma mais empilhada quando a zona de texto fica abaixo de `textoMinimo`, seja por breakpoint, escala de texto ou zoom.
+- **Alvos não encolhem em largo** (há toque em tablets deitados e portáteis táteis): 48 mínimo em todos os tamanhos.
+- **Rato:** cursor de clique e hover só como reforço; nenhuma informação só em hover. Tooltips abrem também com foco e toque longo. Razão de botão desativado sempre escrita, não só em tooltip.
+- **Teclado:** ordem de Tab = ordem de leitura; anel `foco` só com navegação por teclado; Enter submete formulários; Esc fecha folhas e diálogos; foco preso em folhas e diálogos e devolvido ao botão de origem. Em decisões do cliente não há botão por defeito.
+- **Navegador:** cada ecrã tem endereço; "voltar" fecha primeiro a folha ou o diálogo; texto de consentimento, nomes e emails selecionáveis.
+- **Teclado virtual:** campo com foco e botão de envio visíveis acima dele; sem foco automático em compacto; em formulários de ecrã inteiro (compacto) os botões vão no fluxo, não fixos.
+- **Folhas e diálogos:** compacto = folha inferior (decisões, leitura) ou ecrã inteiro (formulários); médio e largo = diálogo centrado (decisões, leitura) ou folha lateral de `folhaLateral` (formulários).
+- **Conta e navegação:** sem AppBar nem barra de navegação em nenhum tamanho enquanto cada perfil tiver poucos ecrãs; topo com a marca e a conta (compacto: só "Sair", com o nome na leitura de ecrã; médio/largo: nome + "Sair").
+- **Goldens:** cada ecrã de cliente e mediador a 390 × 844, 768 × 1024 e 1280 × 800, escala 1.0 e 1.3.
 
 ## Regras
 
@@ -129,7 +155,7 @@ A criar em `lib/core/widgets/` na feature 001:
 - Botão desativado tem sempre a razão escrita por baixo ("Sem ligação. Tente quando voltar a ligação.").
 - Nunca mostrar como feito algo que o servidor não confirmou (sem updates otimistas em consentimento).
 - Erros dizem o que aconteceu e o que fazer, em PT-PT, sem códigos técnicos.
-- Nomes e emails longos: uma linha com reticências em listas; o nome completo aparece no foco/hover (tooltip) e na leitura de ecrã.
+- Nomes e emails longos: em médio/largo, uma linha com reticências em tabelas; em compacto, até 2 linhas (emails quebram em qualquer caractere) e só depois reticências. O texto completo aparece no tooltip (hover, foco e toque longo) e na leitura de ecrã.
 - Datas: "26 nov 2026" e "26 nov 2026, 14:32", em `registo`. Nada de "há 3 dias" em consentimento (tem de ser verificável).
 - Ícones: Material Symbols Outlined (já incluídos no Flutter), traço uniforme, sempre com etiqueta visível quando o significado não é óbvio. Sem emoji.
 - Nenhum `AppBar`, `Card`, `FloatingActionButton` ou `ListTile` com estilo por defeito a definir o aspeto de um ecrã.

@@ -1,6 +1,8 @@
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/app_scope.dart';
+import '../../../app/router.dart';
 import '../../../core/design/tokens.dart';
 import '../../../core/design/typography.dart';
 import '../../../core/widgets/widgets.dart';
@@ -41,8 +43,9 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
     try {
       await services.auth.updatePassword(_password.text);
       services.connectivity.reportReachable();
-      // O router leva-o para o ecrã do seu perfil.
       services.session.finishRecovery();
+      final role = services.session.role;
+      if (mounted && role != null) context.go(homeFor(role));
     } on AuthFailure catch (f) {
       if (f.kind == AuthFailureKind.network) {
         services.connectivity.reportNetworkFailure();

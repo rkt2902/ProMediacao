@@ -34,9 +34,13 @@ class _ClientLinkFormState extends State<ClientLinkForm> {
   final _email = TextEditingController();
   String? _error;
 
+  bool _prefilled = false;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_prefilled) return;
+    _prefilled = true;
     _email.text = AppScope.of(context).clientLink.email;
   }
 
