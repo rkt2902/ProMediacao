@@ -7,7 +7,7 @@ Atualizado: 2026-11-26 (fecho do marco "001 Fundação: design aprovado, backend
 - Decisões 1 a 10 da secção 7 do `docs/business/context.md` tratadas (ver `docs/decisions.md`). Nome de trabalho ProDossier. Stack: Flutter web-first e responsivo (telemóvel, tablet, desktop; admin desktop-first) + Supabase (eu-west-1) + Cloudflare Pages (alojamento, por criar).
 - **Feature 001 Fundação** (`docs/features/001-fundacao/`): 01 a 04 escritos; **gates 1, 2 e 3 aprovados**; 05-qa por escrever. Design aprovado em 152+ renders (`renders/`, índice em `renders/README.md`), incluindo estados, fluxos, transições, cabeçalho sem marca com "Sair" na linha do separador e **marca por colofão**.
 - **Backend (ao vivo, confirmado):** 8 tabelas com RLS, 3 migrações aplicadas, 1 admin; 3 funções (`invite-mediator`, `create-client`, `resend-request`) ACTIVE; Auth: palavra-passe 10+ com 4 classes, registo público desativado, URLs provisórios `http://localhost:8080`. Nunca testadas com chamadas autenticadas.
-- **App (código):** tarefas 3, 3b, 4, 4b (renders), 4c (alinhamento com o design), 4d (templates de email, por aplicar sem SMTP), 4e, 5 (cliente), 6 (mediador) e 7 (admin) **feitas e ligadas às rotas**; `flutter analyze` limpo e 245 testes a passar (26/11). **Em curso: tarefa 8 (qa).** Depois: tarefa 9 (designer, goldens e polimento) e gate 4. Nada foi testado com sessões reais nem num navegador.
+- **App (código):** tarefas 3, 3b, 4, 4b (renders), 4c (alinhamento com o design), 4d (templates de email, por aplicar sem SMTP), 4e, 5 (cliente), 6 (mediador) e 7 (admin) **feitas e ligadas às rotas**; `flutter analyze` limpo e 245 testes a passar (26/11). **Tarefa 8 (qa) feita: veredicto FALHA com correções localizadas** (`docs/features/001-fundacao/05-qa.md`). Sem fugas no esquema e RLS ao vivo; build web e teste de fumo no navegador sem erros. Depois: tarefa 9 (designer, goldens e polimento) e gate 4. Nada foi testado com sessões reais nem num navegador.
 
 ## Como retomar (chat novo)
 
@@ -53,3 +53,12 @@ Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de public
 - Designer: campo "Nome do mediador" no convite (não está nos renders); frases "A {escritório}" com nomes masculinos; 3 px a mais por baixo da régua do separador; botões da folha lateral do mediador em 2:3; confirmar o glifo "…" na fonte (o texto "A criar…" mediu 136).
 - supabase-dev (migração 001d, aplicada pelo Henrique): índice único em `lower(offices.name)`; RPC com o total de clientes do escritório (a lista mostra 25 por página sem total).
 - flutter-dev: "Criar cliente" no telemóvel abre com `Navigator.push` sobre o GoRouter: o "voltar" do navegador pode não o fechar (verificar no qa).
+
+## Próximo passo exato (retoma da 001 depois do qa)
+
+0. O Henrique corre `supabase/tests/001_isolation_matrix.sql` no SQL Editor (termina num erro propositado cujo texto é o relatório; tudo é desfeito). Esperado: 0 FAIL, 2 RISCO. Traz o texto do erro.
+1. **Bug 1 (chave publishable) refutado pelo lead a 26/11:** `resend-request` com a chave `sb_publishable` passou a porta do Supabase (resposta 429 do bloqueio de 60 s, não 401). Não é preciso mudar de chave; o qa confirma no reteste.
+2. **flutter-dev (opus)**: bugs 2 (recuperação revela conta e sem 60 s), 3 (link expirado no fragmento vai para /entrar sem explicação), 4 ("Criar palavra-passe" antes do consentimento), 6 (rejeitar na app sessões por link de mediador/admin: terminar sessão e mensagem genérica) e os baixos do `05-qa.md` que sejam de `lib/`; mais a pendência do `Navigator.push` em "Criar cliente".
+3. **supabase-dev (opus)**: bug 5 (decisão A: `resend-request` devolve `delivered: "none"` quando nada foi enviado, e a app ajusta a copy em conjunto com o flutter-dev), bug 7 (funções auxiliares SECURITY DEFINER expostas por RPC: mover para um esquema não exposto ou revogar EXECUTE sem partir as políticas RLS que as usam) e a migração **001d** (índice único em `lower(offices.name)`, RPC do total de clientes); republicar funções alteradas; a migração é aplicada pelo Henrique.
+4. Reteste do qa (opus) só nos pontos corrigidos e no resultado do script.
+5. Tarefa 9 (designer, opus): goldens e polimento com as pendências acima. Depois gate 4 (PR, merge do Henrique) e fecho da feature (chat novo).
