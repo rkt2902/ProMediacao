@@ -8,10 +8,12 @@ Atualizado: 2026-11-25
 
 ## Próximos passos
 
-1. **Supabase:** projeto `aboducqavmsmlzslrseu` existe, está vazio, e o MCP só leitura está no `.mcp.json`. Na sessão de 25/11 a ligação MCP falhou (erro de proxy): confirmar a ligação (pede login no Supabase).
-2. **Contexto de negócio em rascunho** em `docs/business/context.md` (vindo da thread de planeamento) e backlog em `docs/business/backlog.md`. Nada é definitivo: rever as 10 decisões em aberto (secção 7) e confirmar o que já vinha como decidido.
+1. **Primeira feature:** 001 Fundação (autenticação, perfis, escritórios e consentimento). Proposta ao Henrique; falta o OK para abrir o gate 1 (`/feature`).
+2. **Supabase:** projeto `aboducqavmsmlzslrseu` existe, está vazio, e o MCP só leitura está no `.mcp.json`. Na sessão de 25/11 a ligação falhou (erro de proxy): confirmar (pede login).
 3. **Preencher `docs/design/DESIGN.md`** a partir do protótipo (`docs/reference/prototipo/`).
+4. **Henrique:** verificar marca ProDossier no INPI/TMview e domínios; escolher jurista e fornecedor de email; juntar templates reais de seguradoras em `docs/reference/`.
 
 ## Em aberto
 
-- Stack decidida: Flutter + Supabase (projeto vazio). Decisões de negócio 1, 2 e 4 fechadas; ver `docs/decisions.md`. Faltam as decisões 3 (diferenciação), 5 a 10 da secção 7 do `context.md`.
+- Decisões 1 a 10 da secção 7 do `context.md` tratadas (ver `docs/decisions.md`). Por validar: diferenciação (decisão 3), parecer jurídico (briefing em `docs/business/research/08-juridico.md`), viabilidade dos templates, valores de preços.
+- Sem clientes reais até haver parecer jurídico.
