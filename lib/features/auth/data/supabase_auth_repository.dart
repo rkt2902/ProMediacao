@@ -140,7 +140,7 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   AuthFailure _map(Object e, {bool signIn = false}) {
-    if (e is AuthRetryableFetchError) {
+    if (e is AuthRetryableFetchException) {
       return const AuthFailure(AuthFailureKind.network);
     }
     if (e is AuthApiException) {

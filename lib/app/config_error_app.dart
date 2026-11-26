@@ -34,7 +34,7 @@ class ConfigErrorApp extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpace.s16),
-                const Text(
+                Text(
                   'A ligação ao servidor não está configurada. Contacte a '
                   'administração.',
                   style: AppType.corpo,

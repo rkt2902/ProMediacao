@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:material_ui/material_ui.dart';
 
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/domain/auth_models.dart';
