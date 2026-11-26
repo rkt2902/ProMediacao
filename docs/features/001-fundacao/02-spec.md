@@ -22,8 +22,8 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 3. Como mediador, quero criar um cliente (nome e email) e reenviar-lhe o link, para o pôr a partilhar dados comigo.
    - Dado o mediador, Quando cria o cliente, Então fica criada uma concessão **pendente** para o escritório e o cliente recebe o link mágico com o nome do escritório e do mediador em destaque.
    - Dado uma concessão pendente ou recusada, Quando o mediador pede dados do cliente, Então só vê nome, email e estado (o necessário para reenviar o link ou saber que recusou) e nada mais.
-   - Dado um cliente que recusou, Quando o mediador abre a lista, Então vê-o com o estado "Recusado" e sem ações (sem "Reenviar link").
-   - Dado um link expirado ou perdido, Quando o mediador carrega "Reenviar link", Então o cliente recebe novo link; o botão fica bloqueado 60 s após cada envio.
+   - Dado um cliente que recusou, Quando o mediador abre a lista, Então vê-o com o estado "Recusado" e sem ações (sem "Reenviar pedido").
+   - Dado um link expirado ou perdido, Quando o mediador carrega "Reenviar pedido", Então o cliente recebe novo link; o botão fica bloqueado 60 s após cada envio.
    - Dado um email que já é cliente de outro escritório, Quando o mediador o cria, Então é criada só a concessão pendente para o seu escritório, sem revelar dados do cliente nem de outros escritórios.
 
 4. Como cliente, quero entrar pelo link mágico e aceitar ou recusar a partilha, para só dar acesso a quem eu escolho.

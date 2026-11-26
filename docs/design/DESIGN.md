@@ -1,7 +1,7 @@
 # DESIGN.md: direção de arte
 
 > Fonte de verdade do agente designer. Os tokens e componentes vivem no design system; aqui fica a intenção, as regras e o que já foi rejeitado.
-> Estado: **proposta** (feature 001, 2026-11-26). Os tokens abaixo ainda não existem em código; o flutter-dev cria-os nos caminhos indicados em "Design system". Até lá, nenhum ecrã usa valores soltos: se faltar um token, propõe-se aqui primeiro.
+> Estado: **aprovada no gate 2 da feature 001** (2026-11-26), incluindo as fontes. Os tokens abaixo ainda não existem em código; o flutter-dev cria-os nos caminhos indicados em "Design system". Até lá, nenhum ecrã usa valores soltos: se faltar um token, propõe-se aqui primeiro.
 
 ## Personalidade
 
@@ -113,7 +113,7 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 
 A criar em `lib/core/widgets/` na feature 001:
 
-- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + separador + margens por breakpoint + largura máxima).
+- `FolderTab` (separador de pasta com o contexto), `FolderTabs` (dois ou mais separadores escolhíveis, 50/50, `alvoMinimo` 48: o ativo em `cartolina`, os inativos em `papel` com contorno `regua` e texto `tintaMedia`; usado em Entrar para "Sou cliente" e "Trabalho num escritório"), `PageFrame` (papel + separador + margens por breakpoint + largura máxima).
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
