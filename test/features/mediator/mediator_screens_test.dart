@@ -28,6 +28,7 @@ class FakeMediatorRepository implements MediatorRepository {
   MediatorFailure? listFailure;
   MediatorFailure? createFailure;
   MediatorFailure? resendFailure;
+  ResendDelivery resendDelivery = ResendDelivery.sent;
   final List<({String name, String email})> created = [];
   final List<String> resent = [];
   final List<({int limit, int offset})> listCalls = [];
@@ -64,7 +65,7 @@ class FakeMediatorRepository implements MediatorRepository {
   }
 
   @override
-  Future<void> resendRequest(String grantId) async {
+  Future<ResendDelivery> resendRequest(String grantId) async {
     if (resendFailure != null) throw resendFailure!;
     resent.add(grantId);
     final i = items.indexWhere((c) => c.grantId == grantId);
@@ -76,6 +77,7 @@ class FakeMediatorRepository implements MediatorRepository {
       status: c.status,
       updatedAt: clock(),
     );
+    return resendDelivery;
   }
 }
 
@@ -467,6 +469,37 @@ void main() {
       ]);
       await pumpMediator(tester, repo, clock: clock);
       expect(find.text('Pode reenviar às 15:05'), findsOneWidget);
+    });
+
+    testWidgets('QA bug 5: nada enviado (delivered none) diz que o pedido está '
+        'na app do cliente e bloqueia 60 s', (tester) async {
+      final repo = repoWith()..resendDelivery = ResendDelivery.none;
+      await pumpMediator(tester, repo, clock: clock);
+      await tester.tap(find.text('Reenviar pedido').last);
+      await tester.pumpAndSettle();
+      expect(repo.resent, ['g2']);
+      expect(find.textContaining('Pedido reenviado'), findsNothing);
+      expect(
+        find.text(
+          'O pedido está à espera na app do cliente '
+          '(geral@construcoes-teixeira-exemplo.pt). Não foi enviado email.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Pode reenviar às 15:06'), findsOneWidget);
+    });
+
+    test('QA bug 5: só delivered "none" conta como nada enviado', () {
+      expect(
+        ResendDelivery.fromResponse({'ok': true, 'delivered': 'none'}),
+        ResendDelivery.none,
+      );
+      expect(
+        ResendDelivery.fromResponse({'ok': true, 'delivered': 'link'}),
+        ResendDelivery.sent,
+      );
+      expect(ResendDelivery.fromResponse({'ok': true}), ResendDelivery.sent);
+      expect(ResendDelivery.fromResponse(null), ResendDelivery.sent);
     });
 
     testWidgets('falha de envio mostra erro sem texto técnico', (tester) async {

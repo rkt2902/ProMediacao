@@ -9,6 +9,7 @@ import '../features/auth/presentation/expired_link_page.dart';
 import '../features/auth/presentation/forgot_password_page.dart';
 import '../features/auth/presentation/session_gate_page.dart';
 import '../features/auth/presentation/set_password_page.dart';
+import '../features/mediator/presentation/create_client_form.dart';
 import 'page_transition.dart';
 import 'route_builders.dart';
 import 'routes.dart';
@@ -34,8 +35,11 @@ const _publicPaths = {
   AppRoutes.expiredLink,
 };
 
-bool _hasLinkError(Uri uri) {
-  // Em web o Supabase devolve o erro no fragmento (#error=...) ou na query.
+/// `true` se o URL de retorno do Supabase traz um erro de link (expirado,
+/// já usado ou inválido). Em web o erro vem no fragmento (`#error=...`, fluxo
+/// implícito) ou na query (`?error=...`). `main.dart` lê-o em `Uri.base`
+/// antes de `Supabase.initialize`, que limpa o fragmento.
+bool hasLinkError(Uri uri) {
   final fragment = uri.fragment.contains('=')
       ? Uri.splitQueryString(uri.fragment.replaceFirst(RegExp(r'^[^?]*\?'), ''))
       : const <String, String>{};
@@ -49,7 +53,7 @@ bool _hasLinkError(Uri uri) {
 String? redirectFor(SessionController session, Uri uri) {
   final path = uri.path;
 
-  if (_hasLinkError(uri) && path != AppRoutes.expiredLink) {
+  if (hasLinkError(uri) && path != AppRoutes.expiredLink) {
     return session.status == SessionStatus.signedIn
         ? homeFor(session.role!)
         : AppRoutes.expiredLink;
@@ -63,6 +67,11 @@ String? redirectFor(SessionController session, Uri uri) {
       return '${AppRoutes.gate}?de=$back';
 
     case SessionStatus.signedOut:
+      // O erro do link já foi lido (e limpo do URL) antes de o router
+      // arrancar: mostra a explicação e o pedido de link novo.
+      if (session.linkFailed && path != AppRoutes.expiredLink) {
+        return AppRoutes.expiredLink;
+      }
       if (path == AppRoutes.gate) {
         final back = uri.queryParameters['de'];
         return back != null && back != '/' ? back : AppRoutes.entry;
@@ -88,6 +97,14 @@ String? redirectFor(SessionController session, Uri uri) {
       if (owner == null) return home; // entrada, "/" e rotas desconhecidas
       if (owner != role) return home; // rota de outro perfil: não existe
       if (role == AppRole.cliente) {
+        // Entrada por link com um pedido pendente: a primeira paragem é o
+        // pedido (03-design, ecrã 1c e fluxo 1). Uma só vez por entrada; ao
+        // voltar a "Com quem partilho" aparece o convite.
+        final pending = session.pendingRequestId;
+        if (path == AppRoutes.client && pending != null) {
+          session.consumePendingRequest();
+          return AppRoutes.consentFor(pending);
+        }
         // O convite para criar palavra-passe vem antes de "Com quem
         // partilho", nunca antes nem durante o consentimento (o pedido tem
         // rota própria e não passa por aqui).
@@ -152,6 +169,17 @@ GoRouter buildRouter(
         path: AppRoutes.mediator,
         pageBuilder: (c, s) =>
             fadePage(c, s, Builder(builder: builders.mediatorHome)),
+        routes: [
+          // "Criar cliente" em ecrã inteiro (telemóvel). Só abre a partir de
+          // Clientes (precisa do estado da lista em `extra`).
+          GoRoute(
+            path: 'novo-cliente',
+            redirect: (c, s) =>
+                s.extra is CreateClientArgs ? null : AppRoutes.mediator,
+            pageBuilder: (c, s) =>
+                fadePage(c, s, (s.extra! as CreateClientArgs).page()),
+          ),
+        ],
       ),
       // Rotas de topo (não filhas de /cliente): sem o ecrã inicial por baixo,
       // que ficaria com o estado antigo ao voltar.

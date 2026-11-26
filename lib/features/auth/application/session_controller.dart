@@ -8,13 +8,24 @@ import '../domain/auth_repository.dart';
 
 enum SessionStatus { restoring, signedOut, signedIn, failed }
 
+/// Id do pedido de consentimento pendente mais recente do cliente com sessão,
+/// ou `null`. Uma falha conta como "sem pedido" (nunca impede a entrada).
+typedef PendingRequestLookup = Future<String?> Function();
+
 /// Estado de sessão da app. O router escuta-o (refreshListenable).
 class SessionController extends ChangeNotifier {
-  SessionController(this._repo, {PasswordPromptStore? prompts})
-    : _prompts = prompts ?? MemoryPasswordPromptStore();
+  SessionController(
+    this._repo, {
+    PasswordPromptStore? prompts,
+    PendingRequestLookup? pendingRequest,
+  }) : _prompts = prompts ?? MemoryPasswordPromptStore(),
+       _pendingLookup = pendingRequest;
 
   final AuthRepository _repo;
   final PasswordPromptStore _prompts;
+  final PendingRequestLookup? _pendingLookup;
+  String? _pendingRequestId;
+  String? _pendingCheckedFor;
   StreamSubscription<AuthSignal>? _sub;
   bool _explicitSignOut = false;
 
@@ -58,8 +69,24 @@ class SessionController extends ChangeNotifier {
         !_promptDismissed;
   }
 
-  /// A app abriu um link inválido ou expirado.
+  /// A app abriu um link inválido ou expirado (sem sessão: o router mostra
+  /// "Este link já não é válido").
   bool get linkFailed => _linkFailed;
+
+  /// Marca, antes de arrancar, que o URL de entrada trazia um erro de link
+  /// (o Supabase limpa o fragmento antes de o router o ver).
+  void markLinkFailed() {
+    _linkFailed = true;
+    notifyListeners();
+  }
+
+  /// Pedido pendente a abrir primeiro depois de uma entrada por link, antes
+  /// do convite "Criar palavra-passe" (03-design, ecrã 1c). Só existe
+  /// enquanto o convite estiver por mostrar nesta entrada.
+  String? get pendingRequestId => offerPassword ? _pendingRequestId : null;
+
+  /// O router abriu o pedido: a paragem seguinte já é o convite.
+  void consumePendingRequest() => _pendingRequestId = null;
 
   /// Email para preencher Entrar (depois de sair, de a sessão terminar, ou
   /// de "Já tem palavra-passe? Entrar com ela"). Fica só em memória.
@@ -119,9 +146,30 @@ class SessionController extends ChangeNotifier {
   static String _promptKey(AppSession s) =>
       '${s.userId}:${s.signedInAt?.millisecondsSinceEpoch ?? 0}';
 
+  /// Mediador e admin só entram com palavra-passe (US 1). Uma sessão aberta
+  /// por link mágico com esses papéis termina já, sem dizer porquê (a
+  /// mensagem é a de sessão terminada, igual para todos).
+  static bool _forbiddenLink(AppSession s) =>
+      s.role != AppRole.cliente && s.method == SignInMethod.link;
+
   Future<void> _apply(AppSession? s) async {
     final before = _status;
     final previous = _session;
+    if (s != null && _forbiddenLink(s)) {
+      try {
+        await _repo.signOut();
+      } on AuthFailure {
+        // A sessão local termina na mesma.
+      }
+      _session = null;
+      _sessionEnded = true;
+      _recovering = false;
+      _pendingRequestId = null;
+      _status = SessionStatus.signedOut;
+      _explicitSignOut = false;
+      notifyListeners();
+      return;
+    }
     if (s != null &&
         s.role == AppRole.cliente &&
         s.method == SignInMethod.link) {
@@ -129,6 +177,7 @@ class SessionController extends ChangeNotifier {
     } else {
       _promptDismissed = false;
     }
+    await _lookUpPendingRequest(s);
     _session = s;
     if (s == null) {
       if (previous != null) _lastEmail = previous.email;
@@ -139,10 +188,36 @@ class SessionController extends ChangeNotifier {
       _status = SessionStatus.signedOut;
     } else {
       _sessionEnded = false;
+      // Com sessão válida, um erro de link antigo já não interessa.
+      _linkFailed = false;
       _status = SessionStatus.signedIn;
     }
     _explicitSignOut = false;
     notifyListeners();
+  }
+
+  /// Uma vez por entrada por link (cliente sem palavra-passe e com o convite
+  /// por mostrar): procura o pedido pendente que deve abrir primeiro.
+  Future<void> _lookUpPendingRequest(AppSession? s) async {
+    final lookup = _pendingLookup;
+    if (s == null) {
+      _pendingRequestId = null;
+      _pendingCheckedFor = null;
+      return;
+    }
+    final offers =
+        s.role == AppRole.cliente &&
+        s.method == SignInMethod.link &&
+        !s.hasPassword &&
+        !_promptDismissed;
+    final key = _promptKey(s);
+    if (lookup == null || !offers || _pendingCheckedFor == key) return;
+    _pendingCheckedFor = key;
+    try {
+      _pendingRequestId = await lookup();
+    } on Object {
+      _pendingRequestId = null;
+    }
   }
 
   /// Lança [AuthFailure] se falhar.

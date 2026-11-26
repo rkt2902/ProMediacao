@@ -41,6 +41,8 @@ class _ExpiredLinkPageState extends State<ExpiredLinkPage> {
     final services = AppScope.of(context);
     _email.text = services.session.lastEmail;
     services.clientLink.resetForNewScreen();
+    // O erro já está explicado aqui: daqui em diante pode ir a Entrar.
+    services.session.consumeLinkFailure();
   }
 
   @override

@@ -231,6 +231,7 @@ class ClientsController extends ChangeNotifier {
   Future<void> resend(
     OfficeClient c, {
     required String sentMessage,
+    required String inAppMessage,
     required String notPendingMessage,
     required String sendFailedMessage,
     required String networkMessage,
@@ -242,15 +243,17 @@ class ClientsController extends ChangeNotifier {
     _sending.add(c.grantId);
     _emit();
     try {
-      await _repo.resendRequest(c.grantId);
+      final delivery = await _repo.resendRequest(c.grantId);
       _connectivity.reportReachable();
       _locks[c.grantId] = _now().add(cooldown);
       _sending.remove(c.grantId);
       await _refresh(highlightId: c.grantId);
-      _setNotice(
-        ClientsNoticeKind.info,
-        sentMessage.replaceAll('{email}', c.email),
-      );
+      // Sem email enviado, o mediador não fica a pensar que o cliente
+      // recebeu alguma coisa: o pedido está à espera na app dele.
+      final message = delivery == ResendDelivery.none
+          ? inAppMessage
+          : sentMessage;
+      _setNotice(ClientsNoticeKind.info, message.replaceAll('{email}', c.email));
     } on MediatorFailure catch (f) {
       _sending.remove(c.grantId);
       _reportNetwork(f);

@@ -53,12 +53,15 @@ class SupabaseMediatorRepository implements MediatorRepository {
   }) => _invoke('create-client', {'full_name': fullName, 'email': email});
 
   @override
-  Future<void> resendRequest(String grantId) =>
-      _invoke('resend-request', {'grant_id': grantId});
+  Future<ResendDelivery> resendRequest(String grantId) async =>
+      ResendDelivery.fromResponse(
+        await _invoke('resend-request', {'grant_id': grantId}),
+      );
 
-  Future<void> _invoke(String function, Map<String, dynamic> body) async {
+  Future<Object?> _invoke(String function, Map<String, dynamic> body) async {
     try {
-      await _client.functions.invoke(function, body: body);
+      final res = await _client.functions.invoke(function, body: body);
+      return res.data;
     } on Object catch (e) {
       throw _map(e);
     }

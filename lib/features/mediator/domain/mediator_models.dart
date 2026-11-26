@@ -32,6 +32,20 @@ class OfficeClient {
   final DateTime updatedAt;
 }
 
+/// O que o servidor fez com "Reenviar pedido" (`resend-request`).
+enum ResendDelivery {
+  /// Enviou um email (link novo ou aviso).
+  sent,
+
+  /// Não enviou nada (`delivered: "none"`): o cliente já tem conta e vê o
+  /// pedido dentro da app.
+  none;
+
+  /// Resposta da função: só `delivered: "none"` conta como nada enviado.
+  static ResendDelivery fromResponse(Object? data) =>
+      data is Map && data['delivered'] == 'none' ? none : sent;
+}
+
 enum MediatorFailureKind {
   /// Sem ligação ou servidor inalcançável.
   network,

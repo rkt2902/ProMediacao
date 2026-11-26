@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/app_scope.dart';
+import '../../../app/routes.dart';
 import '../../../core/design/motion.dart';
 import '../../../core/design/tokens.dart';
 import '../../../core/design/typography.dart';
@@ -13,7 +15,8 @@ import 'mediator_copy.dart';
 final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]{2,}$');
 
 /// Abre "Criar cliente": folha lateral de `folhaLateral` 440 em médio/largo,
-/// ecrã inteiro (rota própria, cross-fade) em compacto. Devolve `true` se o
+/// ecrã inteiro em compacto (rota [AppRoutes.mediatorNewClient] do GoRouter,
+/// cross-fade; sem GoRouter, rota do Navigator). Devolve `true` se o
 /// cliente foi criado.
 Future<bool?> showCreateClient(
   BuildContext context, {
@@ -25,7 +28,20 @@ Future<bool?> showCreateClient(
   final origin = FocusManager.instance.primaryFocus;
   final compact = AppBreakpoints.fromContext(context) == Breakpoint.compacto;
   final Future<bool?> result;
-  if (compact) {
+  final router = GoRouter.maybeOf(context);
+  if (compact && router != null) {
+    // Rota própria do GoRouter (cross-fade de página): o "voltar" do
+    // navegador fecha o formulário em vez de sair de Clientes.
+    result = router.push<bool>(
+      AppRoutes.mediatorNewClient,
+      extra: CreateClientArgs(
+        controller: controller,
+        officeName: officeName,
+        accountName: accountName,
+        onSignOut: onSignOut,
+      ),
+    );
+  } else if (compact) {
     result = Navigator.of(context).push<bool>(
       PageRouteBuilder<bool>(
         transitionDuration: AppMotion.resolve(context, AppMotion.base),
@@ -71,6 +87,30 @@ Future<bool?> showCreateClient(
     origin.requestFocus();
   }
   return created;
+}
+
+/// O que a rota [AppRoutes.mediatorNewClient] precisa (vai em `extra`; sem
+/// ele, a rota volta a Clientes).
+class CreateClientArgs {
+  const CreateClientArgs({
+    required this.controller,
+    required this.officeName,
+    this.accountName,
+    this.onSignOut,
+  });
+
+  final ClientsController controller;
+  final String officeName;
+  final String? accountName;
+  final VoidCallback? onSignOut;
+
+  Widget page() => CreateClientView(
+    controller: controller,
+    officeName: officeName,
+    fullScreen: true,
+    accountName: accountName,
+    onSignOut: onSignOut,
+  );
 }
 
 /// Folha que desliza da direita (o lado do botão que a abre), com véu.

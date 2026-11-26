@@ -71,6 +71,11 @@ abstract final class MediatorCopy {
       'daqui a pouco.';
 
   static const String resent = 'Pedido reenviado a {email}.';
+
+  /// `resend-request` respondeu `delivered: "none"`: nada seguiu por email.
+  static const String resentInApp =
+      'O pedido está à espera na app do cliente ({email}). Não foi enviado '
+      'email.';
   static const String resendNotPending =
       'Este pedido já não está pendente. A lista foi atualizada.';
   static const String resendSendFailed =

@@ -19,4 +19,11 @@ abstract final class AppRoutes {
 
   /// Pedido de consentimento (tarefa 5).
   static const consentPattern = '/cliente/pedido/:grantId';
+
+  static String consentFor(String grantId) =>
+      '$client/pedido/${Uri.encodeComponent(grantId)}';
+
+  /// "Criar cliente" em ecrã inteiro (mediador, telemóvel): rota própria para
+  /// o "voltar" do navegador o fechar.
+  static const mediatorNewClient = '/mediador/novo-cliente';
 }

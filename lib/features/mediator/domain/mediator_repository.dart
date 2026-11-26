@@ -13,6 +13,7 @@ abstract interface class MediatorRepository {
   /// igual exista ou não a conta (nunca revela nada).
   Future<void> createClient({required String fullName, required String email});
 
-  /// "Reenviar pedido" de uma concessão pendente.
-  Future<void> resendRequest(String grantId);
+  /// "Reenviar pedido" de uma concessão pendente. Diz se seguiu um email ou
+  /// se o pedido só está à espera na app do cliente.
+  Future<ResendDelivery> resendRequest(String grantId);
 }

@@ -21,7 +21,7 @@ Erros: `{ "error": { "code": "..." } }` com códigos fixos (`forbidden`, `invali
 
 ## O que o Henrique tem de fazer (por esta ordem)
 
-1. Aplicar no SQL Editor, por esta ordem, `migrations/20261126120000_001_fundacao.sql`, `migrations/20261126130000_001b_send_throttle.sql` (limite de 60 s) e `migrations/20261126140000_001c_declined_final.sql` ("recusada é final" na RLS e listas por data de atualização). Confirmar "aplicada".
+1. Aplicar no SQL Editor, por esta ordem, `migrations/20261126120000_001_fundacao.sql`, `migrations/20261126130000_001b_send_throttle.sql` (limite de 60 s), `migrations/20261126140000_001c_declined_final.sql` ("recusada é final" na RLS e listas por data de atualização) e `migrations/20261126150000_001d_hardening.sql` (auxiliares no esquema `private`, nome de escritório único, `office_client_count()`). Confirmar "aplicada". O esquema `private` nunca deve ser acrescentado a Settings > API > Exposed schemas.
 2. Definir os segredos (só os nomes estão aqui; os valores ficam fora do repositório):
    ```
    supabase secrets set --project-ref aboducqavmsmlzslrseu ALLOWED_ORIGINS=<origens da app web, separadas por vírgula>

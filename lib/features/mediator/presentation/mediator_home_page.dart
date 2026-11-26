@@ -83,6 +83,7 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
   void _resend(OfficeClient c) => controller.resend(
     c,
     sentMessage: MediatorCopy.resent,
+    inAppMessage: MediatorCopy.resentInApp,
     notPendingMessage: MediatorCopy.resendNotPending,
     sendFailedMessage: MediatorCopy.resendSendFailed,
     networkMessage: MediatorCopy.resendNetwork,
