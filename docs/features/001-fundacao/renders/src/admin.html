@@ -35,7 +35,7 @@
 </style>
 </head>
 <!-- Estados: normal, a-carregar, vazio, erro, offline; folha=escritorio | convidar -->
-<body>
+<body data-colofao="admin">
 <div class="offline" data-em="offline"><div class="frame"><div class="in">
   <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
 </div></div></div>
@@ -137,5 +137,6 @@
 </div></main>
 <script src="estado.js"></script>
 <script>if (document.body.dataset.estado === 'offline') document.querySelectorAll('.esc .acao').forEach((a) => a.classList.add('off'));</script>
+<script src="colofao.js"></script>
 </body>
 </html>

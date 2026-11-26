@@ -81,6 +81,9 @@ const SHOTS = [
   ['criar-escritorio', 'admin.html?folha=escritorio', ADMIN],
   ['convidar-mediador', 'admin.html?folha=convidar', ADMIN],
   ['escritorio-criado', 'admin.html?estado=criado', ADMIN],
+  // Marca: colofão (escolhido a 2026-11-26), um ecrã sem sessão e um com sessão; o de com sessão em página inteira
+  ['marca-colofao-entrar', 'entrar.html', ['telemovel', 'desktop']],
+  ['marca-colofao-com-quem-partilho', 'com-quem-partilho.html', ['telemovel', 'desktop'], true],
   // Storyboards (página inteira, 1600 de largura)
   ['fluxo-1-convite', 'fluxos.html?fluxo=1', ['fluxo'], true],
   ['fluxo-2-entrar', 'fluxos.html?fluxo=2', ['fluxo'], true],

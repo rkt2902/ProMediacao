@@ -47,7 +47,7 @@
 </style>
 </head>
 <!-- Estados: normal, vazio, a-carregar, erro, offline, criado, reenviado; folha=criar (com estado=validacao) -->
-<body>
+<body data-colofao="mediador">
 <div class="offline" data-em="offline"><div class="frame"><div class="in">
   <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
 </div></div></div>
@@ -188,5 +188,6 @@
   // Reenviado: a linha do João fica com fundo realce (o bloqueio de 60 s já aparece na célula).
   if (e === 'reenviado') document.querySelector('[data-reenviado]').classList.add('realce-linha');
 </script>
+<script src="colofao.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 </head>
 <!-- ?modo=criar (cliente, depois do link) | definir (recuperação, qualquer perfil) | alterar (cliente, da conta)
      ?estado=normal (regras em tempo real, parcial) | todas | fraca (tentou guardar com regras por cumprir) | erro | offline -->
-<body>
+<body data-colofao="cliente">
 <div class="offline" data-em="offline"><div class="frame"><div class="in">
   <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
 </div></div></div>
@@ -17,7 +17,7 @@
     <div class="pasta">
       <div class="separador rotulo" data-modo="criar alterar">Os meus dados</div>
       <div class="conta" data-modo="criar alterar"><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div>
-      <div class="separador rotulo" data-modo="definir">ProDossier</div>
+      <div class="separador rotulo" data-modo="definir">Acesso</div>
     </div>
     <div class="col-form">
       <h1 class="titulo mt32" data-modo="criar">Criar palavra-passe</h1>
@@ -90,5 +90,6 @@
   document.querySelectorAll('[data-modo]').forEach((el) => { if (!el.dataset.modo.split(' ').includes(modo)) el.remove(); });
 </script>
 <script src="estado.js"></script>
+<script src="colofao.js"></script>
 </body>
 </html>

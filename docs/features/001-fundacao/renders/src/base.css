@@ -232,3 +232,22 @@ main.frame { flex: 1; padding-top: var(--s24); padding-bottom: var(--s48); }
 
 /* Estado por parâmetro ?estado=: cada bloco diz em que estados aparece com data-em="a b c" */
 [data-em] { display: none !important; }
+
+/* ---- Marca: wordmark e colofão (escolhido pelo Henrique a 2026-11-26) ---- */
+
+/* Wordmark (AppType.marca): Serif 19/24, -0.2; "Pro" itálico 400 tintaMedia + "Dossier" 600 tinta */
+.wordmark { font-family: var(--serif); font-size: 19px; line-height: 24px; letter-spacing: -0.2px; color: var(--tinta); white-space: nowrap; }
+.wordmark .pro { font-style: italic; font-weight: 400; color: var(--tintaMedia); }
+.wordmark .dossier { font-weight: 600; }
+
+/* Colofão: última coisa da página, depois do conteúdo; empurrado para o fundo da janela quando o conteúdo é curto.
+   Distância ao conteúdo: s72 (médio/largo) / s48 (compacto) = padding-bottom de main (s48) + o que falta.
+   Régua à largura da moldura, como a da pasta. Nunca fixo, nunca dentro de folhas, diálogos ou formulários de ecrã inteiro. */
+.colofao { padding-top: var(--s24); padding-bottom: var(--s32); }
+.colofao .corpo-colofao { border-top: var(--fino) solid var(--regua); padding-top: var(--s16); display: flex; align-items: baseline; flex-wrap: wrap; column-gap: var(--s16); row-gap: var(--s4); }
+.colofao .linha-colofao { color: var(--tintaMedia); }
+.colofao .registo { color: var(--tintaTenue); }
+@media (max-width: 639px) {
+  .colofao { padding-top: 0; padding-bottom: var(--s24); }
+  .colofao .corpo-colofao { flex-direction: column; align-items: flex-start; }
+}

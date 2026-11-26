@@ -13,7 +13,7 @@ Referências visuais de cada ecrã, **antes** da implementação das tarefas 5, 
 Todos os ecrãs em `-telemovel`, `-tablet` e `-desktop` (admin: `-telemovel` e `-desktop`), salvo indicação. `-completo-` = página inteira.
 
 ### Cabeçalho (revisão de 2026-11-26)
-Sem marca nem linha de cabeçalho nos ecrãs com sessão: o separador é a primeira linha e "Sair" (com o nome, onde couber) fica à direita na mesma linha. Sem sessão, o separador diz "ProDossier". Todos os PNG foram regenerados com este cabeçalho.
+Sem marca nem linha de cabeçalho: o separador é a primeira linha e "Sair" (com o nome, onde couber) fica à direita na mesma linha. Sem sessão, o separador diz "Acesso"; a marca está no colofão (ver "Marca").
 
 ### Entrar e palavra-passe
 | Ficheiros | Estado |
@@ -95,21 +95,18 @@ Sem marca nem linha de cabeçalho nos ecrãs com sessão: o separador é a prime
 
 As setas dos storyboards dizem a ação e a transição (tipo, duração e curva de `AppMotion`); a especificação completa está em `03-design.md`, "Transições entre ecrãs".
 
-## Marca (propostas de 2026-11-26, por escolher)
+## Marca: colofão (escolhido pelo Henrique a 2026-11-26)
 
-Pedido do Henrique: a marca ProDossier tem de estar presente sem voltar ao cabeçalho com a marca (rejeitado) e com "Sair" na linha do separador. Três ideias, cada uma em Entrar (sem sessão) e Com quem partilho (com sessão), `-telemovel` e `-desktop`. Fonte: `src/marca-entrar.html` e `src/marca-partilho.html` com `?ideia=lombada|selo|colofao`, estilos em `src/marca.css`; gerar com `node docs/features/001-fundacao/renders/src/shoot-marca.js`. Nenhum PNG existente nem o `03-design.md`/`DESIGN.md` foram alterados.
+A marca está só no **colofão**, no fim de cada página: régua à largura da moldura, wordmark "*Pro*Dossier" (`AppType.marca`), uma linha que diz de quem é o que se vê e, onde houver, uma data em `registo`. O separador dos ecrãs sem sessão passou de "ProDossier" a "Acesso". Regras em `docs/design/DESIGN.md` ("Colofão") e em `03-design.md` ("Colofão (todos os ecrãs de página)").
 
-| Ideia | Ficheiros | O que muda | Racional |
-| --- | --- | --- | --- |
-| 1. Etiqueta da lombada (**recomendada**) | `marca-lombada-entrar-*`, `marca-lombada-com-quem-partilho-*` | Sem sessão, o separador mostra o wordmark em serifa ("*Pro*Dossier") em vez de "ProDossier" em `rotulo`. Com sessão, o separador passa a etiqueta de arquivo com dois campos: monograma "*p*D" (24 × 24, contorno 1.5 a `tinta`, raio `carimbo`) \| régua vertical `reguaForte` \| contexto ("Os meus dados" ou o escritório). "Sair" fica onde está. | A marca vive no único objeto decorativo que já existe, como a etiqueta impressa de uma pasta de arquivo: está em todos os ecrãs, acrescenta 53 px de largura ao separador (16 + 24 + 12 + régua) e não acrescenta nenhuma linha. |
-| 2. Selo de registo | `marca-selo-entrar-*` (estado link enviado), `marca-selo-com-quem-partilho-*` (estado acesso retirado) | Separador igual ao de hoje. Nos momentos que ficam registados (link enviado, consentimento aceite/recusado, acesso retirado) aparece um selo a tinta com contorno duplo (1.5 + 1 a 2 de afastamento), inclinado -1.5°: "PRODOSSIER" em serifa 13 maiúsculas e "REGISTADO · 26 NOV 2026, 15:02" em `registo`. | A marca aparece como quem certifica o registo: reforça a promessa de "fica registado com data e hora". Só aparece em 4 momentos, por isso nunca se torna papel de parede; mas fora deles a marca não está. |
-| 3. Colofão | `marca-colofao-entrar-*`, `marca-colofao-com-quem-partilho-*` (página inteira) | Sem sessão, o separador diz "Acesso" e a marca passa para o fim da página: régua, wordmark, uma frase ("O dossiê dos seus seguros, partilhado só com quem autorizar." / "Dossiê de Maria Figueiredo") e, com sessão, "Aberto a 12 nov 2026" em `registo`. | Acaba cada página como a última folha de um livro; dá à marca uma frase franca sobre o que a app faz. Mas em listas longas só se vê no fim do scroll (no telemóvel nunca no primeiro ecrã). |
+| Ficheiros | O que mostram |
+| --- | --- |
+| `marca-colofao-entrar-telemovel`, `-desktop` | Sem sessão: "O dossiê dos seus seguros, partilhado só com quem autorizar." |
+| `marca-colofao-com-quem-partilho-telemovel`, `-desktop` | Cliente, página inteira: "Dossiê de Maria do Carmo Figueiredo" + "Aberto a 12 nov 2026" |
 
-**Recomendação: 1, etiqueta da lombada**, com o selo da ideia 2 como acrescento opcional só no ecrã de "consentimento aceite" e "acesso retirado" se o Henrique quiser mais presença. A 1 é a única que põe a marca em todos os ecrãs sem acrescentar uma linha nem uma superfície, e usa a forma que já é a assinatura da app.
+Todos os outros PNG foram regenerados com o colofão onde ele se vê no recorte (conteúdo curto, ou `-completo-`): mediador "Ana Martins, Ribeira Seguros" + "Na equipa desde 3 nov 2026"; admin "Administração da plataforma"; a carregar (cliente e mediador) só o wordmark; sem colofão nos formulários de ecrã inteiro do telemóvel; por trás do véu nas folhas e diálogos; no consentimento, entre o texto e a barra fixa. Os PNG onde o colofão fica abaixo do recorte não mudaram. O email do `src/prototipo.html` acaba com o mesmo colofão.
 
-**Wordmark (sim, precisa de tratamento próprio):** "ProDossier" em Source Serif 4, 19 / 24, espaçamento -0.2; "Pro" em itálico 400 a `tintaMedia`, "Dossier" em 600 a `tinta` (contraste sobre `cartolina`: 6.5 e 12.1). O itálico lê-se como a anotação à mão numa capa impressa, e separa as duas palavras sem maiúscula a meio a fazer esse trabalho. Monograma derivado: "*p*D" com a mesma lógica, para onde não cabe o wordmark (separador com sessão, favicon, ícone da app, emails). Tokens a propor no `DESIGN.md` se for escolhida: `AppType.marca` (Serif 19/24, 600, -0.2) e `AppSize.monograma`=24 (= `icone`). O selo da ideia 2 precisaria ainda de `AppType.selo` (Serif 13/16, 700, +1, maiúsculas).
-
-Aplicações fora destes ecrãs, para qualquer das ideias: o mesmo wordmark no topo dos emails (convite, link de acesso) e no ecrã de carregamento inicial (wordmark sozinho sobre `papel`, sem animação), e o monograma como favicon.
+Fonte: `src/colofao.js` (acrescenta o colofão depois do `<main>`; perfil em `<body data-colofao="...">`) e os estilos `.wordmark` / `.colofao` em `src/base.css`. As propostas "etiqueta da lombada" e "selo de registo" foram apagadas (ficam em DESIGN.md, "Rejeitado").
 
 ## Decisões para o Henrique olhar
 
