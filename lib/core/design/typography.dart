@@ -1,4 +1,3 @@
-import 'dart:ui' show FontFeature, FontVariation;
 
 import 'package:flutter/painting.dart';
 

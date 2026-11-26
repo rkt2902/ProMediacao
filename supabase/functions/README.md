@@ -12,7 +12,7 @@ Erros: `{ "error": { "code": "..." } }` com códigos fixos (`forbidden`, `invali
 
 ## O que o Henrique tem de fazer (por esta ordem)
 
-1. Aplicar no SQL Editor `migrations/20261126120000_001_fundacao.sql` e depois `migrations/20261126130000_001b_send_throttle.sql` (esta cria o limite de 60 s). Confirmar "aplicada".
+1. Aplicar no SQL Editor, por esta ordem, `migrations/20261126120000_001_fundacao.sql`, `migrations/20261126130000_001b_send_throttle.sql` (limite de 60 s) e `migrations/20261126140000_001c_declined_final.sql` ("recusada é final" na RLS e listas por data de atualização). Confirmar "aplicada".
 2. Definir os segredos (só os nomes estão aqui; os valores ficam fora do repositório):
    ```
    supabase secrets set --project-ref aboducqavmsmlzslrseu ALLOWED_ORIGINS=<origens da app web, separadas por vírgula>
