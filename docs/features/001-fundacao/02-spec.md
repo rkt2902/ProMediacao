@@ -34,7 +34,10 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
    - Dado um cliente sem palavra-passe, Quando pede link no ecrã de entrada, Então continua a entrar por link mágico, sempre.
    - Dado a primeira entrada por link, Quando o cliente entra, Então é convidado a criar palavra-passe com "Criar palavra-passe" e "Agora não"; "Agora não" leva-o em frente sem bloqueio e o convite volta a aparecer no máximo na entrada seguinte por link.
    - Dado o convite adiado, Quando o cliente abre a conta, Então encontra "Criar palavra-passe" (ou "Alterar palavra-passe" se já existir).
-   - Dado o convite ou a conta, Quando a palavra-passe tem menos de 8 caracteres, Então é recusada com mensagem de requisitos; palavra-passe e confirmação têm de coincidir.
+   - Dado o ecrã de criar ou alterar palavra-passe (um só campo, sem confirmação, com opção de mostrar/ocultar), Então as 5 regras ficam visíveis e cada uma muda de estado em tempo real à medida que escreve: mínimo 10 caracteres, uma maiúscula, uma minúscula, um número, um carácter especial.
+   - Dado uma palavra-passe que falha uma ou mais regras, Quando tenta guardar, Então "Guardar" fica inativo ou a gravação é recusada, e cada regra em falta aparece com a sua mensagem (ex.: "Falta uma maiúscula", "Mínimo de 10 caracteres"); uma palavra-passe que cumpre as 5 é aceite.
+   - Dado as regras, Então cada uma é testável isoladamente (ex.: 9 caracteres falha; 10 sem número falha) e a mesma política é imposta no Supabase Auth: um pedido direto à API com palavra-passe fraca é recusado.
+   - Dado um leitor de ecrã, Então cada regra é anunciada com o seu estado ("cumprida" / "por cumprir") e a mudança é comunicada sem depender só da cor (ícone e texto).
    - Dado um cliente com concessão pendente, Quando aceita ou recusa, Então a palavra-passe nunca é exigida, nem antes nem depois do consentimento.
    - Dado um cliente com palavra-passe, Quando pede também um link mágico, Então entra por link na mesma conta, sem perder a palavra-passe.
    - Dado um cliente que já tem conta e uma concessão pendente, Quando entra na app, Então vê o convite (escritório, mediador, texto) e pode aceitar ou recusar dentro da app, sem depender de email nem de link; pode também pedir reenvio do link a partir da app.
