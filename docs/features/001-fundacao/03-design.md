@@ -31,20 +31,27 @@
 
 ## Ecrãs
 
-### 1. Entrar (mediador e admin)
+### 1. Entrar (cliente, mediador e admin)
 
-- **Hierarquia:** 1.º título "Entrar" e os dois campos; 2.º botão "Entrar"; 3.º "Esqueci-me da palavra-passe" e a nota para clientes.
-- **Composição:** sem cartão nem hero. Coluna de 400 alinhada à esquerda na grelha (em largo começa a 1/3 da largura; em compacto ocupa a largura toda), título a `s72` do topo em largo e `s32` em compacto. Campos empilhados com `s16`; botão a `s24` dos campos, largura da coluna, `alvoPrincipal`. Nota de cliente separada por uma régua e `s48`.
-- **Componentes e tokens:** `LabeledField` (rótulo `rotulo`, campo `campo` 52, contorno `reguaForte` `controlo` 1.5, `AppRadius.controlo`, foco `foco` 2); `PrimaryButton` (`tinta` / `sobreTinta`); `TextAction`; `InlineNotice` para erro. Sem `FolderTab` (ainda não há contexto).
+Um só ecrã de entrada com dois separadores de pasta: "Sou cliente" (link por email, sem palavra-passe) e "Trabalho num escritório" (email e palavra-passe). O cliente nunca fica sem saída: se o link expirou, pede outro aqui sem depender do mediador.
+
+- **Hierarquia:** 1.º a escolha entre os dois separadores; 2.º o título "Entrar" e o(s) campo(s) do separador ativo; 3.º o botão principal; 4.º ligações secundárias ("Esqueci-me da palavra-passe").
+- **Composição:** sem cartão nem hero. Coluna de 400 alinhada à esquerda na grelha (em largo começa a 1/3 da largura; em compacto ocupa a largura toda), a `s72` do topo em largo e `s32` em compacto. No topo da coluna, `FolderTabs` com os dois separadores lado a lado (50/50, `alvoMinimo` 48): o ativo em `cartolina` com texto `tinta`, o inativo em `papel` com contorno `regua` e texto `tintaMedia`; régua de largura total por baixo. Título "Entrar" a `s32` do separador; campos empilhados com `s16`; botão a `s24` dos campos, largura da coluna, `alvoPrincipal`. Separador inicial: "Sou cliente" na primeira visita; depois, o último usado neste dispositivo.
+- **Separador "Sou cliente":** um campo "Email" e `PrimaryButton` "Enviar link de acesso". Depois de enviar, o formulário é substituído por uma `InlineNotice` (fundo `realce`) com a confirmação, o email em `corpoForte` e `TextAction` "Enviar outra vez" (bloqueado 60 s, com a razão escrita) e "Usar outro email". A resposta é igual exista ou não a conta.
+- **Separador "Trabalho num escritório":** "Email", "Palavra-passe", `PrimaryButton` "Entrar", `TextAction` "Esqueci-me da palavra-passe".
+- **Componentes e tokens:** `FolderTabs` (novo, ver DESIGN.md), `LabeledField` (rótulo `rotulo`, campo `campo` 52, contorno `reguaForte` `controlo` 1.5, `AppRadius.controlo`, foco `foco` 2); `PrimaryButton` (`tinta` / `sobreTinta`); `TextAction`; `InlineNotice`.
 - **Copy:**
-  - Título: "Entrar"
-  - Linha de apoio (`corpoPequeno` `tintaMedia`): "Acesso para escritórios de mediação."
-  - Campos: "Email", "Palavra-passe"; ação no campo: "Mostrar" / "Ocultar"
-  - Botão: "Entrar"; a carregar: "A entrar…"
+  - Separadores: "Sou cliente" / "Trabalho num escritório"
+  - Título (ambos): "Entrar"
+  - Cliente, apoio (`corpoPequeno` `tintaMedia`): "Indique o seu email. Enviamos-lhe um link para entrar, sem palavra-passe."
+  - Cliente, botão: "Enviar link de acesso"; a carregar: "A enviar…"
+  - Cliente, confirmação: "Se este email tiver acesso ao ProDossier, o link chega a {email} dentro de alguns minutos. Abra-o neste dispositivo. Veja também a pasta de spam."; ações "Enviar outra vez" (depois de enviar: "Pode enviar outra vez daqui a 1 minuto.") e "Usar outro email"
+  - Escritório, apoio: "Para mediadores e administração."
+  - Escritório, campos: "Email", "Palavra-passe"; ação no campo: "Mostrar" / "Ocultar"
+  - Escritório, botão: "Entrar"; a carregar: "A entrar…"
   - Ligação: "Esqueci-me da palavra-passe"
-  - Nota de cliente: "É cliente? Entre pelo link que recebeu por email. Se já não funcionar, peça um novo ao seu mediador."
   - Erro de credenciais: "Email ou palavra-passe incorretos."
-  - Campo vazio: "Escreva o seu email." / "Escreva a palavra-passe."
+  - Campo vazio: "Escreva o seu email." / "Escreva a palavra-passe."; email mal escrito: "Escreva um email completo, por exemplo nome@exemplo.pt."
   - Sessão terminada: "A sua sessão terminou. Entre de novo para continuar."
 
 ### 1b. Recuperar e definir palavra-passe

@@ -1,13 +1,36 @@
-# 04 Plano: <feature>
+# 04 Plano: 001 Fundação
+
+Entradas comuns a todas as tarefas: `CLAUDE.md`, `docs/decisions.md`, `02-spec.md`, `03-design.md`, `docs/design/DESIGN.md`. Migrações e funções: só escritas como ficheiros, nunca aplicadas nem publicadas pelos agentes.
 
 | # | Tarefa | Dono | Ficheiros permitidos | Depende de | Feito quando |
 | --- | --- | --- | --- | --- | --- |
+| 1 | Esquema, RLS e auditoria: perfis, escritórios, pertença (1 por mediador), concessões (pendente/ativa/recusada/retirada), auditoria só INSERT por trigger, texto de consentimento `v0-rascunho`, vista/função security definer do mediador (nome, email, estado de pendentes/recusados), função de contagens do admin. Seguir a skill `supabase-migrations` | supabase-dev | `supabase/migrations/*.sql` (ficheiros novos), `supabase/seed/` | nada | Ficheiro(s) `.sql` idempotentes e comentados; admin sem SELECT em nomes/emails; auditoria sem UPDATE/DELETE para os perfis da app |
+| 2 | Funções de servidor com service role: convidar mediador (admin), criar cliente e concessão pendente (mediador), reenviar/pedir link (mediador e cliente, resposta igual exista ou não a conta, 60 s de limite) | supabase-dev | `supabase/functions/**` | 1 | Código escrito e comentado; nenhum segredo no repositório; lista do que o Henrique tem de publicar |
+| 3 | Fundação visual: fontes (Source Serif 4, Atkinson Hyperlegible Next e Mono, OFL) em `assets/fonts`, tokens, tipografia, motion, tema, widgets partilhados do `03-design.md`; dependências novas do projeto (Supabase, rotas, etc.) | flutter-dev | `pubspec.yaml`, `assets/fonts/**`, `lib/core/design/**`, `lib/core/widgets/**`, `test/core/**` | nada | `flutter analyze` limpo; tokens e widgets testados; nenhum valor solto nos widgets |
+| 4 | Esqueleto da app: inicialização do Supabase (URL e chave anon por `--dart-define`, sem segredos no repo), sessão, rotas por papel, login/recuperação de palavra-passe do mediador e admin, entrada do cliente por link mágico, link expirado e pedido de novo link | flutter-dev | `lib/main.dart`, `lib/app/**`, `lib/core/config/**`, `lib/features/auth/**`, `test/features/auth/**` | 3 (UI), 2 (contrato das funções) | Login e rotas funcionam contra o backend; estados de erro e offline do `03-design.md` |
+| 5 | Ecrãs do cliente: convite e consentimento (aceitar/recusar, texto da versão), "Com quem partilho", retirar acesso, convite pendente dentro da app | flutter-dev | `lib/features/consent/**`, `test/features/consent/**` | 4, gate 3 | Todos os estados da matriz; nunca mostra aceite/retirado sem confirmação do servidor |
+| 6 | Ecrãs do mediador: lista de clientes com estados (incl. "Recusado"), criar cliente, reenviar (bloqueio de 60 s) | flutter-dev | `lib/features/mediator/**`, `test/features/mediator/**` | 4, gate 3 | Responsivo (desktop, tablet, telemóvel); lista vazia, longa e paginada |
+| 7 | Ecrãs do admin: criar escritório, convidar mediador, 3 contagens | flutter-dev | `lib/features/admin/**`, `test/features/admin/**` | 4, gate 3 | Sem nenhum dado pessoal no ecrã nem nos pedidos |
+| 8 | QA: scripts SQL da matriz de isolamento (todas as linhas da US 6), verificação ao vivo do esquema e RLS, testes de auditoria, `flutter analyze` e `flutter test`, veredicto em `05-qa.md` | qa | `docs/features/001-fundacao/05-qa.md`, `supabase/tests/**`, `test/**` só para testes novos | 5, 6, 7 | Veredicto PASSA/FALHA com a matriz linha a linha; 0 divergências |
+| 9 | Polimento visual e goldens | designer | `test/design_review/001_fundacao/**`, `docs/design/DESIGN.md` | 5, 6, 7 | Goldens lidos e críticos tratados; sem alterações a `lib/` (pedidos vão ao flutter-dev) |
 
 ## Ordem e paralelismo
 
+- Em paralelo já: **1** (supabase-dev) e **3** (flutter-dev).
+- **2** começa quando o **1** estiver escrito.
+- **GATE 3** depois do **1** e do **2**: o Henrique aplica a(s) migração(ões) no SQL Editor e publica as funções, e confirma "aplicada".
+- **4** começa depois de **3**; **5, 6 e 7** depois do gate 3 e do **4**.
+- **8** e **9** no fim; correções devolvidas ao dono do ficheiro (máx. 2 ciclos).
+
+## Riscos do plano
+
+- O QA precisa de executar a matriz com papéis de teste. O MCP do Supabase é só leitura e falhou nesta sessão: se não ligar, o `qa` escreve os scripts em `supabase/tests/` e o Henrique corre-os no SQL Editor e devolve o resultado.
+- O email por defeito do Supabase tem limites de envio: pode afetar a métrica dos 10 minutos (decisão já tomada).
+- Texto de consentimento `v0-rascunho`: não é final; sem clientes reais até haver parecer jurídico.
+
 ## Gates
 
-- [ ] Gate 1: âmbito aprovado
-- [ ] Gate 2: design aprovado
+- [x] Gate 1: âmbito aprovado (2026-11-26)
+- [x] Gate 2: design aprovado (2026-11-26)
 - [ ] Gate 3: migração aplicada pelo Henrique (se houver)
 - [ ] Gate 4: release aprovada
