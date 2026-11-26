@@ -31,7 +31,7 @@ Atualizado: 2026-11-26 (gate 3 das migrações confirmado; fecho do marco "001 F
 Bloqueia a continuação da 001 (por ordem):
 - [x] 1. Aplicar no SQL Editor (confirmado ao vivo via MCP: 8 tabelas com RLS, funções 001c presentes), por ordem, `supabase/migrations/20261126120000_001_fundacao.sql`, `..._001b_send_throttle.sql` e `..._001c_declined_final.sql`; dizer "aplicada".
 - [x] 2. Criar o utilizador admin (1 perfil admin confirmado ao vivo) em Authentication > Users (Auto confirm) e correr `supabase/seed/001_first_admin.sql` com o UUID, nome e email trocados.
-- [ ] 3. Decidir o alojamento da app web (UE): opções A/B/C propostas no chat de 26/11; falta escolher. Até lá, usar um URL provisório.
+- [x] 3. Alojamento decidido: Cloudflare Pages (opção A). Falta criar o projeto Cloudflare e ligar o repositório; o URL `*.pages.dev` serve de endereço provisório.
 - [ ] 4. Publicar as 3 funções e definir `ALLOWED_ORIGINS` e `AUTH_REDIRECT_URL` (guia passo a passo dado no chat de 26/11; resumo: `npx supabase login`, `functions deploy` x3 com `--project-ref aboducqavmsmlzslrseu`, ver `supabase/functions/README.md`); ajustar Redirect URLs e modelos de email no painel. Depende do ponto 3.
 - [x] 5. Colar `docs/cloud/setup-flutter.sh` no setup script do ambiente cloud (`docs/cloud/CLOUD.md`), para os chats novos terem o Flutter.
 - [x] 6. Reconectar o MCP do Supabase (liga em só leitura; confirmado) (token em Network secrets, `docs/cloud/CLOUD.md`); sem isto o qa dá queries para correres tu.
