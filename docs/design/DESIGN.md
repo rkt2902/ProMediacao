@@ -28,7 +28,7 @@ Todos entram pelo navegador, sem instalar nada. Clientes e mediadores usam telem
 O que torna a app reconhecível num screenshot sem logótipo:
 
 1. **Papel e tinta.** Fundo cor de papel (`papel`), texto quase preto (`tinta`), e a ação principal é um botão cheio a tinta. Não há "cor de marca" a pintar botões: a autoridade vem do contraste, não do azul.
-2. **O separador de pasta.** O contexto do ecrã (o escritório, "Os meus dados" no cliente, ou "Acesso" antes de haver sessão) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. Por baixo, uma régua `regua` corre a largura da moldura (1040 em largo), mesmo quando a coluna é mais estreita: é a borda da pasta. É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver.
+2. **O separador de pasta.** O contexto do ecrã (o escritório, "Os meus dados" no cliente, ou "Acesso" antes de haver sessão) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. Por baixo, uma régua `regua` corre a largura da moldura (1040 em largo), mesmo quando a coluna é mais estreita: é a borda da pasta. O separador é a primeira linha do ecrã: não há cabeçalho nem marca por cima nos ecrãs com sessão; "Sair" (e o nome, onde couber) fica na mesma linha, encostado à direita da moldura e centrado com o separador. Sem sessão, o separador diz "ProDossier": é o único sítio onde a marca aparece. É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver.
 3. **Serifa nos títulos e nos números, sans legível no resto.** Títulos, nomes de escritórios e contagens em Source Serif 4; interface e corpo em Atkinson Hyperlegible Next; datas, versões e registos em Atkinson Hyperlegible Mono.
 4. **O carimbo.** Estados (Ativo, Pendente, Recusado, Retirado) são etiquetas retangulares de canto quase reto (`AppRadius.carimbo`), com ícone + palavra, contorno de 1.5 na cor do estado e fundo `folha`. Parecem carimbos num processo, não "pills" de app.
 5. **Réguas em vez de cartões.** Listas separadas por linhas finas (`regua`), sem sombras. Só há superfície elevada (`folha`) em formulários, folhas laterais e diálogos.
@@ -92,7 +92,7 @@ A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima di
 
 ### Espaço, raios, traços e tamanhos
 
-- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 32 da régua do separador ao título, 48 entre grupos. Entre a linha do topo e o separador: 0 (o separador cola-se à linha do topo, que tem `s16` em cima e 48 de altura). `s72` fica sem uso desde 2026-11-26 (era o vazio acima dos formulários em largo, rejeitado).
+- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 32 da régua do separador ao título, 48 entre grupos. Topo da janela ao separador: `s16` em compacto, `s24` em médio/largo (não há linha de cabeçalho). `s72` fica sem uso desde 2026-11-26 (era o vazio acima dos formulários em largo, rejeitado).
 - `AppRadius`: `carimbo`=3, `controlo`=6 (botões, campos), `superficie`=10 (folhas, diálogos), `separador`=10 só nos cantos superiores. Listas e linhas não têm raio.
 - `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2, `focoAfastamento`=2 (distância entre o controlo e o anel de foco).
 - `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente em todos os tamanhos; de mediador e admin em compacto), `campo`=52, `larguraLeitura`=640 (texto de consentimento, listas de leitura do cliente, diálogo só de leitura), `larguraLista`=1040 (também largura máxima da moldura em largo), `folhaLateral`=440, `separadorAltura`=40, `icone`=24 (ícones de interface: resumo do consentimento, spinner), `iconePequeno`=18 (ícones dentro de carimbos, campos, avisos e botões), `dialogo`=480 (diálogo de confirmação em médio/largo).
@@ -121,7 +121,7 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 
 A criar em `lib/core/widgets/` na feature 001:
 
-- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + linha do topo com `s16` em cima e 0 em baixo + separador colado + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
+- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + `s16`/`s24` de topo + linha do separador com a conta à direita + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
@@ -143,7 +143,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - **Navegador:** cada ecrã tem endereço; "voltar" fecha primeiro a folha ou o diálogo; texto de consentimento, nomes e emails selecionáveis.
 - **Teclado virtual:** campo com foco e botão de envio visíveis acima dele; sem foco automático em compacto; em formulários de ecrã inteiro (compacto) os botões vão no fluxo, não fixos.
 - **Folhas e diálogos:** compacto = folha inferior (decisões, leitura) ou ecrã inteiro (formulários); médio e largo = diálogo centrado (decisões, leitura) ou folha lateral de `folhaLateral` (formulários).
-- **Conta e navegação:** sem AppBar nem barra de navegação em nenhum tamanho enquanto cada perfil tiver poucos ecrãs; topo com a marca e a conta (compacto: só "Sair", com o nome na leitura de ecrã; médio/largo: nome + "Sair").
+- **Conta e navegação:** sem AppBar, sem barra de navegação e sem linha de cabeçalho em nenhum tamanho enquanto cada perfil tiver poucos ecrãs; a conta vive na linha do separador (compacto: só "Sair", com o nome na leitura de ecrã; médio/largo: nome + "Sair").
 - **Goldens:** cada ecrã de cliente e mediador a 390 × 844, 768 × 1024 e 1280 × 800, escala 1.0 e 1.3.
 
 ## Regras
@@ -160,6 +160,8 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Ícones: Material Symbols Outlined (já incluídos no Flutter), traço uniforme, sempre com etiqueta visível quando o significado não é óbvio. Sem emoji.
 - Nenhum `AppBar`, `Card`, `FloatingActionButton` ou `ListTile` com estilo por defeito a definir o aspeto de um ecrã.
 - Admin: nunca mostrar nome nem email de pessoas, nem em tooltips.
+- Palavra-passe: mínimo 10 caracteres com maiúscula, minúscula, número e carácter especial, sem campo de confirmação ("Mostrar" no campo). As regras estão sempre visíveis por baixo do campo e mudam em tempo real com ícone + texto (por cumprir `circle_outlined`, cumprida `check_circle`, em erro `error_outline` a `erro`). O botão de guardar nunca fica desativado por causa das regras: ao carregar, o erro diz quantas faltam.
+- Mudança de ecrã: cross-fade `base` (entra `entrar`, sai `sair`); nada desliza entre ecrãs. Só folhas laterais e inferiores se deslocam, porque têm um sítio de onde vêm.
 - Entrada: um só formulário (email + palavra-passe) para todos os perfis; o link mágico é alternativa do cliente, com `SecondaryButton` à largura da coluna e "Só para clientes." escrito, nunca um link pequeno. Convites opcionais (ex.: criar palavra-passe) têm "Agora não" como `SecondaryButton` do mesmo tamanho, e nunca aparecem antes de uma decisão de consentimento.
 
 ## Referências
@@ -175,6 +177,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 
 | Data | O quê | Porquê |
 | --- | --- | --- |
+| 2026-11-26 | Marca "ProDossier" visível num cabeçalho por cima do separador, com "Sair" à parte | Parecia nota de rodapé e o "Sair" flutuava sem relação; a marca sai dos ecrãs com sessão e a conta passa para a linha do separador |
 | 2026-11-26 | Vazio entre a linha do topo (marca + conta) e o separador de pasta: 24 + 16 nos ecrãs de lista e mais 32 / 48 / 72 nos formulários de entrada | Demasiado espaço vertical; o separador tem de ficar colado ao cabeçalho, como uma pasta |
 
 (Só rejeições do Henrique em gates. As direções descartadas pelo designer ficam no `03-design.md` de cada feature.)
