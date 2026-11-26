@@ -66,7 +66,7 @@ Um só ecrã de entrada com dois separadores de pasta: "Sou cliente" (link por e
 Estados de passagem antes do consentimento ou de "Com quem partilho".
 
 - **A validar:** skeleton do ecrã de consentimento (separador, bloco do título, 3 linhas). Sem spinner de página.
-- **Link expirado ou inválido:** `FolderTab` "Os meus dados"; título "Este link já não é válido"; texto "Os links de acesso expiram ao fim de algum tempo, por segurança. Peça ao seu mediador que lhe envie um novo: basta ele carregar em Reenviar link."; sem botão principal (não há ação possível sem a decisão em aberto n.º 2); ligação "Sou mediador: entrar".
+- **Link expirado ou inválido:** `FolderTab` "Os meus dados"; título "Este link já não é válido"; texto "Os links de acesso expiram ao fim de algum tempo, por segurança. Peça um novo aqui: basta o seu email."; campo "Email" e `PrimaryButton` "Enviar link novo" (mesmo comportamento e confirmação do separador "Sou cliente" do ecrã 1); por baixo, `corpoPequeno` `tintaMedia`: "Também pode pedir ao seu mediador que reenvie o pedido." Depois de entrar com o link novo, os pedidos pendentes aparecem em "Com quem partilho" (ecrã 4), por isso o cliente não perde o pedido original.
 - **Pedido já respondido:** vai direto para "Com quem partilho", com `InlineNotice` "Já respondeu a este pedido a 26 nov 2026, 14:32."
 
 ### 3. Aceitar partilha (consentimento) [cliente, telemóvel primeiro]
@@ -112,19 +112,26 @@ Notas para o jurista e para o pm: a base de licitude (pergunta 1 do briefing) po
 
 ### 4. Com quem partilho [cliente; ecrã inicial do cliente]
 
-- **Hierarquia:** 1.º a frase-resumo ("Partilha os seus dados com 2 escritórios."); 2.º cada escritório com o nome, o carimbo e a data; 3.º a ação de cada linha ("Retirar acesso" ou "Responder") e a explicação do que retirar faz.
-- **Composição:** `FolderTab` "Os meus dados"; título "Com quem partilho" (`titulo`); frase-resumo em `corpoForte` a `s8`. Três grupos, cada um com cabeçalho `rotulo` e lista com réguas, separados por `s48`, mostrados só se tiverem linhas, por esta ordem:
-  1. "Com acesso" (ativos)
-  2. "À espera da sua resposta" (pendentes)
-  3. "Sem acesso" (recusados e retirados)
-  Cada linha (`RuledRow`, padding vertical `s16`): nome do escritório em `subtitulo` (até 2 linhas, depois reticências; nome completo na leitura de ecrã); por baixo, `StatusStamp` + `registo` com a data; à direita em médio/largo, ou por baixo a toda a largura em compacto, a ação com `alvoMinimo` 48. Ativos: `SecondaryButton` com texto `erro` "Retirar acesso" e `TextAction` "Ler o texto aceite" (abre o texto da versão aceite numa `ConfirmSheet` só de leitura). Pendentes: `PrimaryButton` "Responder" (abre o ecrã 3). Sem acesso: sem ação. Rodapé `corpoPequeno` `tintaMedia` a `s48`. Coluna máxima `larguraLeitura`.
+É sempre o ecrã onde o cliente aterra ao entrar (pelo separador "Sou cliente" ou por um link genérico). Um link de um pedido concreto continua a abrir direto o ecrã 3. Os pedidos pendentes aparecem aqui também quando o cliente já tem conta e o escritório lhe enviou um pedido sem link: não é preciso email para responder.
+
+- **Hierarquia:**
+  1. Se houver pedidos pendentes: o bloco "À espera da sua resposta", no topo e acima de tudo o resto.
+  2. A frase-resumo ("Partilha os seus dados com 2 escritórios.") e os escritórios com acesso, com nome, carimbo e data.
+  3. A ação de cada linha ("Retirar acesso") e a explicação do que retirar faz.
+- **Composição:** `FolderTab` "Os meus dados"; título "Com quem partilho" (`titulo`).
+  - **Bloco de pedidos pendentes** (só se existir algum), a `s24` do título: superfície `realce` com `AppRadius.superficie`, padding `s24` (`s16` em compacto), sem sombra. Cabeçalho `subtitulo` "À espera da sua resposta" + `corpo` "Estes escritórios pedem acesso aos seus dados. Nada é partilhado até responder." Cada pedido é uma `RuledRow` (réguas `regua` dentro do bloco): nome do escritório em `corpoForte`, "Enviado por Ana Martins, mediadora" em `corpoPequeno` `tintaMedia`, `StatusStamp` pendente + `registo` "Pedido a 25 nov 2026, 15:04", e `PrimaryButton` "Responder" (`alvoPrincipal` 56; a toda a largura em compacto, à direita nos outros), que abre o ecrã 3. É o único bloco com fundo de cor no ecrã, para ser a primeira coisa vista. O leitor de ecrã anuncia-o ao entrar ("Tem 1 pedido de acesso à espera da sua resposta.").
+  - **Frase-resumo** em `corpoForte` a `s48` do bloco (ou a `s8` do título se não houver bloco).
+  - Dois grupos por baixo, cada um com cabeçalho `rotulo` e lista com réguas, separados por `s48`, mostrados só se tiverem linhas: 1) "Com acesso" (ativos); 2) "Sem acesso" (recusados e retirados).
+  - Cada linha (`RuledRow`, padding vertical `s16`): nome do escritório em `subtitulo` (até 2 linhas, depois reticências; nome completo na leitura de ecrã); por baixo, `StatusStamp` + `registo` com a data; à direita em médio/largo, ou por baixo a toda a largura em compacto, a ação com `alvoMinimo` 48. Ativos: `SecondaryButton` com texto `erro` "Retirar acesso" e `TextAction` "Ler o texto aceite" (abre o texto da versão aceite numa `ConfirmSheet` só de leitura). Sem acesso: sem ação. Rodapé `corpoPequeno` `tintaMedia` a `s48`. Coluna máxima `larguraLeitura`.
+- **Depois de responder a um pedido (vindo do ecrã 3):** o pedido sai do bloco; se aceitou, entra em "Com acesso" com fundo `realce` a desvanecer; se recusou, entra em "Sem acesso". Quando o último pedido sai, o bloco fecha.
 - **Confirmação de retirada (`ConfirmSheet`: folha inferior em compacto, diálogo de 480 em médio/largo):** título `subtitulo`; texto `corpo`; `DestructiveButton` "Retirar acesso" e `SecondaryButton` "Cancelar", empilhados em compacto (destrutivo em cima), lado a lado nos outros. Sem "anular" depois: voltar a dar acesso exige um novo pedido e um novo consentimento.
 - **Depois de retirar:** a linha sai de "Com acesso" e entra em "Sem acesso" com fundo `realce` a desvanecer, carimbo "Retirado" e "Retirado a 26 nov 2026, 15:02"; `InlineNotice` no topo: "Acesso retirado. A Ribeira Seguros já não vê os seus dados." A frase-resumo atualiza.
 - **Componentes e tokens:** `FolderTab`, `RuledList`, `RuledRow`, `StatusStamp`, `SecondaryButton`, `PrimaryButton`, `DestructiveButton`, `TextAction`, `ConfirmSheet`, `InlineNotice`, `SkeletonRows`; `AppColors.erro` só no botão de retirar e no destrutivo.
 - **Copy:**
   - Título: "Com quem partilho"
   - Frase-resumo: "Partilha os seus dados com 1 escritório." / "Partilha os seus dados com {n} escritórios." / "Neste momento não partilha os seus dados com nenhum escritório."
-  - Grupos: "Com acesso", "À espera da sua resposta", "Sem acesso"
+  - Bloco pendente: "À espera da sua resposta" / "Estes escritórios pedem acesso aos seus dados. Nada é partilhado até responder." (com 1 pedido: "Este escritório pede acesso aos seus dados. Nada é partilhado até responder."); remetente "Enviado por {mediador}, mediador(a)"; botão "Responder"; anúncio "Tem {n} pedido(s) de acesso à espera da sua resposta."
+  - Grupos: "Com acesso", "Sem acesso"
   - Datas: "Desde 12 nov 2026, 10:04" / "Pedido a 25 nov 2026, 15:04" / "Recusado a 20 nov 2026, 09:12" / "Retirado a 26 nov 2026, 15:02"
   - Carimbos: "ATIVO", "PENDENTE", "RECUSADO", "RETIRADO"
   - Ações: "Retirar acesso", "Ler o texto aceite", "Responder"
