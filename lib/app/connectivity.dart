@@ -6,10 +6,7 @@ import 'package:flutter/foundation.dart';
 /// falha por rede e volta a ficar online quando o servidor responde (teste
 /// periódico enquanto offline).
 class AppConnectivity extends ChangeNotifier {
-  AppConnectivity({
-    this.probe,
-    this.retryEvery = const Duration(seconds: 5),
-  });
+  AppConnectivity({this.probe, this.retryEvery = const Duration(seconds: 5)});
 
   final Future<bool> Function()? probe;
   final Duration retryEvery;

@@ -2,6 +2,8 @@
 
 > **Gate 2 aprovado (2026-11-26):** direção "Dossiê arrumado" e fontes Source Serif 4 + Atkinson Hyperlegible Next/Mono. Emendas incorporadas: o cliente pede um link novo no ecrã de entrada e no ecrã de link expirado; os pedidos pendentes aparecem dentro da app em "Com quem partilho" para clientes com conta; o mediador tem "Reenviar pedido"; os recusados aparecem na lista do mediador sem ações; tratamento formal; bloqueio de 60 s nos reenvios.
 >
+> **Revisão responsiva (2026-11-26, decisão web-first em `docs/decisions.md`):** a app corre no navegador, sem instalação. Os ecrãs de cliente e de mediador deixam de ter um tamanho "primeiro": cada um tem composição explícita em compacto (telemóvel, < 640), médio (tablet, 640 a 1100) e largo (desktop, > 1100), com a mesma qualidade nos três. Só o admin é desktop-first. Ver "Responsividade" abaixo e a secção com o mesmo nome em DESIGN.md.
+>
 > Classificação: **transformação visível** (não existe identidade: a app é o contador por defeito). Esta feature fixa a direção de arte do produto em `docs/design/DESIGN.md`; os tokens citados aqui (`AppColors.papel`, `AppType.titulo`, `AppMotion.base`...) estão todos definidos lá.
 > Referência: o protótipo HTML "Dossier" não está no repositório (só `docs/reference/prototipo/README.md`) e os links de artefacto não foram abertos. Usou-se a descrição da secção 6 de `docs/business/context.md`. O protótipo não cobre login, consentimento nem admin, por isso estes ecrãs são desenhados de raiz.
 
@@ -27,9 +29,35 @@
 
 ## Estrutura comum
 
-- `PageFrame`: fundo `papel`; margens `s16` / `s32` / `s48` (compacto / médio / largo); topo com a marca "ProDossier" em `rotulo` `tintaMedia` à esquerda e o menu da conta à direita ("Ana Martins" + "Sair"; no cliente só "Sair").
-- `FolderTab` colado ao topo da área de conteúdo (`separadorAltura` 40, `cartolina`, `AppRadius.separador` em cima), texto `rotulo` `tinta`: "Ribeira Seguros" (mediador), "Administração" (admin), "Os meus dados" (cliente) ou "Pedido de acesso" (consentimento). Por baixo, uma régua `regua` de largura total: a "pasta" é o ecrã.
-- Sem AppBar nem barra de navegação inferior nesta feature: cada perfil tem só 1 ou 2 ecrãs.
+- `PageFrame`: fundo `papel`; margens `s16` / `s32` / `s48` (compacto / médio / largo); topo com a marca "ProDossier" em `rotulo` `tintaMedia` à esquerda e o menu da conta à direita (ver "Conta e navegação por tamanho" abaixo). Em largo, a moldura inteira (marca, conta, separador, conteúdo) tem largura máxima `larguraLista` 1040 e fica **centrada na janela**; dentro dela tudo alinha à esquerda. Em compacto e médio ocupa a janela menos as margens.
+- `FolderTab` colado ao topo da área de conteúdo (`separadorAltura` 40, `cartolina`, `AppRadius.separador` em cima), texto `rotulo` `tinta`: "Ribeira Seguros" (mediador), "Administração" (admin), "Os meus dados" (cliente) ou "Pedido de acesso" (consentimento). Por baixo, uma régua `regua` com a largura da moldura: a "pasta" é o ecrã. Nome de escritório longo no separador: uma linha com reticências; o separador nunca passa de `larguraFormulario` 400 em médio/largo, nem da largura toda menos `s48` em compacto (o nome completo está no título ou na leitura de ecrã).
+- Sem AppBar nem barra de navegação (inferior ou lateral) nesta feature, em nenhum tamanho: cada perfil tem só 1 ou 2 ecrãs, e as passagens entre eles são botões com texto dentro do conteúdo.
+
+## Responsividade
+
+Regras gerais em DESIGN.md ("Responsividade (web)"). O que se aplica a todos os ecrãs desta feature:
+
+- **Tamanho pela largura lógica da janela**, não pelo aparelho: um desktop com zoom de 200% ou uma janela estreita recebe o layout compacto, e um tablet deitado (1180) recebe o largo. Largura mínima suportada: 320 (zoom de 400% num portátil), sem scroll horizontal.
+- **Os alvos não encolhem com a largura.** Toque é possível em qualquer tamanho (tablets deitados e portáteis com ecrã tátil caem em largo): mínimo `alvoMinimo` 48 em tudo o que se carrega, `alvoPrincipal` 56 nas ações principais do cliente em todos os tamanhos e nas ações principais de mediador e admin em compacto (48 em médio/largo).
+- **Rato:** cursor de clique em tudo o que se carrega e de texto nos campos; hover só reforça (fundo/contorno em `rapido`), nunca é o único sítio onde aparece informação. Tooltips abrem com hover, foco de teclado **e** toque longo; e a razão de um botão desativado está sempre escrita por baixo, não só no tooltip.
+- **Teclado** (qualquer tamanho, obrigatório em largo): Tab segue a ordem de leitura; anel de foco `foco` 2 com `AppStroke.focoAfastamento` 2, só quando a navegação é por teclado; Enter submete o formulário a partir do último campo; Esc fecha folhas e diálogos (= Cancelar); dentro de folhas e diálogos o foco fica preso e, ao fechar, volta ao botão que os abriu. Nenhum atalho de teclado próprio nesta feature.
+- **Navegador:** cada ecrã tem endereço próprio (os links do email abrem-no direto); o botão "voltar" do navegador fecha primeiro a folha ou o diálogo aberto e só depois muda de ecrã. Texto de consentimento, emails e nomes são selecionáveis para copiar (rato e toque longo).
+- **Teclado virtual (telemóvel e tablet):** o campo com foco e o botão de envio ficam visíveis acima do teclado (o ecrã faz scroll até eles). Em compacto não há foco automático no primeiro campo ao abrir um ecrã (abriria o teclado por cima do contexto); em médio/largo há. Campos com o tipo de teclado e o preenchimento automático certos (email, palavra-passe nova/atual). O texto dos campos é 17, o que evita o zoom automático do Safari no iOS.
+- **Altura baixa** (telemóvel deitado, altura < `AppBreakpoints.alturaBaixa` 480): as barras fixas em baixo perdem a linha de texto de apoio (passa para o fim do scroll) e o padding vertical passa de `s16` a `s8`; as folhas inferiores ocupam a altura toda menos `s16` em cima.
+- **Faixas e barras fixas** (`OfflineBar`, barra de ações do consentimento, barra de botões das folhas): o fundo ocupa a largura da janela; o conteúdo alinha com a coluna do ecrã (mesma margem esquerda e mesma largura máxima), em todos os tamanhos.
+- **Folhas e diálogos por tamanho:**
+  - `ConfirmSheet` de decisão (retirar acesso): compacto, folha inferior à largura da janela, cantos superiores `AppRadius.superficie`, padding `s24` e o espaço seguro de baixo respeitado, botões empilhados a toda a largura; médio e largo, diálogo centrado de `AppSize.dialogo` 480, botões lado a lado ("Cancelar" à esquerda, ação à direita). Véu `AppColors.veu`, sombra `AppShadow.superficie`. Fecha com "Cancelar", Esc, toque no véu e "voltar" do navegador; arrastar para baixo também fecha a folha, mas nunca é a única forma. Foco inicial em "Cancelar": Enter nunca dispara a ação destrutiva por acidente.
+  - `ConfirmSheet` só de leitura (texto aceite): compacto, folha inferior com altura máxima da janela menos `s48`, texto com scroll e "Fechar" fixo em baixo; médio e largo, diálogo de `larguraLeitura` 640 (não 480: é texto longo), altura máxima da janela menos 2 × `s48`, mesmo scroll e "Fechar".
+  - Folha lateral de formulário (criar cliente; no admin, criar escritório e convidar): largo e médio, `folhaLateral` 440 encostada à direita, altura toda, véu sobre o resto, botões numa barra fixa no fundo da folha; compacto, ecrã inteiro (rota própria) com os botões **no fluxo, a seguir aos campos** e não fixos, porque o teclado virtual ocupa metade do ecrã. Foco inicial no primeiro campo (exceto compacto, pela regra do teclado virtual).
+
+### Conta e navegação por tamanho
+
+| | Compacto | Médio | Largo |
+| --- | --- | --- | --- |
+| Linha do topo | Marca à esquerda; à direita só `TextAction` "Sair" (ícone `logout` + palavra, alvo 48). A leitura de ecrã diz "Sair da conta de Ana Martins" | Marca à esquerda; à direita o nome ("Ana Martins", `rotulo` `tintaMedia`, uma linha, reticências) + `s16` + "Sair" | Igual ao médio, alinhado com a moldura centrada de 1040 |
+| Cliente | Só "Sair" nos três tamanhos (o cliente sabe quem é; o separador "Os meus dados" já o diz) | idem | idem |
+| Entre ecrãs | Botões com texto no conteúdo ("Responder", "Ver com quem partilho") e o `TextAction` "Com quem partilho" com ícone `arrow_back` no consentimento (ver ecrã 3); "voltar" do navegador funciona sempre | idem | idem |
+| Sair | Sem confirmação; volta a Entrar com o separador do perfil que saiu | idem | idem |
 
 ## Ecrãs
 

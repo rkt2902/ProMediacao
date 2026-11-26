@@ -103,10 +103,7 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<void> requestClientLink(String email) async {
     try {
-      await _client.functions.invoke(
-        'resend-request',
-        body: {'email': email},
-      );
+      await _client.functions.invoke('resend-request', body: {'email': email});
     } on Object catch (e) {
       throw _map(e);
     }

@@ -4,6 +4,7 @@ import '../../../app/app_scope.dart';
 import '../../../core/design/tokens.dart';
 import '../../../core/design/typography.dart';
 import '../../../core/widgets/widgets.dart';
+import '../application/client_link_controller.dart';
 import '../application/validators.dart';
 import '../domain/auth_models.dart';
 import 'auth_copy.dart';
@@ -65,11 +66,11 @@ class _ClientLinkFormState extends State<ClientLinkForm> {
     );
   }
 
-  Widget _sent(dynamic link) {
+  Widget _sent(ClientLinkController link) {
     final locked = link.remaining > 0;
     return SentNotice(
       before: AuthCopy.sentBefore,
-      emphasis: link.email as String,
+      emphasis: link.email,
       after: AuthCopy.sentAfter,
       children: [
         const SizedBox(height: AppSpace.s8),
@@ -84,12 +85,12 @@ class _ClientLinkFormState extends State<ClientLinkForm> {
                 label: AuthCopy.sendAgain,
                 onPressed: locked ? null : () => link.send(link.email),
                 disabledReason: locked
-                    ? AuthCopy.waitToResend(link.remaining as int)
+                    ? AuthCopy.waitToResend(link.remaining)
                     : null,
               ),
               if (locked)
                 Text(
-                  AuthCopy.waitToResend(link.remaining as int),
+                  AuthCopy.waitToResend(link.remaining),
                   style: AppType.corpoPequeno.copyWith(
                     color: AppColors.tintaMedia,
                   ),
@@ -105,10 +106,10 @@ class _ClientLinkFormState extends State<ClientLinkForm> {
     );
   }
 
-  Widget _form(dynamic link, {required bool online}) {
+  Widget _form(ClientLinkController link, {required bool online}) {
     final sending = link.status == ClientLinkStatus.sending;
     final failed = link.status == ClientLinkStatus.failed;
-    final blocked = !(link.canSend(_email.text) as bool);
+    final blocked = !(link.canSend(_email.text));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -147,7 +148,9 @@ class _ClientLinkFormState extends State<ClientLinkForm> {
           principal: true,
           expand: true,
           onPressed: online && !blocked ? _submit : null,
-          disabledReason: online ? null : AuthCopy.offlineReason,
+          disabledReason: !online
+              ? AuthCopy.offlineReason
+              : (blocked ? AuthCopy.waitToResend(link.remaining) : null),
         ),
         if (widget.footer != null) ...[
           const SizedBox(height: AppSpace.s16),

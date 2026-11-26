@@ -9,9 +9,11 @@ abstract final class AuthCopy {
       'palavra-passe.';
   static const clientSend = 'Enviar link de acesso';
   static const sending = 'A enviar…';
-  static const sentBefore = 'Se este email tiver acesso ao ProDossier, o link '
+  static const sentBefore =
+      'Se este email tiver acesso ao ProDossier, o link '
       'chega a ';
-  static const sentAfter = ' dentro de alguns minutos. Abra-o neste '
+  static const sentAfter =
+      ' dentro de alguns minutos. Abra-o neste '
       'dispositivo. Veja também a pasta de spam.';
   static const sendAgain = 'Enviar outra vez';
   static const otherEmail = 'Usar outro email';
@@ -47,7 +49,8 @@ abstract final class AuthCopy {
   static const genericError = 'Não foi possível concluir. Tente de novo.';
   static const offlineEntry =
       'Sem ligação à internet. Precisa de ligação para entrar.';
-  static const offlineLink = 'Sem ligação à internet. Precisa de ligação para '
+  static const offlineLink =
+      'Sem ligação à internet. Precisa de ligação para '
       'abrir o link.';
   static const offlineReason = 'Precisa de ligação à internet.';
 

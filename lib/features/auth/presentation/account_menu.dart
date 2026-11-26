@@ -30,7 +30,10 @@ class AccountMenu extends StatelessWidget {
           ),
           const SizedBox(width: AppSpace.s16),
         ],
-        TextAction(label: AuthCopy.signOut, onPressed: services.session.signOut),
+        TextAction(
+          label: AuthCopy.signOut,
+          onPressed: services.session.signOut,
+        ),
       ],
     );
   }
