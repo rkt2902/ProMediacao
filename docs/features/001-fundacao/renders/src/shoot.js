@@ -20,8 +20,9 @@ const ALL = ['telemovel', 'tablet', 'desktop'];
 
 // [nome do ficheiro, página, tamanhos, página inteira?]
 const SHOTS = [
-  ['entrar-cliente', 'entrar.html?separador=cliente', ALL],
-  ['entrar-escritorio', 'entrar.html?separador=escritorio', ALL],
+  ['entrar', 'entrar.html', ALL],
+  ['entrar-link-enviado', 'entrar.html?estado=enviado', ALL],
+  ['criar-palavra-passe', 'criar-palavra-passe.html', ALL],
   ['recuperar-palavra-passe', 'recuperar.html', ALL],
   ['link-expirado', 'link-expirado.html', ALL],
   ['link-expirado-enviado', 'link-expirado.html?estado=enviado', ALL],
@@ -29,6 +30,7 @@ const SHOTS = [
   ['consentimento-completo', 'consentimento.html', ['telemovel'], true],
   ['com-quem-partilho', 'com-quem-partilho.html', ALL],
   ['com-quem-partilho-completo', 'com-quem-partilho.html', ['telemovel'], true],
+  ['conta-cliente', 'com-quem-partilho.html#conta', ALL],
   ['retirar-acesso', 'com-quem-partilho.html?folha=retirar', ALL],
   ['clientes', 'clientes.html', ALL],
   ['clientes-completo', 'clientes.html', ['telemovel'], true],
@@ -65,6 +67,8 @@ function serve() {
       await tab.goto(`http://127.0.0.1:${port}${BASE}${page}`);
       await tab.evaluate(() => document.fonts.ready);
       const fonts = await tab.evaluate(() => [...document.fonts].filter((f) => f.status === 'error').map((f) => f.family));
+      // Âncora no endereço: mostra essa secção no topo da janela.
+      await tab.evaluate(() => { if (location.hash) document.querySelector(location.hash).scrollIntoView(); });
       if (fonts.length) console.warn(`  fontes com erro em ${name}: ${fonts.join(', ')}`);
       // Página inteira: a barra fixa aparece no fim, onde fica ao acabar o scroll.
       if (full) await tab.addStyleTag({ content: '.barra-fixa { position: static; }' });

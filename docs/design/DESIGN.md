@@ -28,7 +28,7 @@ Todos entram pelo navegador, sem instalar nada. Clientes e mediadores usam telem
 O que torna a app reconhecível num screenshot sem logótipo:
 
 1. **Papel e tinta.** Fundo cor de papel (`papel`), texto quase preto (`tinta`), e a ação principal é um botão cheio a tinta. Não há "cor de marca" a pintar botões: a autoridade vem do contraste, não do azul.
-2. **O separador de pasta.** O contexto do ecrã (o escritório, ou "Os meus dados" no cliente) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver.
+2. **O separador de pasta.** O contexto do ecrã (o escritório, "Os meus dados" no cliente, ou "Acesso" antes de haver sessão) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. Por baixo, uma régua `regua` corre a largura da moldura (1040 em largo), mesmo quando a coluna é mais estreita: é a borda da pasta. É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver.
 3. **Serifa nos títulos e nos números, sans legível no resto.** Títulos, nomes de escritórios e contagens em Source Serif 4; interface e corpo em Atkinson Hyperlegible Next; datas, versões e registos em Atkinson Hyperlegible Mono.
 4. **O carimbo.** Estados (Ativo, Pendente, Recusado, Retirado) são etiquetas retangulares de canto quase reto (`AppRadius.carimbo`), com ícone + palavra, contorno de 1.5 na cor do estado e fundo `folha`. Parecem carimbos num processo, não "pills" de app.
 5. **Réguas em vez de cartões.** Listas separadas por linhas finas (`regua`), sem sombras. Só há superfície elevada (`folha`) em formulários, folhas laterais e diálogos.
@@ -96,7 +96,7 @@ A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima di
 - `AppRadius`: `carimbo`=3, `controlo`=6 (botões, campos), `superficie`=10 (folhas, diálogos), `separador`=10 só nos cantos superiores. Listas e linhas não têm raio.
 - `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2, `focoAfastamento`=2 (distância entre o controlo e o anel de foco).
 - `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente em todos os tamanhos; de mediador e admin em compacto), `campo`=52, `larguraLeitura`=640 (texto de consentimento, listas de leitura do cliente, diálogo só de leitura), `larguraLista`=1040 (também largura máxima da moldura em largo), `folhaLateral`=440, `separadorAltura`=40, `icone`=24 (ícones de interface: resumo do consentimento, spinner), `iconePequeno`=18 (ícones dentro de carimbos, campos, avisos e botões), `dialogo`=480 (diálogo de confirmação em médio/largo).
-- `AppSize` (proposto, para a feature 001): `larguraFormulario`=400 (coluna de Entrar, recuperar/definir palavra-passe, link expirado; largura máxima do separador de pasta em médio/largo), `textoMinimo`=240 (largura mínima da zona de texto de uma linha antes de passar ao layout seguinte, mais empilhado), `linhaTabela`=72 (altura mínima de linha de tabela), `colunaEstado`=140, `colunaData`=248 (também a coluna Estado + data da tabela em médio; revisto de 200 nos renders da tarefa 4b: "Recusado a 20 nov 2026, 09:12" em `registo` mede 238), `colunaAcao`=160.
+- `AppSize` (proposto, para a feature 001): `larguraFormulario`=400 (coluna de Entrar, recuperar/definir/criar palavra-passe, link expirado; largura máxima do separador de pasta em médio/largo), `textoMinimo`=240 (largura mínima da zona de texto de uma linha antes de passar ao layout seguinte, mais empilhado), `linhaTabela`=72 (altura mínima de linha de tabela), `colunaEstado`=140, `colunaData`=248 (também a coluna Estado + data da tabela em médio; revisto de 200 nos renders da tarefa 4b: "Recusado a 20 nov 2026, 09:12" em `registo` mede 238), `colunaAcao`=160.
 - `AppBreakpoints`: `compacto` < 640 (telemóvel), `medio` 640 a 1100 (tablet), `largo` > 1100 (desktop). 640 exato já é médio (a decisão diz "até 640"; 1 px sem efeito prático). Margens laterais: 16 / 32 / 48. Proposto: `alturaBaixa`=480 (altura da janela abaixo da qual as barras fixas encolhem: telemóvel deitado).
 - Sombras: nenhuma, exceto diálogos, folhas inferiores e folhas laterais (`AppShadow.superficie`: deslocamento 0 8, desfoque 24, cor `sombra`). Cartões com elevação estão proibidos.
 
@@ -121,7 +121,7 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 
 A criar em `lib/core/widgets/` na feature 001:
 
-- `FolderTab` (separador de pasta com o contexto), `FolderTabs` (dois ou mais separadores escolhíveis, 50/50, `alvoMinimo` 48: o ativo em `cartolina`, os inativos em `papel` com contorno `regua` e texto `tintaMedia`; usado em Entrar para "Sou cliente" e "Trabalho num escritório"), `PageFrame` (papel + separador + margens por breakpoint + largura máxima).
+- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + separador + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
@@ -135,7 +135,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 
 - **Três composições explícitas por ecrã** (compacto, médio, largo), escritas no `03-design.md` da feature com: colunas e larguras máximas, o que muda de sítio, alvos, rato, teclado e foco, conta e navegação, folhas e diálogos. Nenhum ecrã de cliente ou mediador tem um tamanho "primeiro"; não há "versão desktop esticada" nem "versão telemóvel encolhida".
 - **Largura lógica da janela decide**, não o tipo de aparelho: zoom de 200% num desktop dá compacto; tablet deitado dá largo. Largura mínima suportada 320 sem scroll horizontal.
-- **Moldura:** em largo, centrada com máximo `larguraLista`; dentro dela tudo alinha à esquerda (nada de colunas centradas). Colunas de leitura e formulários mantêm a sua largura máxima (`larguraLeitura`, `larguraFormulario`) e deixam o resto em `papel` vazio, sem encher com decoração.
+- **Moldura:** em largo, centrada com máximo `larguraLista`; dentro dela tudo alinha à esquerda (nada de colunas centradas), incluindo os formulários de entrada (nunca deslocados para uma fração da janela). Colunas de leitura e formulários mantêm a sua largura máxima (`larguraLeitura`, `larguraFormulario`) e deixam o resto em `papel` vazio, sem encher com decoração.
 - **Layout por espaço disponível:** linhas e tabelas descem para uma forma mais empilhada quando a zona de texto fica abaixo de `textoMinimo`, seja por breakpoint, escala de texto ou zoom.
 - **Alvos não encolhem em largo** (há toque em tablets deitados e portáteis táteis): 48 mínimo em todos os tamanhos.
 - **Rato:** cursor de clique e hover só como reforço; nenhuma informação só em hover. Tooltips abrem também com foco e toque longo. Razão de botão desativado sempre escrita, não só em tooltip.
@@ -160,6 +160,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Ícones: Material Symbols Outlined (já incluídos no Flutter), traço uniforme, sempre com etiqueta visível quando o significado não é óbvio. Sem emoji.
 - Nenhum `AppBar`, `Card`, `FloatingActionButton` ou `ListTile` com estilo por defeito a definir o aspeto de um ecrã.
 - Admin: nunca mostrar nome nem email de pessoas, nem em tooltips.
+- Entrada: um só formulário (email + palavra-passe) para todos os perfis; o link mágico é alternativa do cliente, com `SecondaryButton` à largura da coluna e "Só para clientes." escrito, nunca um link pequeno. Convites opcionais (ex.: criar palavra-passe) têm "Agora não" como `SecondaryButton` do mesmo tamanho, e nunca aparecem antes de uma decisão de consentimento.
 
 ## Referências
 

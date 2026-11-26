@@ -12,10 +12,12 @@ Referências visuais de cada ecrã, **antes** da implementação das tarefas 5, 
 
 | Ecrã | Ficheiros | O que mostra |
 | --- | --- | --- |
-| Entrar, "Sou cliente" | `entrar-cliente-{telemovel,tablet,desktop}.png` | Separadores 50/50, email preenchido, "Enviar link de acesso" 56 |
-| Entrar, "Trabalho num escritório" | `entrar-escritorio-{telemovel,tablet,desktop}.png` | Separador a 2 linhas no telemóvel, palavra-passe com "Mostrar", "Esqueci-me da palavra-passe" |
-| Recuperar palavra-passe | `recuperar-palavra-passe-{telemovel,tablet,desktop}.png` | Separador fixo "Trabalho num escritório", um campo, "Voltar a entrar" |
-| Link expirado | `link-expirado-{telemovel,tablet,desktop}.png` | Explicação, campo de email, "Enviar link novo", alternativa pelo mediador |
+| Entrar (todos os perfis) | `entrar-{telemovel,tablet,desktop}.png` | Separador fixo "Acesso", email + palavra-passe, "Entrar" 56, "Esqueci-me da palavra-passe", régua e alternativa "Receber link de acesso por email" (contorno, 56) |
+| Entrar, depois de pedir o link | `entrar-link-enviado-{telemovel,tablet,desktop}.png` | Confirmação (`realce`), "Enviar outra vez" bloqueado com a razão, "Usar outro email", "Entrar com palavra-passe" |
+| Criar palavra-passe (cliente) | `criar-palavra-passe-{telemovel,tablet,desktop}.png` | Depois da entrada por link: email só de leitura, campo com "Mostrar", regra cumprida, "Guardar palavra-passe" e "Agora não" com o mesmo tamanho |
+| A sua conta (cliente) | `conta-cliente-{telemovel,tablet,desktop}.png` | Fim de "Com quem partilho": email e "Palavra-passe: Ainda não criou" com "Criar palavra-passe" |
+| Recuperar palavra-passe | `recuperar-palavra-passe-{telemovel,tablet,desktop}.png` | Separador fixo "Acesso" (todos os perfis), um campo, "Voltar a entrar" |
+| Link expirado | `link-expirado-{telemovel,tablet,desktop}.png` | Separador "Acesso", explicação, campo de email, "Enviar link novo", "Já tem palavra-passe? Entrar com ela", alternativa pelo mediador |
 | Link expirado, depois de enviar | `link-expirado-enviado-{telemovel,tablet,desktop}.png` | Confirmação (`realce`), "Enviar outra vez" bloqueado com a razão escrita, "Usar outro email" |
 | Consentimento | `consentimento-{telemovel,tablet,desktop}.png`, `consentimento-completo-telemovel.png` | Quem pede, resumo em 3 réguas, texto v0-rascunho, barra fixa Recusar/Aceitar com o mesmo peso |
 | Com quem partilho | `com-quem-partilho-{telemovel,tablet,desktop}.png`, `com-quem-partilho-completo-telemovel.png` | Bloco pendente (nome longo), 1 ativo com "Retirar acesso" e "Ler o texto aceite", 1 retirado e 1 recusado sem ações |
@@ -27,8 +29,9 @@ Referências visuais de cada ecrã, **antes** da implementação das tarefas 5, 
 
 ## Decisões para o Henrique olhar
 
-1. **Régua do separador à largura da moldura.** Em todos os ecrãs a linha por baixo do separador de pasta corre a moldura toda (1040 em desktop), mesmo quando a coluna é de 400 ou 640: é a "borda da pasta". O código atual (`PageFrame`, `FolderTabs`) desenha-a só à largura da coluna. Recomendo a versão dos renders.
-2. **Formulários de entrada à esquerda da moldura em desktop**, como diz o `03-design.md`, com 640 de papel vazio à direita. O `AuthLayout` já implementado desloca a coluna para 1/3 da janela; uma das duas tem de mudar (recomendo os renders: alinha com o separador e com os outros ecrãs).
+0. **Revisão de 2026-11-26 (palavra-passe do cliente):** Entrar deixou de ter os separadores "Sou cliente" / "Trabalho num escritório" e passou a um só formulário com a alternativa por link; justificação no `03-design.md`, ecrã 1.
+1. **Régua do separador à largura da moldura.** Assumida (recomendação aceite por omissão a 2026-11-26): o `PageFrame` do código tem de a desenhar à largura da moldura, não da coluna.
+2. **Formulários de entrada à esquerda da moldura em desktop.** Assumida a 2026-11-26: o `AuthLayout` deixa de deslocar a coluna para 1/3 da janela.
 3. **Consentimento: "Recusar" e "Aceitar" com a mesma largura e a mesma altura**, contorno contra cheio. O "não" não é um link. Ver se o contraste de peso entre contorno e cheio ainda parece "empurrar" para o sim.
 4. **Bloco pendente em `realce`** é a única superfície de cor no ecrã do cliente, para ser a primeira coisa vista.
 5. **Coluna Data passou de 200 para 248** (`AppSize.colunaData`, alterado no DESIGN.md): "Recusado a 20 nov 2026, 09:12" em mono 13 mede 238 e partia em 2 linhas.
@@ -39,4 +42,4 @@ Referências visuais de cada ecrã, **antes** da implementação das tarefas 5, 
 
 ## Não incluído
 
-Definir palavra-passe, a validar (skeleton), offline, erros, "Ler o texto aceite", resultado depois de aceitar/recusar, criar escritório e convidar mediador, escala de texto 1.3 e 320 de largura. Estes ficam para os goldens da tarefa 9 ou para uma segunda volta, se o Henrique os quiser ver antes.
+Definir palavra-passe (recuperação), Alterar palavra-passe, erro de credenciais com a dica do link, a validar (skeleton), offline, erros, "Ler o texto aceite", resultado depois de aceitar/recusar, criar escritório e convidar mediador, escala de texto 1.3 e 320 de largura. Estes ficam para os goldens da tarefa 9 ou para uma segunda volta, se o Henrique os quiser ver antes.
