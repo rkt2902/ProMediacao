@@ -89,8 +89,8 @@ body {
 /* PageFrame: moldura centrada de 1040, margens 16/32/48 */
 .frame { width: 100%; padding: 0 var(--margem); }
 .frame > .in { max-width: var(--larguraLista); margin: 0 auto; }
-.top { display: flex; align-items: center; justify-content: space-between; padding-top: var(--s24); padding-bottom: var(--s16); min-height: 48px; box-sizing: content-box; }
-@media (max-width: 639px) { .top { padding-top: var(--s16); } }
+.top { display: flex; align-items: center; justify-content: space-between; padding-top: var(--s16); padding-bottom: 0; min-height: var(--alvoMinimo); box-sizing: content-box; }
+/* O separador cola-se à linha do topo: nenhum espaço extra entre os dois (revisão de 2026-11-26). */
 .brand { font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.2px; color: var(--tintaMedia); }
 .conta { display: flex; align-items: center; gap: var(--s16); min-width: 0; }
 .conta .nome { color: var(--tintaMedia); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -158,10 +158,8 @@ main.frame { flex: 1; padding-bottom: var(--s48); }
 /* Espaços utilitários (só tokens) */
 .mt4 { margin-top: var(--s4); } .mt8 { margin-top: var(--s8); } .mt12 { margin-top: var(--s12); } .mt16 { margin-top: var(--s16); }
 .mt24 { margin-top: var(--s24); } .mt32 { margin-top: var(--s32); } .mt48 { margin-top: var(--s48); } .mt72 { margin-top: var(--s72); }
-/* distância do topo nos ecrãs de formulário: 32 / 48 / 72 */
-.topo-form { margin-top: var(--s72); }
-@media (max-width: 1100px) { .topo-form { margin-top: var(--s48); } }
-@media (max-width: 639px) { .topo-form { margin-top: var(--s32); } }
+/* Ecrãs de formulário: mesma distância ao topo que os outros (separador colado à linha do topo). */
+.topo-form { margin-top: 0; }
 .stack16 > * + * { margin-top: var(--s16); }
 
 /* Véu, diálogo, folhas */

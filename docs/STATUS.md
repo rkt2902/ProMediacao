@@ -37,6 +37,7 @@ Bloqueia a continuação da 001 (por ordem):
 - [ ] 6. Reconectar o MCP do Supabase (token em Network secrets, `docs/cloud/CLOUD.md`); sem isto o qa dá queries para correres tu.
 
 Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de publicar:
+- [ ] 6b. No painel do Supabase (Authentication > Providers/Policies), definir palavra-passe mínima de 10 caracteres com maiúscula, minúscula, número e símbolo (e ativar a verificação de palavras-passe comprometidas, se o plano o permitir).
 - [ ] 7. Escolher o fornecedor de email (SMTP) para os links mágicos.
 - [ ] 8. Escolher o jurista e entregar `docs/business/research/08-juridico.md`.
 - [ ] 9. Verificar a marca ProDossier no INPI/TMview (classes 9, 42, 35) e os domínios .pt/.com.

@@ -29,6 +29,7 @@ Referências visuais de cada ecrã, **antes** da implementação das tarefas 5, 
 
 ## Decisões para o Henrique olhar
 
+0a. **Ritmo vertical (2026-11-26, pedido do Henrique):** o separador de pasta cola-se à linha do topo (`s16` em cima, 48 de altura, 0 em baixo) em todos os ecrãs; sai o vazio extra de 32 / 48 / 72 acima dos formulários; "Sem acesso" passa a `s32` de "Com acesso". Todos os PNG regenerados.
 0. **Revisão de 2026-11-26 (palavra-passe do cliente):** Entrar deixou de ter os separadores "Sou cliente" / "Trabalho num escritório" e passou a um só formulário com a alternativa por link; justificação no `03-design.md`, ecrã 1.
 1. **Régua do separador à largura da moldura.** Assumida (recomendação aceite por omissão a 2026-11-26): o `PageFrame` do código tem de a desenhar à largura da moldura, não da coluna.
 2. **Formulários de entrada à esquerda da moldura em desktop.** Assumida a 2026-11-26: o `AuthLayout` deixa de deslocar a coluna para 1/3 da janela.

@@ -92,7 +92,7 @@ A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima di
 
 ### Espaço, raios, traços e tamanhos
 
-- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 48 entre grupos, 72 acima do título em largo.
+- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 32 da régua do separador ao título, 48 entre grupos. Entre a linha do topo e o separador: 0 (o separador cola-se à linha do topo, que tem `s16` em cima e 48 de altura). `s72` fica sem uso desde 2026-11-26 (era o vazio acima dos formulários em largo, rejeitado).
 - `AppRadius`: `carimbo`=3, `controlo`=6 (botões, campos), `superficie`=10 (folhas, diálogos), `separador`=10 só nos cantos superiores. Listas e linhas não têm raio.
 - `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2, `focoAfastamento`=2 (distância entre o controlo e o anel de foco).
 - `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente em todos os tamanhos; de mediador e admin em compacto), `campo`=52, `larguraLeitura`=640 (texto de consentimento, listas de leitura do cliente, diálogo só de leitura), `larguraLista`=1040 (também largura máxima da moldura em largo), `folhaLateral`=440, `separadorAltura`=40, `icone`=24 (ícones de interface: resumo do consentimento, spinner), `iconePequeno`=18 (ícones dentro de carimbos, campos, avisos e botões), `dialogo`=480 (diálogo de confirmação em médio/largo).
@@ -121,7 +121,7 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 
 A criar em `lib/core/widgets/` na feature 001:
 
-- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + separador + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
+- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + linha do topo com `s16` em cima e 0 em baixo + separador colado + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
@@ -175,5 +175,6 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 
 | Data | O quê | Porquê |
 | --- | --- | --- |
+| 2026-11-26 | Vazio entre a linha do topo (marca + conta) e o separador de pasta: 24 + 16 nos ecrãs de lista e mais 32 / 48 / 72 nos formulários de entrada | Demasiado espaço vertical; o separador tem de ficar colado ao cabeçalho, como uma pasta |
 
 (Só rejeições do Henrique em gates. As direções descartadas pelo designer ficam no `03-design.md` de cada feature.)
