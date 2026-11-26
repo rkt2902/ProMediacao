@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clientes · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .cabeca { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s24); }
+  @media (max-width: 639px) { .cabeca .btn { display: none; } }
+
+  /* Largo: 4 colunas (Cliente flexível, Estado 140, Data 200, Ação 160) */
+  .tabela .lin { display: grid; grid-template-columns: minmax(0, 1fr) var(--colunaEstado) var(--colunaData) var(--colunaAcao); align-items: center; min-height: var(--linhaTabela); border-bottom: var(--fino) solid var(--regua); column-gap: var(--s16); padding: var(--s8) 0; }
+  .tabela .cab { min-height: 0; padding: 0 0 var(--s8); align-items: end; }
+  .tabela .ed { display: contents; }
+  .tabela .acao-cel { justify-self: end; text-align: right; }
+  .tabela .um { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sem-acao { color: transparent; }
+  /* Médio: Estado + data numa coluna de 200 */
+  @media (max-width: 1100px) {
+    .tabela .lin { grid-template-columns: minmax(0, 1fr) var(--colunaData) var(--colunaAcao); }
+    .tabela .ed { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s4); }
+    .tabela .cab .h-data { display: none; }
+  }
+  /* Compacto: lista empilhada, sem cabeçalhos */
+  @media (max-width: 639px) {
+    .tabela .lin.cab { display: none; }
+    .tabela { border-top: var(--fino) solid var(--regua); }
+    .tabela .lin { display: block; padding: var(--s16) 0; }
+    .tabela .um { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .tabela .email { overflow-wrap: anywhere; }
+    .tabela .ed { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: var(--s12); row-gap: var(--s4); margin-top: var(--s8); }
+    .tabela .acao-cel { justify-self: start; text-align: left; margin-top: var(--s8); }
+    .tabela .acao-cel:empty { display: none; }
+    .tabela .acao-cel .acao { display: flex; width: 100%; }
+  }
+  .espera { display: flex; flex-direction: column; align-items: flex-end; }
+  @media (max-width: 639px) { .espera { align-items: flex-start; min-height: var(--alvoMinimo); justify-content: center; } }
+
+  [data-estado="vazio"] .so-lista, [data-estado="lista"] .so-vazio { display: none; }
+  [data-folha="nenhuma"] .folha, [data-folha="nenhuma"] .veu { display: none; }
+  @media (max-width: 639px) {
+    [data-folha="criar"] main.lista-pagina, [data-folha="criar"] .veu, [data-folha="criar"] .folha-lateral { display: none; }
+  }
+  .form-pagina { display: none; }
+  @media (max-width: 639px) { [data-folha="criar"] .form-pagina { display: block; } }
+</style>
+</head>
+<body data-estado="lista" data-folha="nenhuma">
+<script>
+  const q = new URLSearchParams(location.search);
+  document.body.dataset.estado = q.get('estado') || 'lista';
+  document.body.dataset.folha = q.get('folha') || 'nenhuma';
+</script>
+<div class="frame"><div class="in">
+  <header class="top"><span class="brand">ProDossier</span><span class="conta"><span class="rotulo nome">Ana Martins</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></span></header>
+</div></div>
+
+<main class="frame lista-pagina"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div></div>
+  <div class="cabeca mt32">
+    <div>
+      <h1 class="titulo">Clientes</h1>
+      <p class="registo tenue mt4 so-lista">12 clientes · 3 pendentes · 1 recusado</p>
+    </div>
+    <div class="btn cheio so-lista">Criar cliente</div>
+  </div>
+  <div class="btn cheio principal largo mt16 so-compacto so-lista">Criar cliente</div>
+
+  <div class="tabela mt32 so-lista">
+    <div class="lin cab rotulo media">
+      <span>Cliente</span><span>Estado</span><span class="h-data">Data</span><span aria-label="Ação"></span>
+    </div>
+
+    <div class="lin">
+      <div><p class="corpoForte um">João Pedro Albuquerque de Vasconcelos Sampaio</p><p class="corpoPequeno media um email">joao.pedro.albuquerque.vasconcelos@correio-exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span></span><span class="registo tenue">Enviado a 26 nov 2026, 15:04</span></div>
+      <div class="acao-cel"><div class="espera"><span class="acao off"><span class="t">Reenviar pedido</span></span><span class="razao">Pode reenviar às 15:05</span></div></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Construções Teixeira &amp; Irmão, Unipessoal Lda.</p><p class="corpoPequeno media um email">geral@construcoes-teixeira-exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span></span><span class="registo tenue">Enviado a 25 nov 2026, 15:04</span></div>
+      <div class="acao-cel"><span class="acao"><span class="t">Reenviar pedido</span></span></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Luís Almeida (exemplo)</p><p class="corpoPequeno media um email">luis.almeida@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span></span><span class="registo tenue">Enviado a 24 nov 2026, 18:30</span></div>
+      <div class="acao-cel"><span class="acao"><span class="t">Reenviar pedido</span></span></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Rita Fonseca (exemplo)</p><p class="corpoPequeno media um email">rita.fonseca@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo inativo"><span class="ic">&#xe0e1;</span>Recusado</span></span><span class="registo tenue">Recusado a 20 nov 2026, 09:12</span></div>
+      <div class="acao-cel"></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Maria do Carmo Figueiredo</p><p class="corpoPequeno media um email">maria.figueiredo@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span></span><span class="registo tenue">Desde 12 nov 2026</span></div>
+      <div class="acao-cel"></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Paulo Santos (exemplo)</p><p class="corpoPequeno media um email">paulo.santos@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span></span><span class="registo tenue">Desde 10 nov 2026</span></div>
+      <div class="acao-cel"></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Café Central Exemplo, Lda.</p><p class="corpoPequeno media um email">cafe.central@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span></span><span class="registo tenue">Desde 3 nov 2026</span></div>
+      <div class="acao-cel"></div>
+    </div>
+    <div class="lin">
+      <div><p class="corpoForte um">Teresa Moura (exemplo)</p><p class="corpoPequeno media um email">teresa.moura@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span></span><span class="registo tenue">Desde 28 out 2026</span></div>
+      <div class="acao-cel"></div>
+    </div>
+  </div>
+  <div class="btn contorno mt24 so-lista">Mostrar mais 25</div>
+
+  <section class="so-vazio mt48 col-leitura">
+    <h2 class="subtitulo">Ainda não tem clientes</h2>
+    <p class="corpo mt8">Crie o primeiro cliente. Ele recebe um pedido para aceitar a partilha dos dados com a Ribeira Seguros.</p>
+    <div class="btn cheio mt24 nao-compacto">Criar cliente</div>
+    <div class="btn cheio principal largo mt24 so-compacto">Criar cliente</div>
+  </section>
+</div></main>
+
+<!-- Médio e largo: folha lateral de 440 -->
+<div class="veu"></div>
+<aside class="folha folha-lateral superficie" role="dialog" aria-modal="true" aria-labelledby="t-criar">
+  <div class="corpo-folha">
+    <h2 class="subtitulo" id="t-criar">Criar cliente</h2>
+    <p class="corpoPequeno media mt8">O cliente recebe o pedido com o nome da Ribeira Seguros e o seu: por email ou, se já usar o ProDossier, dentro da app. Só vê os dados dele depois de ele aceitar.</p>
+    <div class="stack16 mt24">
+      <div class="campo"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
+      <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+    </div>
+    <div class="aviso mt24"><div class="linha"><span class="ic g">&#xe33d;</span><p class="corpo">Até o cliente aceitar, vê apenas o nome, o email e o estado do pedido.</p></div></div>
+  </div>
+  <div class="barra">
+    <div class="btn contorno">Cancelar</div>
+    <div class="btn cheio">Criar e enviar pedido</div>
+  </div>
+</aside>
+
+<!-- Compacto: ecrã inteiro, botões no fluxo -->
+<main class="frame form-pagina"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div></div>
+  <h1 class="titulo mt32">Criar cliente</h1>
+  <p class="corpoPequeno media mt8">O cliente recebe o pedido com o nome da Ribeira Seguros e o seu: por email ou, se já usar o ProDossier, dentro da app. Só vê os dados dele depois de ele aceitar.</p>
+  <div class="stack16 mt24">
+    <div class="campo"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
+    <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+  </div>
+  <div class="aviso mt24"><div class="linha"><span class="ic g">&#xe33d;</span><p class="corpo">Até o cliente aceitar, vê apenas o nome, o email e o estado do pedido.</p></div></div>
+  <div class="btn cheio principal largo mt24">Criar e enviar pedido</div>
+  <div class="btn contorno principal largo mt12">Cancelar</div>
+</div></main>
+</body>
+</html>
