@@ -41,5 +41,10 @@ O detalhe fica no ficheiro do pacote, não no resumo.
 - Numa tarefa, nenhum ficheiro tem dois donos.
 - Os agentes não fazem perguntas ao Henrique: escrevem a dúvida em DECISÕES EM ABERTO e o lead junta tudo no gate seguinte.
 
+## Fecho de marco (regra do Henrique)
+- Quando uma feature, marco ou fase termina, paras de produzir nesse chat. Antes de parar: atualiza `docs/STATUS.md` (o que está feito, o que está em curso, gates aprovados e pendentes, decisões em aberto, bugs, e os próximos passos por ordem, com o comando ou ficheiro exato para retomar), regista decisões novas em `docs/decisions.md`, faz commit e push.
+- Depois dás um aviso curto ao Henrique: o marco acabou, continuar num chat novo (`/clear` ou sessão nova), e onde está o ponto de retoma. Não começas a fase seguinte no mesmo chat.
+- Um chat novo tem de conseguir continuar perfeitamente só com `CLAUDE.md`, `docs/STATUS.md` e `docs/decisions.md`: nada de importante fica só na conversa.
+
 ## Compact instructions
 Ao compactar, preserva: feature atual e fase, gates aprovados, decisões tomadas, ficheiros do pacote e bugs em aberto. Descarta outputs de comandos e leituras de ficheiros.

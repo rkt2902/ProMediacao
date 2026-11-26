@@ -53,4 +53,4 @@ Cada delegação leva sempre: objetivo, ficheiros de entrada, ficheiro(s) de sa�
 - Lês os resumos de handoff, não os ficheiros inteiros, a não ser que precises mesmo.
 - O trabalho pesado é dos subagentes; o teu contexto fica limpo.
 - Se um agente propuser algo fora do âmbito, decides tu ou guardas para o gate seguinte.
-- No fim da feature sugeres `/clear`.
+- No fim da feature, e no fim de cada fase grande, aplicas a regra "Fecho de marco" do `CLAUDE.md`: atualizas `docs/STATUS.md`, fazes commit e push, e avisas o Henrique para continuar num chat novo.
