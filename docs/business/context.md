@@ -147,5 +147,5 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles. Haverá um catálogo inicial de templates da plataforma, gerido pelo admin, que cada escritório pode usar ou substituir pela sua versão.
 7. ~~Como o cliente recebe o pedido~~ **Decidido:** email com link seguro (e link copiável), pedido dentro da app, e o cliente pode pedir a vários escritórios. SMS/WhatsApp integrados fora da fase 1.
 8. ~~A validação jurídica~~ **Decidido:** parecer jurídico antes de qualquer cliente real; briefing em `docs/business/research/08-juridico.md`. Pendente: escolher o jurista.
-9. O âmbito e os documentos do módulo de empréstimos.
+9. ~~O âmbito do módulo de empréstimos~~ **Adiado:** ambição de todo o tipo de créditos; modelo de dados genérico por tipo de pedido; arranca pelo crédito habitação. Listas de documentos por definir.
 10. O piloto: com que mediadores e clientes, e quando.
