@@ -95,6 +95,22 @@ Sem marca nem linha de cabeçalho nos ecrãs com sessão: o separador é a prime
 
 As setas dos storyboards dizem a ação e a transição (tipo, duração e curva de `AppMotion`); a especificação completa está em `03-design.md`, "Transições entre ecrãs".
 
+## Marca (propostas de 2026-11-26, por escolher)
+
+Pedido do Henrique: a marca ProDossier tem de estar presente sem voltar ao cabeçalho com a marca (rejeitado) e com "Sair" na linha do separador. Três ideias, cada uma em Entrar (sem sessão) e Com quem partilho (com sessão), `-telemovel` e `-desktop`. Fonte: `src/marca-entrar.html` e `src/marca-partilho.html` com `?ideia=lombada|selo|colofao`, estilos em `src/marca.css`; gerar com `node docs/features/001-fundacao/renders/src/shoot-marca.js`. Nenhum PNG existente nem o `03-design.md`/`DESIGN.md` foram alterados.
+
+| Ideia | Ficheiros | O que muda | Racional |
+| --- | --- | --- | --- |
+| 1. Etiqueta da lombada (**recomendada**) | `marca-lombada-entrar-*`, `marca-lombada-com-quem-partilho-*` | Sem sessão, o separador mostra o wordmark em serifa ("*Pro*Dossier") em vez de "ProDossier" em `rotulo`. Com sessão, o separador passa a etiqueta de arquivo com dois campos: monograma "*p*D" (24 × 24, contorno 1.5 a `tinta`, raio `carimbo`) \| régua vertical `reguaForte` \| contexto ("Os meus dados" ou o escritório). "Sair" fica onde está. | A marca vive no único objeto decorativo que já existe, como a etiqueta impressa de uma pasta de arquivo: está em todos os ecrãs, acrescenta 53 px de largura ao separador (16 + 24 + 12 + régua) e não acrescenta nenhuma linha. |
+| 2. Selo de registo | `marca-selo-entrar-*` (estado link enviado), `marca-selo-com-quem-partilho-*` (estado acesso retirado) | Separador igual ao de hoje. Nos momentos que ficam registados (link enviado, consentimento aceite/recusado, acesso retirado) aparece um selo a tinta com contorno duplo (1.5 + 1 a 2 de afastamento), inclinado -1.5°: "PRODOSSIER" em serifa 13 maiúsculas e "REGISTADO · 26 NOV 2026, 15:02" em `registo`. | A marca aparece como quem certifica o registo: reforça a promessa de "fica registado com data e hora". Só aparece em 4 momentos, por isso nunca se torna papel de parede; mas fora deles a marca não está. |
+| 3. Colofão | `marca-colofao-entrar-*`, `marca-colofao-com-quem-partilho-*` (página inteira) | Sem sessão, o separador diz "Acesso" e a marca passa para o fim da página: régua, wordmark, uma frase ("O dossiê dos seus seguros, partilhado só com quem autorizar." / "Dossiê de Maria Figueiredo") e, com sessão, "Aberto a 12 nov 2026" em `registo`. | Acaba cada página como a última folha de um livro; dá à marca uma frase franca sobre o que a app faz. Mas em listas longas só se vê no fim do scroll (no telemóvel nunca no primeiro ecrã). |
+
+**Recomendação: 1, etiqueta da lombada**, com o selo da ideia 2 como acrescento opcional só no ecrã de "consentimento aceite" e "acesso retirado" se o Henrique quiser mais presença. A 1 é a única que põe a marca em todos os ecrãs sem acrescentar uma linha nem uma superfície, e usa a forma que já é a assinatura da app.
+
+**Wordmark (sim, precisa de tratamento próprio):** "ProDossier" em Source Serif 4, 19 / 24, espaçamento -0.2; "Pro" em itálico 400 a `tintaMedia`, "Dossier" em 600 a `tinta` (contraste sobre `cartolina`: 6.5 e 12.1). O itálico lê-se como a anotação à mão numa capa impressa, e separa as duas palavras sem maiúscula a meio a fazer esse trabalho. Monograma derivado: "*p*D" com a mesma lógica, para onde não cabe o wordmark (separador com sessão, favicon, ícone da app, emails). Tokens a propor no `DESIGN.md` se for escolhida: `AppType.marca` (Serif 19/24, 600, -0.2) e `AppSize.monograma`=24 (= `icone`). O selo da ideia 2 precisaria ainda de `AppType.selo` (Serif 13/16, 700, +1, maiúsculas).
+
+Aplicações fora destes ecrãs, para qualquer das ideias: o mesmo wordmark no topo dos emails (convite, link de acesso) e no ecrã de carregamento inicial (wordmark sozinho sobre `papel`, sem animação), e o monograma como favicon.
+
 ## Decisões para o Henrique olhar
 
 0a. **Ritmo vertical (2026-11-26, pedido do Henrique):** o separador de pasta cola-se à linha do topo (`s16` em cima, 48 de altura, 0 em baixo) em todos os ecrãs; sai o vazio extra de 32 / 48 / 72 acima dos formulários; "Sem acesso" passa a `s32` de "Com acesso". Todos os PNG regenerados.

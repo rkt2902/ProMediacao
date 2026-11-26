@@ -17,10 +17,10 @@
 .separador.so-marca { padding: 0 var(--s16); }
 
 /* Ideia 2, selo: carimbo de registo da marca, a tinta, contorno duplo, nos momentos que ficam registados */
-.selo { display: inline-flex; flex-direction: column; align-items: flex-start; gap: var(--s4); padding: var(--s8) var(--s12); border: var(--controlo) solid var(--tinta); border-radius: var(--r-carimbo); outline: var(--fino) solid var(--tinta); outline-offset: var(--focoAf); background: var(--folha); color: var(--tinta); transform: rotate(-2deg); flex: none; }
+.selo { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0; padding: var(--s4) var(--s8); border: var(--controlo) solid var(--tinta); border-radius: var(--r-carimbo); outline: var(--fino) solid var(--tinta); outline-offset: var(--focoAf); background: var(--folha); color: var(--tinta); transform: rotate(-1.5deg); flex: none; }
 .selo .topo { display: flex; align-items: center; gap: var(--s8); }
-.selo .nome { font-family: var(--serif); font-size: 15px; line-height: 18px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
-.selo .registo { color: var(--tinta); letter-spacing: 0.4px; text-transform: uppercase; }
+.selo .nome { font-family: var(--serif); font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.selo .registo { color: var(--tinta); text-transform: uppercase; }
 .aviso.com-selo { display: flex; gap: var(--s24); align-items: center; justify-content: space-between; }
 @media (max-width: 639px) { .aviso.com-selo { flex-direction: column; align-items: flex-start; gap: var(--s16); } .aviso.com-selo .selo { margin-left: calc(var(--icone) + var(--s12)); } }
 
