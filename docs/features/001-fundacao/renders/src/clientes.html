@@ -37,7 +37,7 @@
   .espera { display: flex; flex-direction: column; align-items: flex-end; }
   @media (max-width: 639px) { .espera { align-items: flex-start; min-height: var(--alvoMinimo); justify-content: center; } }
 
-  [data-estado="vazio"] .so-lista, [data-estado="lista"] .so-vazio { display: none; }
+  [data-estado="vazio"] .so-lista, body:not([data-estado="vazio"]) .so-vazio { display: none; }
   [data-folha="nenhuma"] .folha, [data-folha="nenhuma"] .veu { display: none; }
   @media (max-width: 639px) {
     [data-folha="criar"] main.lista-pagina, [data-folha="criar"] .veu, [data-folha="criar"] .folha-lateral { display: none; }
@@ -46,33 +46,55 @@
   @media (max-width: 639px) { [data-folha="criar"] .form-pagina { display: block; } }
 </style>
 </head>
-<body data-estado="lista" data-folha="nenhuma">
-<script>
-  const q = new URLSearchParams(location.search);
-  document.body.dataset.estado = q.get('estado') || 'lista';
-  document.body.dataset.folha = q.get('folha') || 'nenhuma';
-</script>
-<div class="frame"><div class="in">
-  <header class="top"><span class="brand">ProDossier</span><span class="conta"><span class="rotulo nome">Ana Martins</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></span></header>
-</div></div>
+<!-- Estados: normal, vazio, a-carregar, erro, offline, criado, reenviado; folha=criar (com estado=validacao) -->
+<body>
+<div class="offline" data-em="offline"><div class="frame"><div class="in">
+  <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
+</div></div></div>
 
 <main class="frame lista-pagina"><div class="in">
-  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div></div>
+  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
   <div class="cabeca mt32">
     <div>
       <h1 class="titulo">Clientes</h1>
-      <p class="registo tenue mt4 so-lista">12 clientes · 3 pendentes · 1 recusado</p>
+      <p class="registo tenue mt4 so-lista" data-fora="a-carregar erro">12 clientes · 3 pendentes · 1 recusado</p>
     </div>
-    <div class="btn cheio so-lista">Criar cliente</div>
+    <div class="btn cheio so-lista" data-fora="offline">Criar cliente</div>
+    <div class="btn desativado so-lista" data-em="offline">Criar cliente</div>
   </div>
-  <div class="btn cheio principal largo mt16 so-compacto so-lista">Criar cliente</div>
+  <div class="btn cheio principal largo mt16 so-compacto so-lista" data-fora="offline">Criar cliente</div>
+  <div class="btn desativado principal largo mt16 so-compacto so-lista" data-em="offline">Criar cliente</div>
+  <p class="razao mt8" data-em="offline">Sem ligação. Criar e reenviar ficam disponíveis quando a ligação voltar.</p>
 
-  <div class="tabela mt32 so-lista">
+  <div class="aviso mt24" role="status" data-em="criado"><div class="linha"><span class="ic g">&#xe15a;</span><p class="corpo">Pedido enviado a <strong class="corpoForte">ines.carvalho@exemplo.pt</strong>. O acesso fica pendente até o cliente aceitar.</p></div></div>
+  <div class="aviso mt24" role="status" data-em="reenviado"><div class="linha"><span class="ic g">&#xe15a;</span><p class="corpo" style="overflow-wrap:anywhere">Pedido reenviado a <strong class="corpoForte">joao.pedro.albuquerque.vasconcelos@correio-exemplo.pt</strong>.</p></div></div>
+  <div class="aviso erro mt24" role="alert" data-em="erro">
+    <div class="linha"><span class="ic g">&#xe238;</span><p class="corpo">Não foi possível carregar os clientes. Tente de novo.</p></div>
+    <div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div>
+  </div>
+
+  <!-- A carregar: título e botão visíveis; 6 linhas de skeleton com as colunas da tabela -->
+  <div class="tabela mt32" data-em="a-carregar" aria-busy="true" aria-label="A carregar clientes">
+    <div class="lin cab rotulo media"><span>Cliente</span><span>Estado</span><span class="h-data">Data</span><span></span></div>
+    <div class="lin"><div><div class="esq l-corpo w60"></div><div class="esq l-peq w80 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w80"></div></div><div></div></div>
+    <div class="lin"><div><div class="esq l-corpo w50"></div><div class="esq l-peq w70 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w70"></div></div><div></div></div>
+    <div class="lin"><div><div class="esq l-corpo w70"></div><div class="esq l-peq w60 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w80"></div></div><div></div></div>
+    <div class="lin"><div><div class="esq l-corpo w40"></div><div class="esq l-peq w60 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w60"></div></div><div></div></div>
+    <div class="lin"><div><div class="esq l-corpo w60"></div><div class="esq l-peq w50 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w70"></div></div><div></div></div>
+    <div class="lin"><div><div class="esq l-corpo w50"></div><div class="esq l-peq w70 mt8"></div></div><div class="ed"><div class="esq l-carimbo"></div><div class="esq l-peq w60"></div></div><div></div></div>
+  </div>
+
+  <div class="tabela mt32 so-lista" data-fora="a-carregar erro">
     <div class="lin cab rotulo media">
       <span>Cliente</span><span>Estado</span><span class="h-data">Data</span><span aria-label="Ação"></span>
     </div>
 
-    <div class="lin">
+    <div class="lin realce-linha" data-em="criado">
+      <div><p class="corpoForte um">Inês Carvalho (exemplo)</p><p class="corpoPequeno media um email">ines.carvalho@exemplo.pt</p></div>
+      <div class="ed"><span><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span></span><span class="registo tenue">Enviado a 26 nov 2026, 15:10</span></div>
+      <div class="acao-cel"><div class="espera"><span class="acao off"><span class="t">Reenviar pedido</span></span><span class="razao">Pode reenviar às 15:11</span></div></div>
+    </div>
+    <div class="lin" data-reenviado>
       <div><p class="corpoForte um">João Pedro Albuquerque de Vasconcelos Sampaio</p><p class="corpoPequeno media um email">joao.pedro.albuquerque.vasconcelos@correio-exemplo.pt</p></div>
       <div class="ed"><span><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span></span><span class="registo tenue">Enviado a 26 nov 2026, 15:04</span></div>
       <div class="acao-cel"><div class="espera"><span class="acao off"><span class="t">Reenviar pedido</span></span><span class="razao">Pode reenviar às 15:05</span></div></div>
@@ -113,7 +135,7 @@
       <div class="acao-cel"></div>
     </div>
   </div>
-  <div class="btn contorno mt24 so-lista">Mostrar mais 25</div>
+  <div class="btn contorno mt24 so-lista" data-fora="a-carregar erro">Mostrar mais 25</div>
 
   <section class="so-vazio mt48 col-leitura">
     <h2 class="subtitulo">Ainda não tem clientes</h2>
@@ -130,8 +152,10 @@
     <h2 class="subtitulo" id="t-criar">Criar cliente</h2>
     <p class="corpoPequeno media mt8">O cliente recebe o pedido com o nome da Ribeira Seguros e o seu: por email ou, se já usar o ProDossier, dentro da app. Só vê os dados dele depois de ele aceitar.</p>
     <div class="stack16 mt24">
-      <div class="campo"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
-      <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+      <div class="campo" data-fora="validacao"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
+      <div class="campo" data-fora="validacao"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+      <div class="campo erro" data-em="validacao"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor vazio">.</span></div><p class="msg-erro"><span class="ic">&#xe238;</span><span>Escreva o nome do cliente.</span></p></div>
+      <div class="campo erro" data-em="validacao"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div><p class="msg-erro"><span class="ic">&#xe238;</span><span>Este email já é cliente da Ribeira Seguros.</span></p></div>
     </div>
     <div class="aviso mt24"><div class="linha"><span class="ic g">&#xe33d;</span><p class="corpo">Até o cliente aceitar, vê apenas o nome, o email e o estado do pedido.</p></div></div>
   </div>
@@ -143,16 +167,26 @@
 
 <!-- Compacto: ecrã inteiro, botões no fluxo -->
 <main class="frame form-pagina"><div class="in">
-  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div></div>
+  <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
   <h1 class="titulo mt32">Criar cliente</h1>
   <p class="corpoPequeno media mt8">O cliente recebe o pedido com o nome da Ribeira Seguros e o seu: por email ou, se já usar o ProDossier, dentro da app. Só vê os dados dele depois de ele aceitar.</p>
   <div class="stack16 mt24">
-    <div class="campo"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
-    <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+    <div class="campo" data-fora="validacao"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor">Maria do Carmo Figueiredo</span></div></div>
+    <div class="campo" data-fora="validacao"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div></div>
+    <div class="campo erro" data-em="validacao"><label class="rotulo">Nome completo</label><div class="caixa"><span class="valor vazio">.</span></div><p class="msg-erro"><span class="ic">&#xe238;</span><span>Escreva o nome do cliente.</span></p></div>
+    <div class="campo erro" data-em="validacao"><label class="rotulo">Email</label><div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div><p class="msg-erro"><span class="ic">&#xe238;</span><span>Este email já é cliente da Ribeira Seguros.</span></p></div>
   </div>
   <div class="aviso mt24"><div class="linha"><span class="ic g">&#xe33d;</span><p class="corpo">Até o cliente aceitar, vê apenas o nome, o email e o estado do pedido.</p></div></div>
   <div class="btn cheio principal largo mt24">Criar e enviar pedido</div>
   <div class="btn contorno principal largo mt12">Cancelar</div>
 </div></main>
+<script src="estado.js"></script>
+<script>
+  const e = document.body.dataset.estado;
+  // Offline: todos os "Reenviar pedido" desativados (a razão está escrita por baixo do botão Criar cliente).
+  if (e === 'offline') document.querySelectorAll('.tabela .acao').forEach((a) => a.classList.add('off'));
+  // Reenviado: a linha do João fica com fundo realce (o bloqueio de 60 s já aparece na célula).
+  if (e === 'reenviado') document.querySelector('[data-reenviado]').classList.add('realce-linha');
+</script>
 </body>
 </html>

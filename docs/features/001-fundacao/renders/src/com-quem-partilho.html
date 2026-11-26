@@ -28,17 +28,40 @@
   @media (max-width: 639px) { .dialogo { display: none; } }
 </style>
 </head>
-<body data-folha="nenhuma">
-<script>document.body.dataset.folha = new URLSearchParams(location.search).get('folha') || 'nenhuma';</script>
-<div class="frame"><div class="in">
-  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
-</div></div>
+<!-- Estados: normal, a-carregar, vazio, erro, offline, retirado, criada (palavra-passe criada), retirar-erro (com folha=retirar) -->
+<body>
+<div class="offline" data-em="offline"><div class="frame"><div class="in">
+  <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
+</div></div></div>
 <main class="frame"><div class="in">
-  <div class="pasta"><div class="separador rotulo">Os meus dados</div></div>
+  <div class="pasta"><div class="separador rotulo">Os meus dados</div><div class="conta"><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
   <div class="col-leitura">
     <h1 class="titulo mt32">Com quem partilho</h1>
 
-    <section class="pendentes mt24" aria-label="Pedidos à espera da sua resposta">
+    <div class="aviso mt24" role="status" data-em="retirado"><div class="linha"><span class="ic g">&#xe15a;</span><p class="corpo">Acesso retirado. A Ribeira Seguros já não vê os seus dados.</p></div></div>
+    <div class="aviso mt24" role="status" data-em="criada"><div class="linha"><span class="ic g">&#xe15a;</span><p class="corpo">Palavra-passe criada. Da próxima vez pode entrar com o seu email e esta palavra-passe.</p></div></div>
+    <div class="aviso erro mt24" role="alert" data-em="erro">
+      <div class="linha"><span class="ic g">&#xe238;</span><p class="corpo">Não foi possível carregar a lista. Tente de novo.</p></div>
+      <div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div>
+    </div>
+
+    <!-- A carregar: SkeletonRows com a forma nome + carimbo + data; o bloco pendente nunca aparece em skeleton -->
+    <div data-em="a-carregar" aria-busy="true" aria-label="A carregar">
+      <div class="esq l-corpo w60 mt24"></div>
+      <div class="esq l-peq w30 mt32"></div>
+      <div class="lista mt8">
+        <div class="linha"><div class="esq l-titulo w50"></div><div class="estado mt8"><div class="esq l-carimbo"></div><div class="esq l-peq w40"></div></div></div>
+        <div class="linha"><div class="esq l-titulo w70"></div><div class="estado mt8"><div class="esq l-carimbo"></div><div class="esq l-peq w40"></div></div></div>
+        <div class="linha"><div class="esq l-titulo w40"></div><div class="estado mt8"><div class="esq l-carimbo"></div><div class="esq l-peq w40"></div></div></div>
+      </div>
+    </div>
+
+    <section data-em="vazio" class="mt24">
+      <p class="corpoForte">Ainda não partilha dados com nenhum escritório.</p>
+      <p class="corpo media mt4">Quando um escritório lhe pedir acesso, o pedido aparece aqui.</p>
+    </section>
+
+    <section class="pendentes mt24" aria-label="Pedidos à espera da sua resposta" data-fora="a-carregar vazio erro retirado">
       <h2 class="subtitulo">À espera da sua resposta</h2>
       <p class="corpo mt4">Este escritório pede acesso aos seus dados. Nada é partilhado até responder.</p>
       <div class="lista mt16">
@@ -48,54 +71,75 @@
             <p class="corpoPequeno media">Enviado por Rui Costa, mediador</p>
             <div class="estado mt8"><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span><span class="registo tenue">Pedido a 25 nov 2026, 15:04</span></div>
           </div>
-          <div class="acoes"><div class="btn cheio principal">Responder</div></div>
+          <div class="acoes">
+            <div class="btn cheio principal" data-fora="offline">Responder</div>
+            <div class="btn desativado principal" data-em="offline">Responder</div>
+          </div>
         </div>
       </div>
     </section>
 
-    <p class="corpoForte mt48">Partilha os seus dados com 1 escritório.</p>
+    <div data-fora="a-carregar vazio erro">
+      <p class="corpoForte mt48" data-fora="retirado">Partilha os seus dados com 1 escritório.</p>
+      <p class="corpoForte mt48" data-em="retirado">Neste momento não partilha os seus dados com nenhum escritório.</p>
 
-    <h2 class="rotulo media mt32">Com acesso</h2>
-    <div class="lista mt8">
-      <div class="linha duas">
-        <div class="texto">
+      <div data-fora="retirado">
+        <h2 class="rotulo media mt32">Com acesso</h2>
+        <div class="lista mt8">
+          <div class="linha duas">
+            <div class="texto">
+              <p class="subtitulo nome2">Ribeira Seguros</p>
+              <div class="estado mt8"><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span><span class="registo tenue">Desde 12 nov 2026, 10:04</span></div>
+            </div>
+            <div class="acoes">
+              <div class="btn contorno perigo" data-fora="offline">Retirar acesso</div>
+              <div class="btn desativado" data-em="offline">Retirar acesso</div>
+              <span class="acao"><span class="t">Ler o texto aceite</span></span>
+            </div>
+          </div>
+        </div>
+        <p class="razao mt8" data-em="offline">Precisa de ligação para responder ou retirar acesso.</p>
+      </div>
+
+      <h2 class="rotulo media mt32">Sem acesso</h2>
+      <div class="lista mt8">
+        <div class="linha realce-linha" data-em="retirado">
           <p class="subtitulo nome2">Ribeira Seguros</p>
-          <div class="estado mt8"><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span><span class="registo tenue">Desde 12 nov 2026, 10:04</span></div>
+          <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe68c;</span>Retirado</span><span class="registo tenue">Retirado a 26 nov 2026, 15:02</span></div>
         </div>
-        <div class="acoes">
-          <div class="btn contorno perigo">Retirar acesso</div>
-          <span class="acao"><span class="t">Ler o texto aceite</span></span>
+        <div class="linha">
+          <p class="subtitulo nome2">Seguros Lima &amp; Viana (exemplo)</p>
+          <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe68c;</span>Retirado</span><span class="registo tenue">Retirado a 18 nov 2026, 11:20</span></div>
+        </div>
+        <div class="linha">
+          <p class="subtitulo nome2">Mediação Norte Exemplo</p>
+          <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe0e1;</span>Recusado</span><span class="registo tenue">Recusado a 20 nov 2026, 09:12</span></div>
         </div>
       </div>
+
+      <p class="corpoPequeno media mt48">Retirar é imediato e não precisa de justificação. Cada resposta fica registada com data, hora e a versão do texto que aceitou.</p>
     </div>
 
-    <h2 class="rotulo media mt32">Sem acesso</h2>
-    <div class="lista mt8">
-      <div class="linha">
-        <p class="subtitulo nome2">Seguros Lima &amp; Viana (exemplo)</p>
-        <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe68c;</span>Retirado</span><span class="registo tenue">Retirado a 18 nov 2026, 11:20</span></div>
-      </div>
-      <div class="linha">
-        <p class="subtitulo nome2">Mediação Norte Exemplo</p>
-        <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe0e1;</span>Recusado</span><span class="registo tenue">Recusado a 20 nov 2026, 09:12</span></div>
-      </div>
-    </div>
-
-    <p class="corpoPequeno media mt48">Retirar é imediato e não precisa de justificação. Cada resposta fica registada com data, hora e a versão do texto que aceitou.</p>
-
-    <section id="conta" class="mt48" aria-labelledby="conta-titulo">
+    <section id="conta" class="mt48" aria-labelledby="conta-titulo" data-fora="a-carregar erro">
       <h2 id="conta-titulo" class="subtitulo">A sua conta</h2>
       <div class="lista mt16">
         <div class="linha">
           <p class="rotulo media">Email</p>
           <p class="corpo mt4" style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</p>
         </div>
-        <div class="linha duas">
+        <div class="linha duas" data-fora="criada">
           <div class="texto">
             <p class="rotulo media">Palavra-passe</p>
             <p class="corpo mt4">Ainda não criou. Entra com um link enviado para o seu email.</p>
           </div>
           <div class="acoes"><div class="btn contorno">Criar palavra-passe</div></div>
+        </div>
+        <div class="linha duas" data-em="criada">
+          <div class="texto">
+            <p class="rotulo media">Palavra-passe</p>
+            <p class="corpo mt4">Criada a <span class="registo">26 nov 2026</span>. Pode entrar com ela ou com um link.</p>
+          </div>
+          <div class="acoes"><div class="btn contorno">Alterar palavra-passe</div></div>
         </div>
       </div>
     </section>
@@ -107,6 +151,7 @@
 <div class="folha folha-inferior superficie" role="dialog" aria-modal="true">
   <h2 class="subtitulo">Retirar o acesso da Ribeira Seguros?</h2>
   <p class="corpo mt12">A partir de agora, ninguém deste escritório vê os seus dados e documentos no ProDossier, incluindo o que o mediador escreveu no seu perfil. Para voltar a partilhar, o escritório terá de lhe enviar um novo pedido.</p>
+  <div class="aviso erro mt16" role="alert" data-em="retirar-erro"><div class="linha"><span class="ic g">&#xe238;</span><p class="corpoPequeno">Não foi possível retirar o acesso. O escritório continua com acesso. Tente de novo.</p></div></div>
   <div class="mt24" style="display:flex;flex-direction:column;gap:var(--s12)">
     <div class="btn destrutivo principal largo">Retirar acesso</div>
     <div class="btn contorno principal largo">Cancelar</div>
@@ -116,10 +161,12 @@
 <div class="folha dialogo superficie" role="dialog" aria-modal="true">
   <h2 class="subtitulo">Retirar o acesso da Ribeira Seguros?</h2>
   <p class="corpo mt12">A partir de agora, ninguém deste escritório vê os seus dados e documentos no ProDossier, incluindo o que o mediador escreveu no seu perfil. Para voltar a partilhar, o escritório terá de lhe enviar um novo pedido.</p>
+  <div class="aviso erro mt16" role="alert" data-em="retirar-erro"><div class="linha"><span class="ic g">&#xe238;</span><p class="corpoPequeno">Não foi possível retirar o acesso. O escritório continua com acesso. Tente de novo.</p></div></div>
   <div class="par mt24">
     <div class="btn contorno principal foco">Cancelar</div>
     <div class="btn destrutivo principal">Retirar acesso</div>
   </div>
 </div>
+<script src="estado.js"></script>
 </body>
 </html>

@@ -95,11 +95,15 @@ body {
 .conta { display: flex; align-items: center; gap: var(--s16); min-width: 0; }
 .conta .nome { color: var(--tintaMedia); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 639px) { .conta .nome { display: none; } }
-main.frame { flex: 1; padding-bottom: var(--s48); }
+main.frame { flex: 1; padding-top: var(--s24); padding-bottom: var(--s48); }
+@media (max-width: 639px) { main.frame { padding-top: var(--s16); } }
 
-/* Separador de pasta: a régua corre a largura da moldura */
-.pasta { border-bottom: var(--fino) solid var(--regua); display: flex; }
-.separador { height: var(--separadorAltura); padding: 0 var(--s16); background: var(--cartolina); border-radius: var(--r-separador) var(--r-separador) 0 0; display: inline-flex; align-items: center; max-width: var(--larguraFormulario); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Separador de pasta: primeira linha do ecrã; a régua corre a largura da moldura.
+   A conta ("Sair", e o nome onde couber) fica na mesma linha, centrada com o separador, encostada à margem direita. */
+.pasta { border-bottom: var(--fino) solid var(--regua); display: flex; align-items: flex-end; gap: var(--s16); }
+.pasta .conta { margin-left: auto; flex: none; height: var(--separadorAltura); align-self: flex-end; display: flex; align-items: center; gap: var(--s16); }
+.pasta .conta .acao { margin: calc((var(--separadorAltura) - var(--alvoMinimo)) / 2) 0; }
+.separador { min-width: 0; height: var(--separadorAltura); padding: 0 var(--s16); background: var(--cartolina); border-radius: var(--r-separador) var(--r-separador) 0 0; display: inline-flex; align-items: center; max-width: var(--larguraFormulario); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 639px) { .separador { max-width: calc(100% - var(--s48)); } }
 .separadores { display: flex; width: 100%; max-width: var(--larguraFormulario); }
 @media (max-width: 639px) { .separadores { max-width: none; } }
@@ -212,7 +216,7 @@ main.frame { flex: 1; padding-bottom: var(--s48); }
 .animar .esq { animation: pulsar 600ms cubic-bezier(0.65, 0, 0.35, 1) infinite alternate; }
 
 /* Linha acabada de criar/alterar: fundo realce (desvanece em AppMotion.realce na app) */
-.realce-linha { background: var(--realce); }
+.realce-linha { background: var(--realce); margin-left: calc(-1 * var(--s8)); margin-right: calc(-1 * var(--s8)); padding-left: var(--s8) !important; padding-right: var(--s8) !important; }
 
 /* Animações usadas só no protótipo navegável (classe .animar no body) */
 @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }

@@ -26,29 +26,70 @@
     .esc .acao-cel { justify-self: start; margin-top: var(--s4); }
     .faixa .numero { min-width: var(--s72); }
   }
+  [data-folha="nenhuma"] .veu, [data-folha="nenhuma"] .folha { display: none; }
+  .form-pagina { display: none; }
+  @media (max-width: 639px) {
+    body:not([data-folha="nenhuma"]) main.lista-pagina, body:not([data-folha="nenhuma"]) .veu, body:not([data-folha="nenhuma"]) .folha-lateral { display: none; }
+    body:not([data-folha="nenhuma"]) .form-pagina { display: block; }
+  }
 </style>
 </head>
+<!-- Estados: normal, a-carregar, vazio, erro, offline; folha=escritorio | convidar -->
 <body>
-<div class="frame"><div class="in">
-  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
-</div></div>
-<main class="frame"><div class="in">
-  <div class="pasta"><div class="separador rotulo">Administração</div></div>
+<div class="offline" data-em="offline"><div class="frame"><div class="in">
+  <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
+</div></div></div>
+<main class="frame lista-pagina"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Administração</div><div class="conta"><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
   <h1 class="titulo mt32">Plataforma</h1>
 
-  <div class="faixa mt24">
+  <div class="aviso erro mt24" role="alert" data-em="erro">
+    <div class="linha"><span class="ic g">&#xe238;</span><p class="corpo">Não foi possível carregar as contagens. Tente de novo.</p></div>
+    <div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div>
+  </div>
+  <div class="faixa mt24" data-fora="a-carregar vazio erro">
     <div><p class="numero">3</p><p class="rotulo media">Escritórios</p></div>
     <div><p class="numero">4</p><p class="rotulo media">Mediadores</p></div>
     <div><p class="numero">12</p><p class="rotulo media">Clientes</p></div>
+  </div>
+  <div class="faixa mt24" data-em="vazio">
+    <div><p class="numero">0</p><p class="rotulo media">Escritórios</p></div>
+    <div><p class="numero">0</p><p class="rotulo media">Mediadores</p></div>
+    <div><p class="numero">0</p><p class="rotulo media">Clientes</p></div>
+  </div>
+  <!-- A carregar: blocos de 56 no lugar dos números (nunca "0" provisório) -->
+  <div class="faixa mt24" data-em="a-carregar" aria-busy="true">
+    <div><div class="esq l-numero"></div><p class="rotulo media mt4">Escritórios</p></div>
+    <div><div class="esq l-numero"></div><p class="rotulo media mt4">Mediadores</p></div>
+    <div><div class="esq l-numero"></div><p class="rotulo media mt4">Clientes</p></div>
   </div>
   <p class="corpoPequeno tenue mt8">Só contagens. Por privacidade, a administração não vê nomes, emails nem documentos.</p>
 
   <div class="seccao mt48">
     <h2 class="subtitulo">Escritórios</h2>
-    <div class="btn cheio">Criar escritório</div>
+    <div class="btn cheio" data-fora="offline vazio">Criar escritório</div>
+    <div class="btn desativado" data-em="offline">Criar escritório</div>
   </div>
-  <div class="btn cheio principal largo mt16 so-compacto">Criar escritório</div>
-  <div class="esc mt24">
+  <div class="btn cheio principal largo mt16 so-compacto" data-fora="offline vazio">Criar escritório</div>
+  <div class="btn desativado principal largo mt16 so-compacto" data-em="offline">Criar escritório</div>
+  <p class="razao mt8" data-em="offline">Sem ligação. Criar e convidar ficam disponíveis quando a ligação voltar.</p>
+  <section class="mt24" data-em="vazio">
+    <p class="corpoForte">Ainda não há escritórios.</p>
+    <p class="corpo media mt4">Crie o primeiro escritório para poder convidar mediadores.</p>
+    <div class="btn cheio principal mt24">Criar escritório</div>
+  </section>
+  <div class="esc mt24" data-em="a-carregar" aria-busy="true">
+    <div class="lin"><div class="esq l-corpo w60"></div><div class="esq l-peq w60"></div><div></div></div>
+    <div class="lin"><div class="esq l-corpo w80"></div><div class="esq l-peq w50"></div><div></div></div>
+    <div class="lin"><div class="esq l-corpo w40"></div><div class="esq l-peq w60"></div><div></div></div>
+  </div>
+  <div class="aviso mt24" role="status" data-em="criado"><div class="linha"><span class="ic g">&#xe15a;</span><p class="corpo">Escritório criado. Convide agora o primeiro mediador.</p></div></div>
+  <div class="esc mt24" data-fora="a-carregar vazio erro">
+    <div class="lin realce-linha" data-em="criado">
+      <p class="corpoForte um">Mediação Douro Exemplo, Lda.</p>
+      <p class="registo tenue">Sem mediadores</p>
+      <div class="acao-cel"><span class="acao"><span class="t">Convidar mediador</span></span></div>
+    </div>
     <div class="lin">
       <p class="corpoForte um">Ribeira Seguros</p>
       <p class="registo tenue">3 mediadores</p>
@@ -66,5 +107,35 @@
     </div>
   </div>
 </div></main>
+<div class="veu"></div>
+<aside class="folha folha-lateral superficie" role="dialog" aria-modal="true" data-folha-em="escritorio">
+  <div class="corpo-folha"><h2 class="subtitulo">Criar escritório</h2>
+    <div class="campo mt24"><label class="rotulo">Nome do escritório</label><div class="caixa"><span class="valor">Mediação Douro Exemplo, Lda.</span></div></div></div>
+  <div class="barra"><div class="btn contorno">Cancelar</div><div class="btn cheio">Criar escritório</div></div>
+</aside>
+<aside class="folha folha-lateral superficie" role="dialog" aria-modal="true" data-folha-em="convidar">
+  <div class="corpo-folha"><h2 class="subtitulo">Convidar mediador</h2>
+    <p class="corpoPequeno media mt8">O mediador recebe um email para definir a palavra-passe. Cada mediador pertence a um só escritório.</p>
+    <div class="stack16 mt24">
+      <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">rui.costa@ribeira-exemplo.pt</span></div></div>
+      <div class="campo"><label class="rotulo">Escritório</label><div class="caixa"><span class="valor">Ribeira Seguros</span></div></div>
+    </div></div>
+  <div class="barra"><div class="btn contorno">Cancelar</div><div class="btn cheio">Enviar convite</div></div>
+</aside>
+<main class="frame form-pagina"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Administração</div><div class="conta"><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
+  <div class="mt32" data-folha-em="escritorio"><h2 class="subtitulo">Criar escritório</h2>
+    <div class="campo mt24"><label class="rotulo">Nome do escritório</label><div class="caixa"><span class="valor">Mediação Douro Exemplo, Lda.</span></div></div>
+    <div class="btn cheio principal largo mt24">Criar escritório</div><div class="btn contorno principal largo mt12">Cancelar</div></div>
+  <div class="mt32" data-folha-em="convidar"><h2 class="subtitulo">Convidar mediador</h2>
+    <p class="corpoPequeno media mt8">O mediador recebe um email para definir a palavra-passe. Cada mediador pertence a um só escritório.</p>
+    <div class="stack16 mt24">
+      <div class="campo"><label class="rotulo">Email</label><div class="caixa"><span class="valor">rui.costa@ribeira-exemplo.pt</span></div></div>
+      <div class="campo"><label class="rotulo">Escritório</label><div class="caixa"><span class="valor">Ribeira Seguros</span></div></div>
+    </div>
+    <div class="btn cheio principal largo mt24">Enviar convite</div><div class="btn contorno principal largo mt12">Cancelar</div></div>
+</div></main>
+<script src="estado.js"></script>
+<script>if (document.body.dataset.estado === 'offline') document.querySelectorAll('.esc .acao').forEach((a) => a.classList.add('off'));</script>
 </body>
 </html>
