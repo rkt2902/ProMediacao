@@ -79,10 +79,7 @@ class _AppPressableState extends State<AppPressable> {
       child: FocusableActionDetector(
         enabled: _enabled,
         focusNode: widget.focusNode,
-        // Sem foco automático em compacto (teclado virtual / contexto).
-        autofocus:
-            widget.autofocus &&
-            AppBreakpoints.fromContext(context) != Breakpoint.compacto,
+        autofocus: widget.autofocus,
         mouseCursor: _enabled
             ? SystemMouseCursors.click
             : SystemMouseCursors.basic,

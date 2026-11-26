@@ -94,7 +94,8 @@ void main() {
       final medium = await content(800);
       expect(medium.left, AppSpace.s32);
       final wide = await content(1400);
-      expect(wide.left, AppSpace.s48);
+      // Moldura de 1040 centrada; a coluna de leitura alinha à esquerda dela.
+      expect(wide.left, (1400 - AppSize.larguraLista) / 2);
       expect(wide.width, AppSize.larguraLeitura);
       expect(find.text('ProDossier'), findsOneWidget);
     });

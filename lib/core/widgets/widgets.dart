@@ -1,6 +1,7 @@
 /// Widgets partilhados do design system (docs/design/DESIGN.md).
 library;
 
+export 'account_actions.dart';
 export 'app_buttons.dart';
 export 'app_pressable.dart';
 export 'confirm_sheet.dart';

@@ -10,7 +10,9 @@ import 'inline_notice.dart';
 /// [showConfirmSheet], que o apresenta como folha inferior em compacto e
 /// como diálogo (480) em médio/largo.
 ///
-/// Se [onConfirm] for nulo, é uma folha só de leitura (um botão de fechar).
+/// Se [confirmLabel] for nulo, é uma folha só de leitura (um botão de
+/// fechar); nesse caso passar `readOnly: true` a [showConfirmSheet] (diálogo
+/// de 640, folha alta em compacto). O foco inicial fica em "Cancelar"/"Fechar".
 class ConfirmSheet extends StatelessWidget {
   const ConfirmSheet({
     super.key,
@@ -51,6 +53,7 @@ class ConfirmSheet extends StatelessWidget {
     final cancelButton = SecondaryButton(
       label: cancelLabel,
       onPressed: loading ? null : cancel,
+      autofocus: true,
       expand: compact,
       principal: compact,
     );
@@ -85,19 +88,32 @@ class ConfirmSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: AppType.subtitulo),
-            if (message != null) ...[
-              const SizedBox(height: AppSpace.s12),
-              Text(message!, style: AppType.corpo),
-            ],
-            if (body != null) ...[
-              const SizedBox(height: AppSpace.s12),
-              Flexible(child: SingleChildScrollView(child: body)),
-            ],
-            if (errorMessage != null) ...[
-              const SizedBox(height: AppSpace.s16),
-              InlineNotice(message: errorMessage!, kind: NoticeKind.erro),
-            ],
+            // Texto com scroll; os botões ficam fixos em baixo.
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(title, style: AppType.subtitulo),
+                    if (message != null) ...[
+                      const SizedBox(height: AppSpace.s12),
+                      Text(message!, style: AppType.corpo),
+                    ],
+                    if (body != null) ...[
+                      const SizedBox(height: AppSpace.s12),
+                      body!,
+                    ],
+                    if (errorMessage != null) ...[
+                      const SizedBox(height: AppSpace.s16),
+                      InlineNotice(
+                        message: errorMessage!,
+                        kind: NoticeKind.erro,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: AppSpace.s24),
             if (compact)
               // Destrutivo em cima, empilhados.
@@ -127,20 +143,32 @@ class ConfirmSheet extends StatelessWidget {
 /// Apresenta [builder] (normalmente um [ConfirmSheet]) como folha inferior
 /// em compacto (entra `lento`, sai `base`) e como diálogo de 480 em
 /// médio/largo (entra `base` com escala 0.98 a 1.0, sai `rapido`).
+///
+/// [readOnly] (texto aceite): diálogo de `larguraLeitura` 640 e, em compacto,
+/// folha alta (janela menos `s48`). Em altura baixa a folha ocupa a janela
+/// menos `s16`. Ao fechar, o foco volta ao controlo que a abriu. A folha é
+/// uma rota do `Navigator`: Esc, véu e "voltar" fecham-na.
 Future<T?> showConfirmSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
   bool barrierDismissible = true,
-}) {
+  bool readOnly = false,
+}) async {
+  final origin = FocusManager.instance.primaryFocus;
   final compact = AppBreakpoints.fromContext(context) == Breakpoint.compacto;
+  final height = MediaQuery.sizeOf(context).height;
+  final low = height < AppBreakpoints.alturaBaixa;
+  final inset = low ? AppSpace.s16 : AppSpace.s48;
 
+  final Future<T?> result;
   if (compact) {
-    return showModalBottomSheet<T>(
+    result = showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       isDismissible: barrierDismissible,
       enableDrag: false,
+      constraints: BoxConstraints(maxHeight: height - inset),
       backgroundColor: AppColors.folha,
       barrierColor: AppColors.veu,
       elevation: 0,
@@ -155,49 +183,62 @@ Future<T?> showConfirmSheet<T>(
       ),
       builder: builder,
     );
-  }
-
-  return showGeneralDialog<T>(
-    context: context,
-    barrierDismissible: barrierDismissible,
-    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-    barrierColor: AppColors.veu,
-    transitionDuration: AppMotion.resolve(context, AppMotion.base),
-    pageBuilder: (context, _, _) => SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: AppSize.dialogo),
-          child: Material(
-            color: AppColors.folha,
-            borderRadius: AppRadius.superficieBorda,
-            clipBehavior: Clip.antiAlias,
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                borderRadius: AppRadius.superficieBorda,
-                boxShadow: AppShadow.superficie,
+  } else {
+    result = showGeneralDialog<T>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: AppColors.veu,
+      transitionDuration: AppMotion.resolve(context, AppMotion.base),
+      pageBuilder: (context, _, _) => SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpace.s16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: readOnly ? AppSize.larguraLeitura : AppSize.dialogo,
+                maxHeight: height - 2 * inset,
               ),
-              child: Builder(builder: builder),
+              child: Material(
+                color: AppColors.folha,
+                borderRadius: AppRadius.superficieBorda,
+                clipBehavior: Clip.antiAlias,
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    borderRadius: AppRadius.superficieBorda,
+                    boxShadow: AppShadow.superficie,
+                  ),
+                  child: Builder(builder: builder),
+                ),
+              ),
             ),
           ),
         ),
       ),
-    ),
-    transitionBuilder: (context, animation, secondary, child) {
-      final enter = CurvedAnimation(
-        parent: animation,
-        curve: AppMotion.entrar,
-        reverseCurve: AppMotion.sair,
-      );
-      return FadeTransition(
-        opacity: enter,
-        child: ScaleTransition(
-          scale: Tween<double>(
-            begin: AppMotion.escalaDialogo,
-            end: 1,
-          ).animate(enter),
-          child: child,
-        ),
-      );
-    },
-  );
+      transitionBuilder: (context, animation, secondary, child) {
+        final enter = CurvedAnimation(
+          parent: animation,
+          curve: AppMotion.entrar,
+          reverseCurve: AppMotion.sair,
+        );
+        return FadeTransition(
+          opacity: enter,
+          child: ScaleTransition(
+            scale: Tween<double>(
+              begin: AppMotion.escalaDialogo,
+              end: 1,
+            ).animate(enter),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  final value = await result;
+  // Devolve o foco ao botão de origem (se ainda existir).
+  if (origin != null && origin.context != null && origin.canRequestFocus) {
+    origin.requestFocus();
+  }
+  return value;
 }

@@ -108,7 +108,7 @@ void main() {
     expect([a, b], [1, 1]);
   });
 
-  testWidgets('TextAction desativada explica a razão no tooltip', (
+  testWidgets('TextAction desativada escreve a razão por baixo', (
     tester,
   ) async {
     await pumpApp(
@@ -122,7 +122,7 @@ void main() {
       ),
     );
     expect(
-      find.byTooltip('Pode enviar outra vez daqui a 1 minuto.'),
+      find.text('Pode enviar outra vez daqui a 1 minuto.'),
       findsOneWidget,
     );
   });

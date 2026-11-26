@@ -21,6 +21,7 @@ class _AppButton extends StatelessWidget {
     required this.expand,
     required this.disabledReason,
     this.labelColor,
+    this.autofocus = false,
   });
 
   final _ButtonKind kind;
@@ -34,6 +35,7 @@ class _AppButton extends StatelessWidget {
 
   /// Só o botão secundário "Retirar acesso" usa `erro` no texto.
   final Color? labelColor;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class _AppButton extends StatelessWidget {
 
     final button = AppPressable(
       onPressed: active ? onPressed : null,
+      autofocus: autofocus,
       semanticsLabel: loading ? (loadingLabel ?? label) : null,
       builder: (context, s) {
         final filled = kind != _ButtonKind.secondary;
@@ -209,6 +212,7 @@ class SecondaryButton extends StatelessWidget {
     this.expand = false,
     this.disabledReason,
     this.danger = false,
+    this.autofocus = false,
   });
 
   final String label;
@@ -218,6 +222,10 @@ class SecondaryButton extends StatelessWidget {
   final bool principal;
   final bool expand;
   final String? disabledReason;
+
+  /// Foco inicial (ex.: "Cancelar" numa confirmação). Só para botões dentro
+  /// de folhas e diálogos; nunca abre teclado.
+  final bool autofocus;
 
   /// Texto em `erro` (ex.: "Retirar acesso" na linha da lista).
   final bool danger;
@@ -233,6 +241,7 @@ class SecondaryButton extends StatelessWidget {
     expand: expand,
     disabledReason: disabledReason,
     labelColor: danger ? AppColors.erro : null,
+    autofocus: autofocus,
   );
 }
 
@@ -310,7 +319,9 @@ class TextAction extends StatelessWidget {
 
     Widget action = AppPressable(
       onPressed: active ? onPressed : null,
-      autofocus: autofocus,
+      autofocus:
+          autofocus &&
+          AppBreakpoints.fromContext(context) != Breakpoint.compacto,
       semanticsLabel: loading
           ? (loadingLabel ?? label)
           : (!active && disabledReason != null

@@ -67,7 +67,10 @@ class LabeledField extends StatelessWidget {
             child: TextField(
               controller: controller,
               focusNode: focusNode,
-              autofocus: autofocus,
+              // Sem foco automático em compacto (abriria o teclado virtual).
+              autofocus:
+                  autofocus &&
+                  AppBreakpoints.fromContext(context) != Breakpoint.compacto,
               obscureText: obscureText,
               readOnly: readOnly,
               enabled: enabled,
