@@ -1,6 +1,5 @@
 // shared_preferences vem como dependência transitiva do supabase_flutter;
 // falta declará-la no pubspec (ver handoff).
-// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Separadores do ecrã de entrada.

@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 // flutter_web_plugins é do SDK mas falta no pubspec (ver handoff).
-// ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
