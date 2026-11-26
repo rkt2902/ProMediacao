@@ -87,8 +87,10 @@ Famílias: **Source Serif 4** (títulos, nomes, números), **Atkinson Hyperlegib
 | `rotulo` | Sans | 14 / 20 | 600, +0.2 de espaçamento | Rótulos de campo, cabeçalhos de coluna e de grupo, texto de botão secundário |
 | `botao` | Sans | 17 / 24 | 600 | Texto de botões |
 | `carimbo` | Sans | 13 / 16 | 700, +0.6, maiúsculas | Texto dentro dos carimbos de estado |
-| `registo` | Mono | 13 / 18 | 400 | Datas, versão do texto, horas de envio |
+| `registo` | Mono | 13 / 18 | 400 | Datas, versão do texto, horas de envio. Cor `tintaTenue` por defeito (metadado); `tinta` nunca |
 | `marca` | Serif | 19 / 24, -0.2 de espaçamento | "Pro" 400 itálico `tintaMedia` + "Dossier" 600 `tinta` | Só o wordmark "ProDossier" (colofão, emails). Lido como uma palavra pela leitura de ecrã |
+
+Reticências: sempre o glifo "…" (U+2026), nunca três pontos; existe nas três famílias (Atkinson Hyperlegible Next 0,67 em, Source Serif 4 0,82 em, Mono 0,632 em), confirmado nos goldens da tarefa 9 ("A criar…" com spinner mede cerca de 136 no botão, com padding).
 
 A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima disso o texto pode fazer scroll, os botões nunca saem do ecrã.
 
@@ -124,6 +126,7 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 A criar em `lib/core/widgets/` na feature 001:
 
 - `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + `s16`/`s24` de topo + linha do separador com a conta à direita + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
+- Geometria da linha do separador (tarefa 9): a linha tem a altura do alvo de "Sair" (`alvoMinimo` 48), o separador (`separadorAltura` 40) começa a 4 do topo dela e a régua (`fino` 1) fica a 44. Os 3 que sobram por baixo da régua (48 − 4 − 40 − 1) contam para o espaço até ao título: o título fica a `s32` da régua, não a `s32` + 3. O `PageFrame` compensa isto (expõe o espaço já gasto, ou o conteúdo começa a `s32` − 3), em vez de cada ecrã somar `s32` por conta própria.
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
@@ -169,6 +172,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Botão desativado tem sempre a razão escrita por baixo ("Sem ligação. Tente quando voltar a ligação.").
 - Nunca mostrar como feito algo que o servidor não confirmou (sem updates otimistas em consentimento).
 - Erros dizem o que aconteceu e o que fazer, em PT-PT, sem códigos técnicos.
+- Nomes de escritório nunca levam artigo nem contração à frente ("da {escritório}" falha com "Gabinete …"): "o escritório {escritório}", "acesso a {escritório}", ou "este escritório" quando o contexto já o diz.
 - Nomes e emails longos: em médio/largo, uma linha com reticências em tabelas; em compacto, até 2 linhas (emails quebram em qualquer caractere) e só depois reticências. O texto completo aparece no tooltip (hover, foco e toque longo) e na leitura de ecrã.
 - Datas: "26 nov 2026" e "26 nov 2026, 14:32", em `registo`. Nada de "há 3 dias" em consentimento (tem de ser verificável).
 - Ícones: Material Symbols Outlined (já incluídos no Flutter), traço uniforme, sempre com etiqueta visível quando o significado não é óbvio. Sem emoji.

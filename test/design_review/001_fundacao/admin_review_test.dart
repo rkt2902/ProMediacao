@@ -42,9 +42,7 @@ Future<void> _pump(WidgetTester tester, Size size) async {
       debugShowCheckedModeBanner: false,
       builder: (context, child) => AppScope(services: services, child: child!),
       home: Scaffold(
-        body: AdminHomePage(
-          repository: FakeAdminRepository()..counts = null,
-        ),
+        body: AdminHomePage(repository: FakeAdminRepository()..counts = null),
       ),
     ),
   );

@@ -44,7 +44,9 @@ Future<void> _openCreate(WidgetTester tester) async {
 
 Future<void> _fill(WidgetTester tester, String label, String text) async {
   final f = find.descendant(
-    of: find.ancestor(of: find.text(label), matching: find.byType(Column)).first,
+    of: find
+        .ancestor(of: find.text(label), matching: find.byType(Column))
+        .first,
     matching: find.byType(EditableText),
   );
   await tester.enterText(f.first, text);

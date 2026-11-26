@@ -25,7 +25,9 @@ Future<void> _pump(
 
 Future<void> _fill(WidgetTester tester, String label, String text) async {
   final f = find.descendant(
-    of: find.ancestor(of: find.text(label), matching: find.byType(Column)).first,
+    of: find
+        .ancestor(of: find.text(label), matching: find.byType(Column))
+        .first,
     matching: find.byType(EditableText),
   );
   await tester.enterText(f.first, text);
@@ -83,8 +85,12 @@ void main() {
       testWidgets('criar-palavra-passe-${e.key}', (tester) async {
         if (e.key.endsWith('1.3')) setTextScale(tester, 1.3);
         final repo = FakeAuthRepository(session: linkClient());
-        await _pump(tester, e.value, '/cliente/criar-palavra-passe',
-            repo: repo);
+        await _pump(
+          tester,
+          e.value,
+          '/cliente/criar-palavra-passe',
+          repo: repo,
+        );
         await _fill(tester, 'Nova palavra-passe', 'Ribeira2026');
         await tester.pumpAndSettle();
         await shoot(tester, 'criar-palavra-passe-${e.key}');
@@ -92,4 +98,3 @@ void main() {
     }
   });
 }
-

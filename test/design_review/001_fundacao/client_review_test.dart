@@ -24,7 +24,10 @@ FakeConsentRepository _repo(List grants) {
 
 FakeConsentRepository _full() => _repo([
   pendingGrant(),
-  activeGrant(id: 'g-a2', office: 'Gabinete de Mediação Vale do Sousa & Filhos, Lda.'),
+  activeGrant(
+    id: 'g-a2',
+    office: 'Gabinete de Mediação Vale do Sousa & Filhos, Lda.',
+  ),
   declinedGrant(),
   withdrawnGrant(),
 ]);
