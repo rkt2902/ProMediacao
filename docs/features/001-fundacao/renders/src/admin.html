@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plataforma · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Faixa de contagens: 3 colunas iguais separadas por réguas verticais, nunca cartões */
+  .faixa { display: grid; grid-template-columns: repeat(3, 1fr); border-top: var(--fino) solid var(--regua); border-bottom: var(--fino) solid var(--regua); }
+  .faixa > div { padding: var(--s24); }
+  .faixa > div:first-child { padding-left: 0; }
+  .faixa > div + div { border-left: var(--fino) solid var(--regua); }
+  .seccao { display: flex; justify-content: space-between; align-items: center; gap: var(--s24); }
+  .esc .lin { display: grid; grid-template-columns: minmax(0, 1fr) var(--colunaData) var(--colunaAcao); align-items: center; column-gap: var(--s16); min-height: var(--linhaTabela); border-bottom: var(--fino) solid var(--regua); padding: var(--s8) 0; }
+  .esc { border-top: var(--fino) solid var(--regua); }
+  .esc .acao-cel { justify-self: end; }
+  .esc .um { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 639px) {
+    .faixa { grid-template-columns: 1fr; }
+    .faixa > div { padding: var(--s16) 0; display: flex; align-items: baseline; gap: var(--s16); }
+    .faixa > div + div { border-left: 0; border-top: var(--fino) solid var(--regua); }
+    .seccao .btn { display: none; }
+    .esc .lin { display: block; padding: var(--s16) 0; }
+    .esc .um { white-space: normal; }
+    .esc .acao-cel { justify-self: start; margin-top: var(--s4); }
+    .faixa .numero { min-width: var(--s72); }
+  }
+</style>
+</head>
+<body>
+<div class="frame"><div class="in">
+  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
+</div></div>
+<main class="frame"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Administração</div></div>
+  <h1 class="titulo mt32">Plataforma</h1>
+
+  <div class="faixa mt24">
+    <div><p class="numero">3</p><p class="rotulo media">Escritórios</p></div>
+    <div><p class="numero">4</p><p class="rotulo media">Mediadores</p></div>
+    <div><p class="numero">12</p><p class="rotulo media">Clientes</p></div>
+  </div>
+  <p class="corpoPequeno tenue mt8">Só contagens. Por privacidade, a administração não vê nomes, emails nem documentos.</p>
+
+  <div class="seccao mt48">
+    <h2 class="subtitulo">Escritórios</h2>
+    <div class="btn cheio">Criar escritório</div>
+  </div>
+  <div class="btn cheio principal largo mt16 so-compacto">Criar escritório</div>
+  <div class="esc mt24">
+    <div class="lin">
+      <p class="corpoForte um">Ribeira Seguros</p>
+      <p class="registo tenue">3 mediadores</p>
+      <div class="acao-cel"><span class="acao"><span class="t">Convidar mediador</span></span></div>
+    </div>
+    <div class="lin">
+      <p class="corpoForte um">Gabinete de Mediação de Seguros Vale do Sousa &amp; Filhos, Lda.</p>
+      <p class="registo tenue">1 mediador</p>
+      <div class="acao-cel"><span class="acao"><span class="t">Convidar mediador</span></span></div>
+    </div>
+    <div class="lin">
+      <p class="corpoForte um">Mediação Norte Exemplo</p>
+      <p class="registo tenue">Sem mediadores</p>
+      <div class="acao-cel"><span class="acao"><span class="t">Convidar mediador</span></span></div>
+    </div>
+  </div>
+</div></main>
+</body>
+</html>

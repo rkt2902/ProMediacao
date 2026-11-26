@@ -35,8 +35,8 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 
 ## 2. Modelo de receita e concorrentes
 
-- **Modelo de receita:** [por decidir]. Não foi discutido. Hipóteses a avaliar: uso interno da mediação do Henrique, ou subscrição por mediador.
-- **Concorrentes:** [por decidir]. Não foram analisados.
+- **Modelo de receita:** [decidido] fase 1 em uso interno, sem cobrar. Direção futura: mensalidade por mediador/escritório até X pedidos, e acima disso extra ou outro plano. Cobra-se só ao mediador/escritório, nunca ao cliente final e sem comissão (nem por apólice, nem por leads, nem % do prémio). Valores por validar. Ver `docs/business/research/02-receita-concorrentes.md`.
+- **Concorrentes:** [proposto] analisados 7 em `docs/business/research/02-receita-concorrentes.md`. Não se encontrou portal português equivalente (a confirmar com colegas da APROSE). Diferenciação proposta: arquivo de documentos do cliente reutilizável e partilhável, com consentimento, com vários mediadores.
 
 ## 3. Restrições
 
@@ -45,15 +45,18 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - **RGPD:** há dados pessoais e de **saúde**, que são uma categoria especial (art. 9.º). Isto implica:
   - consentimento explícito;
   - encriptação e alojamento na UE;
-  - acesso só do mediador responsável;
+  - acesso só dos mediadores a quem o cliente deu consentimento (ver secção 4);
   - poder apagar documentos a pedido do cliente.
 - **Distribuição de seguros:** é uma atividade regulada pela ASF (Lei n.º 7/2019). A app apoia o mediador e não deve parecer uma seguradora nem vender diretamente.
-- **Intermediação de crédito**, para a fase dos empréstimos: é regulada pelo Banco de Portugal (DL 81-C/2017) e exige registo próprio. Deve ser confirmado antes de lançar essa parte.
+- **Intermediação de crédito**, para a fase dos empréstimos: é regulada pelo Banco de Portugal (DL 81-C/2017). Segundo o Henrique, o registo é do lado do mediador e a app só manipula documentos. O jurista confirma se a plataforma precisa de algum estatuto.
 - **Uso de IA:** a IA só extrai e sugere. As decisões e a validação dos dados ficam sempre com o mediador, através da revisão manual.
 
 ## 4. Decisões tomadas
 
+- [decidido] Os dados são do cliente e partilhados por consentimento explícito, mediador a mediador (X, Y, Z...), com o cliente sempre ciente e a poder retirar. Condiciona o modelo de dados, o RLS e a validação RGPD.
+- [decidido] A partilha é do cliente para o **escritório**, tudo ou nada: todos os mediadores do escritório veem o arquivo, e o cliente vê e pode retirar cada escritório. O admin da plataforma **não** acede a documentos nem a dados de pedidos: vê só contagens e agregados (sem nome nem email). O cliente pode ser criado pelo mediador ou registar-se sozinho. Sem encriptação por escritório na fase 1 (plano futuro).
 - [decidido] Há três perfis: admin, mediador e cliente (particular ou empresa).
+- [decidido] O cliente pode também iniciar pedidos na app, a vários escritórios, cada um com consentimento explícito; um escritório não vê os outros destinatários.
 - [decidido] O mediador cria um pedido por tipo de seguro, e a lista do que pedir é gerada automaticamente a partir do tipo.
 - [decidido] O mediador também pode preencher dados no perfil do cliente.
 - [decidido] O cliente pode enviar as condições particulares em vez dos documentos um a um.
@@ -69,8 +72,8 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 - [decidido] O design é responsivo em três tamanhos: desktop, tablet ou PC pequeno (até 1100 px) e telemóvel (até 640 px).
 - [decidido] A app vai incluir empréstimos no futuro, e por isso o nome não pode ser só de seguros.
 - [decidido] O trabalho continua no repositório `rkt2902/ProMediacao`, com uma app Flutter.
-- [proposto] A stack sugerida foi Next.js com Supabase na UE. Foi substituída pela decisão de usar Flutter, e falta escolher o backend.
-- [proposto] Os nomes sugeridos foram ProDossier, ProMediação e ProFinanças. O nome do repositório indica ProMediação, mas falta confirmar a marca.
+- [decidido] Stack: Flutter + **Supabase** (eu-west-1, projeto vazio). Auth: cliente por link mágico por email; mediador e admin por email e palavra-passe (2FA mais tarde). SMS só no futuro. Ver `docs/decisions.md`.
+- [decidido] O nome de trabalho é **ProDossier** (reserva: Reúne). O repositório e o package id `pt.promediacao` ficam como nome interno. Falta verificar a marca no INPI/TMview (classes 9, 42, 35) e os domínios antes de publicar nas lojas. Ver `docs/decisions.md`.
 
 ## 5. Backlog
 
@@ -97,7 +100,7 @@ Legenda: **[decidido]** foi acordado com o Henrique · **[proposto]** foi sugeri
 | "Pedir alteração" e "Comparar preços" a partir de uma apólice | aprovada |
 | Painel de admin: mediadores, clientes, pedidos e custo de IA | aprovada |
 | Design responsivo (desktop, tablet e telemóvel) | aprovada |
-| Fichas ajustadas ao formulário de cada seguradora | proposta |
+| Fichas no formato dos templates de cada escritório (carregar template, mapear campos, preencher) | proposta (fase 2) |
 | Módulo de empréstimos e crédito | proposta |
 | Piloto com mediadores reais | proposta |
 | Testar a extração com documentos reais e escolher o modelo mais barato que acerte | proposta |
@@ -136,13 +139,13 @@ O nome provisório no protótipo é "Dossier". Um seletor no canto inferior troc
 
 ## 7. O que ficou por decidir
 
-1. O nome final e a marca (ProMediação?), e se o domínio .pt e o registo no INPI estão disponíveis.
-2. O modelo de receita.
-3. Os concorrentes e o que diferencia a ProMediação.
-4. O backend da app Flutter (por exemplo Supabase ou Firebase, com alojamento na UE) e a autenticação dos clientes (link mágico, SMS ou palavra-passe).
-5. O modelo de dados: clientes, pedidos, documentos, apólices e mediadores.
-6. O formato final da ficha exportada e se é ajustado a cada seguradora.
-7. Como o cliente recebe o pedido (email, SMS ou WhatsApp).
-8. A validação jurídica do RGPD (dados de saúde) e do registo para a intermediação de crédito.
-9. O âmbito e os documentos do módulo de empréstimos.
-10. O piloto: com que mediadores e clientes, e quando.
+1. ~~O nome final e a marca~~ **Decidido: ProDossier** (nome de trabalho). Pendente: o Henrique verifica o INPI e os domínios.
+2. ~~O modelo de receita~~ **Decidido:** uso interno agora; mensalidade por mediador/escritório com escalões de pedidos no futuro.
+3. Os concorrentes e o que diferencia a ProDossier. Analisados; diferenciação proposta (dados do cliente partilháveis por consentimento) por confirmar.
+4. ~~O backend e a autenticação~~ **Decidido:** Supabase; cliente por link mágico por email, mediador/admin por palavra-passe. Pendente: plano de produção (decisão 8).
+5. ~~O modelo de dados~~ **Princípios decididos** (partilha por escritório, admin sem acesso a documentos, cliente autónomo ou criado pelo mediador). Tabelas e RLS: supabase-dev, na primeira feature.
+6. ~~O formato da ficha~~ **Decidido:** genérica (PDF e Excel) na fase 1; fase 2 com templates carregados por cada escritório, lidos pela app e preenchidos no formato deles. Haverá um catálogo inicial de templates da plataforma, gerido pelo admin, que cada escritório pode usar ou substituir pela sua versão.
+7. ~~Como o cliente recebe o pedido~~ **Decidido:** email com link seguro (e link copiável), pedido dentro da app, e o cliente pode pedir a vários escritórios. SMS/WhatsApp integrados fora da fase 1.
+8. ~~A validação jurídica~~ **Decidido:** parecer jurídico antes de qualquer cliente real; briefing em `docs/business/research/08-juridico.md`. Pendente: escolher o jurista.
+9. ~~O âmbito do módulo de empréstimos~~ **Adiado:** ambição de todo o tipo de créditos; modelo de dados genérico por tipo de pedido; arranca pelo crédito habitação. Listas de documentos por definir.
+10. ~~O piloto~~ **Decidido:** fase A uso interno (após parecer jurídico), fase B com 3 a 5 mediadores grátis 3 meses. Critérios de passagem em `docs/decisions.md`. Mediadores por escolher.

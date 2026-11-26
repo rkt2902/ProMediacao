@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link expirado · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  [data-estado="form"] .so-enviado, [data-estado="enviado"] .so-form { display: none; }
+</style>
+</head>
+<body data-estado="form">
+<script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'form';</script>
+<div class="frame"><div class="in">
+  <header class="top"><span class="brand">ProDossier</span></header>
+</div></div>
+<main class="frame"><div class="in">
+  <div class="topo-form">
+    <div class="pasta"><div class="separador rotulo">Acesso</div></div>
+    <div class="col-form">
+      <h1 class="titulo mt32">Este link já não é válido</h1>
+      <p class="corpo mt8">Os links de acesso expiram ao fim de algum tempo, por segurança. Peça um novo aqui: basta o seu email.</p>
+
+      <section class="so-form">
+        <div class="campo mt24">
+          <label class="rotulo">Email</label>
+          <div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div>
+        </div>
+        <div class="btn cheio principal largo mt24">Enviar link novo</div>
+        <div class="mt16"><span class="acao"><span class="t">Já tem palavra-passe? Entrar com ela</span></span></div>
+      </section>
+
+      <section class="so-enviado mt24">
+        <div class="aviso" role="status">
+          <div class="linha">
+            <span class="ic g">&#xe3c4;</span>
+            <p class="corpo">Se este email tiver acesso ao ProDossier, o link chega a <strong class="corpoForte" style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</strong> dentro de alguns minutos. Abra-o neste dispositivo. Veja também a pasta de spam.</p>
+          </div>
+          <div class="acoes mt8">
+            <div><span class="acao off"><span class="t">Enviar outra vez</span></span><p class="razao">Pode enviar outra vez daqui a 1 minuto.</p></div>
+            <div><span class="acao"><span class="t">Usar outro email</span></span></div>
+          </div>
+        </div>
+      </section>
+
+      <p class="corpoPequeno media mt24">Também pode pedir ao seu mediador que reenvie o pedido.</p>
+    </div>
+  </div>
+</div></main>
+</body>
+</html>

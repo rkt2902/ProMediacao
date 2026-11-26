@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Com quem partilho · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .pendentes { background: var(--realce); border-radius: var(--r-superficie); padding: var(--s24); }
+  .pendentes .lista { border-top-color: var(--regua); }
+  .pendentes .lista > .linha:last-child { border-bottom: 0; padding-bottom: 0; }
+  .duas { display: flex; gap: var(--s24); align-items: flex-start; }
+  .duas > .texto { flex: 1 1 auto; min-width: 0; }
+  .duas > .acoes { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: var(--s8); }
+  .nome2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  @media (max-width: 639px) {
+    .pendentes { padding: var(--s16); }
+    .duas { flex-direction: column; gap: var(--s16); align-items: stretch; }
+    .duas > .acoes { align-items: stretch; }
+    .duas > .acoes .acao { align-self: flex-start; }
+  }
+  .folha .botoes { display: flex; flex-direction: row-reverse; gap: var(--s12); justify-content: flex-start; }
+  .folha .botoes .btn { flex: 1 1 0; }
+  @media (max-width: 639px) { .folha .botoes { flex-direction: column; } }
+  [data-folha="nenhuma"] .folha, [data-folha="nenhuma"] .veu { display: none; }
+  .folha-inferior.folha, .dialogo.folha { }
+  @media (min-width: 640px) { .folha-inferior { display: none; } }
+  @media (max-width: 639px) { .dialogo { display: none; } }
+</style>
+</head>
+<body data-folha="nenhuma">
+<script>document.body.dataset.folha = new URLSearchParams(location.search).get('folha') || 'nenhuma';</script>
+<div class="frame"><div class="in">
+  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
+</div></div>
+<main class="frame"><div class="in">
+  <div class="pasta"><div class="separador rotulo">Os meus dados</div></div>
+  <div class="col-leitura">
+    <h1 class="titulo mt32">Com quem partilho</h1>
+
+    <section class="pendentes mt24" aria-label="Pedidos à espera da sua resposta">
+      <h2 class="subtitulo">À espera da sua resposta</h2>
+      <p class="corpo mt4">Este escritório pede acesso aos seus dados. Nada é partilhado até responder.</p>
+      <div class="lista mt16">
+        <div class="linha duas">
+          <div class="texto">
+            <p class="corpoForte nome2">Gabinete de Mediação de Seguros Vale do Sousa &amp; Filhos, Lda.</p>
+            <p class="corpoPequeno media">Enviado por Rui Costa, mediador</p>
+            <div class="estado mt8"><span class="carimbo pendente"><span class="ic">&#xe556;</span>Pendente</span><span class="registo tenue">Pedido a 25 nov 2026, 15:04</span></div>
+          </div>
+          <div class="acoes"><div class="btn cheio principal">Responder</div></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="corpoForte mt48">Partilha os seus dados com 1 escritório.</p>
+
+    <h2 class="rotulo media mt32">Com acesso</h2>
+    <div class="lista mt8">
+      <div class="linha duas">
+        <div class="texto">
+          <p class="subtitulo nome2">Ribeira Seguros</p>
+          <div class="estado mt8"><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span><span class="registo tenue">Desde 12 nov 2026, 10:04</span></div>
+        </div>
+        <div class="acoes">
+          <div class="btn contorno perigo">Retirar acesso</div>
+          <span class="acao"><span class="t">Ler o texto aceite</span></span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="rotulo media mt32">Sem acesso</h2>
+    <div class="lista mt8">
+      <div class="linha">
+        <p class="subtitulo nome2">Seguros Lima &amp; Viana (exemplo)</p>
+        <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe68c;</span>Retirado</span><span class="registo tenue">Retirado a 18 nov 2026, 11:20</span></div>
+      </div>
+      <div class="linha">
+        <p class="subtitulo nome2">Mediação Norte Exemplo</p>
+        <div class="estado mt8"><span class="carimbo inativo"><span class="ic">&#xe0e1;</span>Recusado</span><span class="registo tenue">Recusado a 20 nov 2026, 09:12</span></div>
+      </div>
+    </div>
+
+    <p class="corpoPequeno media mt48">Retirar é imediato e não precisa de justificação. Cada resposta fica registada com data, hora e a versão do texto que aceitou.</p>
+
+    <section id="conta" class="mt48" aria-labelledby="conta-titulo">
+      <h2 id="conta-titulo" class="subtitulo">A sua conta</h2>
+      <div class="lista mt16">
+        <div class="linha">
+          <p class="rotulo media">Email</p>
+          <p class="corpo mt4" style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</p>
+        </div>
+        <div class="linha duas">
+          <div class="texto">
+            <p class="rotulo media">Palavra-passe</p>
+            <p class="corpo mt4">Ainda não criou. Entra com um link enviado para o seu email.</p>
+          </div>
+          <div class="acoes"><div class="btn contorno">Criar palavra-passe</div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div></main>
+
+<div class="veu"></div>
+<!-- Compacto: folha inferior; destrutivo em cima -->
+<div class="folha folha-inferior superficie" role="dialog" aria-modal="true">
+  <h2 class="subtitulo">Retirar o acesso da Ribeira Seguros?</h2>
+  <p class="corpo mt12">A partir de agora, ninguém deste escritório vê os seus dados e documentos no ProDossier, incluindo o que o mediador escreveu no seu perfil. Para voltar a partilhar, o escritório terá de lhe enviar um novo pedido.</p>
+  <div class="mt24" style="display:flex;flex-direction:column;gap:var(--s12)">
+    <div class="btn destrutivo principal largo">Retirar acesso</div>
+    <div class="btn contorno principal largo">Cancelar</div>
+  </div>
+</div>
+<!-- Médio e largo: diálogo de 480; "Cancelar" à esquerda, com o foco inicial -->
+<div class="folha dialogo superficie" role="dialog" aria-modal="true">
+  <h2 class="subtitulo">Retirar o acesso da Ribeira Seguros?</h2>
+  <p class="corpo mt12">A partir de agora, ninguém deste escritório vê os seus dados e documentos no ProDossier, incluindo o que o mediador escreveu no seu perfil. Para voltar a partilhar, o escritório terá de lhe enviar um novo pedido.</p>
+  <div class="par mt24">
+    <div class="btn contorno principal foco">Cancelar</div>
+    <div class="btn destrutivo principal">Retirar acesso</div>
+  </div>
+</div>
+</body>
+</html>

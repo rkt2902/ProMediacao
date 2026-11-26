@@ -41,5 +41,15 @@ O detalhe fica no ficheiro do pacote, não no resumo.
 - Numa tarefa, nenhum ficheiro tem dois donos.
 - Os agentes não fazem perguntas ao Henrique: escrevem a dúvida em DECISÕES EM ABERTO e o lead junta tudo no gate seguinte.
 
+## Design primeiro (regra do Henrique)
+- Nenhum ecrã é implementado antes de o Henrique ver e aprovar uma referência visual dele (renders em PNG, ou página navegável, por ecrã e nos três tamanhos: telemóvel, tablet, desktop; admin só desktop e um tamanho pequeno). O texto do `03-design.md` não chega.
+- O designer produz primeiro as referências (em `docs/features/NNN-slug/renders/`), o lead mostra-as no gate 2, e só com aprovação o flutter-dev implementa. Mudanças pedidas voltam ao designer.
+- As referências são só referência: o flutter-dev integra-as com os tokens e widgets do projeto, não copia HTML.
+
+## Fecho de marco (regra do Henrique)
+- Quando uma feature, marco ou fase termina, paras de produzir nesse chat. Antes de parar: atualiza `docs/STATUS.md` (o que está feito, o que está em curso, gates aprovados e pendentes, decisões em aberto, bugs, e os próximos passos por ordem, com o comando ou ficheiro exato para retomar), regista decisões novas em `docs/decisions.md`, faz commit e push.
+- Depois dás um aviso curto ao Henrique: o marco acabou, continuar num chat novo (`/clear` ou sessão nova), e onde está o ponto de retoma. Não começas a fase seguinte no mesmo chat.
+- Um chat novo tem de conseguir continuar perfeitamente só com `CLAUDE.md`, `docs/STATUS.md` e `docs/decisions.md`: nada de importante fica só na conversa.
+
 ## Compact instructions
 Ao compactar, preserva: feature atual e fase, gates aprovados, decisões tomadas, ficheiros do pacote e bugs em aberto. Descarta outputs de comandos e leituras de ficheiros.

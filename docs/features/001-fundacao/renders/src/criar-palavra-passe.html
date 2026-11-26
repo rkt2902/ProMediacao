@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criar palavra-passe · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  .regra { display: flex; align-items: center; gap: var(--s8); }
+  [data-regra="cumprida"] .regra .por-cumprir, [data-regra="por-cumprir"] .regra .cumprida { display: none; }
+</style>
+</head>
+<body data-regra="cumprida">
+<script>document.body.dataset.regra = new URLSearchParams(location.search).get('regra') || 'cumprida';</script>
+<div class="frame"><div class="in">
+  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
+</div></div>
+<main class="frame"><div class="in">
+  <div class="topo-form">
+    <div class="pasta"><div class="separador rotulo">Os meus dados</div></div>
+    <div class="col-form">
+      <h1 class="titulo mt32">Criar palavra-passe</h1>
+      <p class="corpo media mt8">Da próxima vez pode entrar com o seu email e esta palavra-passe, sem esperar pelo email. O link de acesso continua a funcionar.</p>
+
+      <div class="mt24">
+        <p class="rotulo">Email</p>
+        <p class="corpo mt4" style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</p>
+      </div>
+
+      <div class="campo mt24">
+        <label class="rotulo">Nova palavra-passe</label>
+        <div class="caixa pw"><span class="valor">••••••••••••</span><span class="acao"><span class="t">Mostrar</span></span></div>
+      </div>
+      <p class="regra corpoPequeno mt8">
+        <span class="ic cumprida">&#xe159;</span><span class="ic por-cumprir">&#xef53;</span>
+        <span>Pelo menos 10 caracteres</span>
+      </p>
+
+      <div class="btn cheio principal largo mt24">Guardar palavra-passe</div>
+      <div class="btn contorno principal largo mt12">Agora não</div>
+      <p class="corpoPequeno media mt16">Pode criar mais tarde, em Com quem partilho, na secção A sua conta.</p>
+    </div>
+  </div>
+</div></main>
+</body>
+</html>

@@ -23,8 +23,8 @@ Se o pedido for pequeno (um bug ou um ajuste em 1 ou 2 ficheiros), não corres o
 
 ## Fase 2: design
 
-4. `designer` em modo 1, que escreve o `03-design.md`.
-5. **GATE 2, design.** Resumo da direção e dos ecrãs principais, com caminhos para os renders se existirem. Se o Henrique pedir mudanças, volta ao designer. Ao fim de 2 voltas sem aprovação, perguntas-lhe o que mudar em concreto.
+4. `designer` em modo 1, que escreve o `03-design.md` **e produz as referências visuais de cada ecrã** (PNG por ecrã nos três tamanhos, ou página navegável) em `docs/features/NNN-slug/renders/`. Sem referências visuais não há gate 2.
+5. **GATE 2, design.** Mostras ao Henrique as referências visuais de cada ecrã (os próprios renders, não só um resumo) e a direção. Nada é implementado antes da aprovação. Se o Henrique pedir mudanças, volta ao designer. Ao fim de 2 voltas sem aprovação, perguntas-lhe o que mudar em concreto.
 
 ## Fase 3: plano
 
@@ -53,4 +53,4 @@ Cada delegação leva sempre: objetivo, ficheiros de entrada, ficheiro(s) de sa�
 - Lês os resumos de handoff, não os ficheiros inteiros, a não ser que precises mesmo.
 - O trabalho pesado é dos subagentes; o teu contexto fica limpo.
 - Se um agente propuser algo fora do âmbito, decides tu ou guardas para o gate seguinte.
-- No fim da feature sugeres `/clear`.
+- No fim da feature, e no fim de cada fase grande, aplicas a regra "Fecho de marco" do `CLAUDE.md`: atualizas `docs/STATUS.md`, fazes commit e push, e avisas o Henrique para continuar num chat novo.
