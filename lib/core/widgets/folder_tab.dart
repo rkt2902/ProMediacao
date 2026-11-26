@@ -23,7 +23,9 @@ class AppRule extends StatelessWidget {
 
 /// Separador de pasta colado ao topo da área de conteúdo: diz em nome de
 /// quem se está a ver. `cartolina`, cantos superiores arredondados.
-/// Por baixo, uma régua de largura total (a "pasta" é o ecrã).
+/// Por baixo, uma régua de largura total (a "pasta" é o ecrã); com
+/// [showRule] a `false` é só o separador (o `PageFrame` desenha a régua à
+/// largura da moldura).
 class FolderTab extends StatelessWidget {
   const FolderTab({super.key, required this.label, this.showRule = true});
 
@@ -32,33 +34,34 @@ class FolderTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tab = Semantics(
+      container: true,
+      header: true,
+      child: Container(
+        height: AppSize.separadorAltura,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpace.s16),
+        decoration: const BoxDecoration(
+          color: AppColors.cartolina,
+          borderRadius: AppRadius.separadorBorda,
+        ),
+        child: Center(
+          widthFactor: 1,
+          child: Text(
+            label,
+            style: AppType.rotulo,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+    );
+    if (!showRule) return tab;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: Semantics(
-            container: true,
-            header: true,
-            child: Container(
-              height: AppSize.separadorAltura,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpace.s16),
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.cartolina,
-                borderRadius: AppRadius.separadorBorda,
-              ),
-              child: Text(
-                label,
-                style: AppType.rotulo,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ),
-        ),
-        if (showRule) const AppRule(),
+        Align(alignment: AlignmentDirectional.centerStart, child: tab),
+        const AppRule(),
       ],
     );
   }
