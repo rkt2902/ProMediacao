@@ -1,12 +1,21 @@
 # Funções de servidor (edge functions)
 
-Escritas como ficheiros. Nada foi publicado. Quem publica é o Henrique.
+Publicadas no projeto `aboducqavmsmlzslrseu` com verificação de JWT. `resend-request` foi republicada a 2026-11-26 (bug 5 do qa: campo `delivered`); sem JWT responde `401`.
 
 | Função | Quem chama | O que faz |
 | --- | --- | --- |
 | `invite-mediator` | admin | `{ email, office_id, full_name? }`: cria o utilizador mediador, perfil, pertença ao escritório e envia o convite |
 | `create-client` | mediador | `{ full_name, email }`: cria o cliente (se não existir) e a concessão pendente do escritório do mediador e envia o pedido |
 | `resend-request` | mediador ou cliente | `{ grant_id }` (mediador, "Reenviar pedido") ou `{ email }` (cliente, link novo no ecrã de entrada) |
+
+### Respostas de sucesso de `resend-request`
+
+- Mediador (`{ grant_id }`): `{ "ok": true, "delivered": "link" | "notice" | "none" }`.
+  - `link`: o cliente nunca tinha entrado e recebeu o link mágico.
+  - `notice`: o cliente já tem conta e recebeu um aviso por email sem link (só com `NOTICE_EMAIL_*` configurado).
+  - `none`: não saiu nenhum email (cliente com conta e sem `NOTICE_EMAIL_*`). O pedido continua visível na app do cliente; a app deve dizê-lo ao mediador em vez de "Pedido reenviado".
+- Cliente (`{ email }`): sempre `{ "ok": true }`, sem `delivered`, exista ou não a conta (não revela contas).
+- `create-client` continua a responder só `{ "ok": true }` (a resposta para emails já existentes é neutra de propósito).
 
 Erros: `{ "error": { "code": "..." } }` com códigos fixos (`forbidden`, `invalid_input`, `already_client`, `declined`, `not_pending`, `too_soon` com `retry_after_seconds`, `send_failed`, `cannot_invite`, `not_found`, `server_error`). Nunca há texto técnico.
 

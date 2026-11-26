@@ -37,7 +37,7 @@ Todos os agentes terminam com isto, no máximo 10 linhas:
 O detalhe fica no ficheiro do pacote, não no resumo.
 
 ## Regras duras
-- Migrações: os agentes só escrevem ficheiros .sql e nunca os aplicam. O Henrique aplica no SQL Editor e confirma.
+- Migrações: os agentes (supabase-dev) só escrevem ficheiros .sql e nunca os aplicam. **Quem aplica é o lead** (autorizado pelo Henrique a 26/11), pela API de gestão do Supabase: antes mostra ao Henrique um resumo do que a migração faz, depois aplica, verifica ao vivo e regista em `docs/decisions.md`. Migrações destrutivas (apagar tabelas, colunas ou dados) precisam sempre do OK explícito do Henrique. Scripts de teste em transação com ROLLBACK podem ser corridos pelo lead.
 - Numa tarefa, nenhum ficheiro tem dois donos.
 - Os agentes não fazem perguntas ao Henrique: escrevem a dúvida em DECISÕES EM ABERTO e o lead junta tudo no gate seguinte.
 

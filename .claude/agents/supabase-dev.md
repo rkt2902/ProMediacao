@@ -1,6 +1,6 @@
 ---
 name: supabase-dev
-description: Dev de backend Supabase/Postgres. Usa para tabelas, RPCs, RLS, triggers e edge functions. Escreve migrações como ficheiros .sql e nunca as aplica.
+description: Dev de backend Supabase/Postgres. Usa para tabelas, RPCs, RLS, triggers e edge functions. Escreve migrações como ficheiros .sql e nunca as aplica (aplica o lead).
 model: opus
 permissionMode: acceptEdits
 skills:
