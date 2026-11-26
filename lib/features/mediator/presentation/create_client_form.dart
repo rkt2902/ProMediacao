@@ -364,14 +364,9 @@ class _CreateClientViewState extends State<CreateClientView> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _cancelButton(expand: false),
+                Expanded(flex: 2, child: _cancelButton(expand: true)),
                 const SizedBox(width: AppSpace.s12),
-                Expanded(
-                  child: Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: _submitButton(online, expand: false),
-                  ),
-                ),
+                Expanded(flex: 3, child: _submitButton(online, expand: true)),
               ],
             ),
           ),

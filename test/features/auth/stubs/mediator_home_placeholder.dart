@@ -1,10 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../core/design/tokens.dart';
-import '../../core/design/typography.dart';
-import '../../core/widgets/widgets.dart';
-import '../../features/auth/presentation/session_colophon.dart';
-import '../app_scope.dart';
+import 'package:promediacao/core/design/tokens.dart';
+import 'package:promediacao/core/design/typography.dart';
+import 'package:promediacao/core/widgets/widgets.dart';
+import 'package:promediacao/features/auth/presentation/session_colophon.dart';
+import 'package:promediacao/app/app_scope.dart';
 
 /// MARCADOR TEMPORÁRIO: "Clientes" é da tarefa 6. Só serve para a rota por
 /// papel existir, já com a moldura (escritório no separador, nome + "Sair")

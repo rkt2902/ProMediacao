@@ -19,7 +19,7 @@ void main() {
       expect(AppSize.larguraFormulario, 400);
       expect(AppSize.textoMinimo, 240);
       expect(AppSize.linhaTabela, 72);
-      expect(AppSize.colunaEstado, 140);
+      expect(AppSize.colunaEstado, 152);
       expect(AppSize.colunaData, 248);
       expect(AppSize.colunaAcao, 160);
       expect(AppBreakpoints.alturaBaixa, 480);

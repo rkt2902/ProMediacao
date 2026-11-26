@@ -8,6 +8,12 @@ import 'package:promediacao/app/connectivity.dart';
 import 'package:promediacao/features/auth/data/password_prompt_store.dart';
 import 'package:promediacao/features/auth/domain/auth_models.dart';
 import 'package:promediacao/features/auth/domain/auth_repository.dart';
+import 'package:promediacao/app/route_builders.dart';
+
+import 'stubs/admin_home_placeholder.dart';
+import 'stubs/client_home_placeholder.dart';
+import 'stubs/consent_placeholder.dart';
+import 'stubs/mediator_home_placeholder.dart';
 
 /// Repositório de teste: sem rede, tudo controlável.
 class FakeAuthRepository implements AuthRepository {
@@ -134,7 +140,11 @@ Future<AppServices> pumpAuthApp(
     connectivity: connectivity ?? AppConnectivity(probe: repo.isReachable),
   );
   await tester.pumpWidget(
-    ProMediacaoApp(services: services, initialLocation: location),
+    ProMediacaoApp(
+      services: services,
+      initialLocation: location,
+      builders: stubRouteBuilders,
+    ),
   );
   await tester.pumpAndSettle();
   addTearDown(() async {
@@ -142,3 +152,17 @@ Future<AppServices> pumpAuthApp(
   });
   return services;
 }
+
+/// Ecrãs por papel simplificados: os testes de autenticação não iniciam o
+/// Supabase, por isso não usam os ecrãs reais (testados nas suas pastas).
+const stubRouteBuilders = RouteBuilders(
+  adminHome: _admin,
+  mediatorHome: _mediator,
+  clientHome: _client,
+  consent: _consent,
+);
+
+Widget _admin(BuildContext c) => const AdminHomePlaceholder();
+Widget _mediator(BuildContext c) => const MediatorHomePlaceholder();
+Widget _client(BuildContext c) => const ClientHomePlaceholder();
+Widget _consent(BuildContext c, String id) => ConsentPlaceholder(grantId: id);

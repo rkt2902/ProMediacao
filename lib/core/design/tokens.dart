@@ -108,7 +108,7 @@ abstract final class AppSize {
   static const double linhaTabela = 72;
 
   /// Colunas fixas das tabelas (Estado, Data, Ação).
-  static const double colunaEstado = 140;
+  static const double colunaEstado = 152;
   static const double colunaData = 248;
   static const double colunaAcao = 160;
 }
