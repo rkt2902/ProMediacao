@@ -68,7 +68,7 @@ class PageFrame extends StatelessWidget {
                   style: AppType.rotulo.copyWith(color: AppColors.tintaMedia),
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
         ),
