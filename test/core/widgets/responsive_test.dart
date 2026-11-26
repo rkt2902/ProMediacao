@@ -20,7 +20,7 @@ void main() {
       expect(AppSize.textoMinimo, 240);
       expect(AppSize.linhaTabela, 72);
       expect(AppSize.colunaEstado, 140);
-      expect(AppSize.colunaData, 200);
+      expect(AppSize.colunaData, 248);
       expect(AppSize.colunaAcao, 160);
       expect(AppBreakpoints.alturaBaixa, 480);
     });

@@ -144,6 +144,27 @@ abstract final class AppType {
     features: _tabular,
   );
 
+  /// Wordmark "ProDossier" (colofão, emails): 19/24, -0.2. Este estilo é
+  /// "Dossier" (600, `tinta`); o "Pro" usa [marcaPro].
+  static final TextStyle marca = _style(
+    family: serif,
+    fallback: _serifFallback,
+    size: 19,
+    line: 24,
+    weight: 600,
+    letterSpacing: -0.2,
+  );
+
+  /// "Pro" do wordmark: 400 itálico, `tintaMedia`.
+  static final TextStyle marcaPro = _style(
+    family: serif,
+    fallback: _serifFallback,
+    size: 19,
+    line: 24,
+    weight: 400,
+    letterSpacing: -0.2,
+  ).copyWith(fontStyle: FontStyle.italic, color: AppColors.tintaMedia);
+
   /// Título do ecrã conforme o breakpoint.
   static TextStyle tituloPara(Breakpoint b) =>
       b == Breakpoint.compacto ? tituloCompacto : titulo;

@@ -1,34 +1,38 @@
 # Templates de email do Supabase Auth
 
-Estilo do `docs/design/DESIGN.md` ("Fora da app"): papel e tinta, serifa Georgia nos títulos e no wordmark (as fontes da app não existem em clientes de email), botão cheio a tinta, colofão no fim. HTML com tabelas e estilos inline, sem JS nem imagens, contraste AA, legível sem imagens. O Supabase só envia HTML: os `.txt` são a versão de texto de referência (para um SMTP próprio futuro) e guardam a mesma copy.
+Estilo do `docs/design/DESIGN.md` ("Fora da app"): papel e tinta, serifa nos títulos e no wordmark (Source Serif 4 com alternativa Georgia; o corpo usa Atkinson com alternativas Segoe UI, Helvetica, Arial), botão cheio a tinta, colofão no fim. HTML com tabelas e estilos inline, sem JS nem imagens, contraste AA (tinta 15.1, tintaMedia 8.0, tintaTenue 5.2), legível sem imagens. O Supabase só envia HTML: os `.txt` são a versão de texto de referência (para um SMTP próprio futuro) com a mesma copy.
 
 ## Ficheiros e campos do painel (Authentication > Emails)
 
-| Ficheiro | Campo (separador Templates) | Assunto (Subject) | Quando é enviado |
-| --- | --- | --- | --- |
-| `invite-mediator.html` | Invite user | Convite para o ProDossier | `invite-mediator` (admin convida mediador) |
-| `magic-link.html` | Magic link | O seu link de acesso ao ProDossier | Convite do cliente (`create-client`, `resend-request`) e link de entrada pedido pelo próprio cliente |
-| `recovery.html` | Reset password | Definir uma nova palavra-passe no ProDossier | "Esqueci-me da palavra-passe" (todos os perfis; é também como um cliente sem palavra-passe a cria) |
+| Email | HTML (corpo) | Texto | Campo do painel | Subject |
+| --- | --- | --- | --- | --- |
+| Convite de mediador | `invite-mediator.html` | `invite-mediator.txt` | Invite user | `Convite para o ProDossier` |
+| Convite de cliente | `magic-link.html` (ramo com escritório) | `client-invite.txt` | Magic link | ver abaixo |
+| Link de entrada (cliente) | `magic-link.html` (ramo sem escritório) | `magic-link.txt` | Magic link | ver abaixo |
+| Recuperação de palavra-passe | `recovery.html` | `recovery.txt` | Reset password | `Definir uma nova palavra-passe no ProDossier` |
 
-O convite de cliente e o link de entrada usam o mesmo campo do Supabase (Magic link), por isso estão num só ficheiro com `{{ if .Data.office_name }}`: com escritório mostra o convite (escritório e mediador em destaque); sem escritório mostra o link de entrada simples. Os outros templates (Confirm signup, Change email, Reauthentication e notificações) não são usados na fase 1.
+Subject do Magic link (uma linha, tal como está):
+`{{ if .Data.office_name }}{{ .Data.office_name }} pede acesso aos seus dados{{ else }}O seu link de acesso ao ProDossier{{ end }}`
+
+O convite de cliente e o link de entrada saem os dois por `signInWithOtp` (`supabase/functions/_shared/requests.ts`), por isso partilham o campo Magic link: com `office_name` mostra o convite (escritório e quem enviou em destaque); vazio mostra o link de entrada. Os outros templates (Confirm signup, Change email, Reauthentication, notificações) não são usados na fase 1.
 
 ## Variáveis (Go template)
 
 - `{{ .ConfirmationURL }}`: o link (botão e endereço em texto).
-- `{{ .Data.office_name }}` e `{{ .Data.mediator_name }}`: metadados do utilizador, escritos por `supabase/functions/_shared/requests.ts` antes de pedir o link. Vazios quando não há pedido pendente.
-- `{{ if }}`, `{{ else }}`, `{{ end }}`.
-
-Não há variável de data de envio no Supabase, por isso o colofão do email não leva "Enviado a {data}" (diferença em relação ao DESIGN.md).
+- `{{ .Email }}`: destinatário, no colofão ("Enviado para ..."). O Supabase não tem variável de data de envio, por isso o "Enviado a {data, hora}" do DESIGN.md fica de fora.
+- `{{ .Data.office_name }}`, `{{ .Data.mediator_name }}`: metadados do utilizador escritos por `_shared/requests.ts` antes de pedir o link; vazios quando não há pedido pendente.
+- `{{ if }}`, `{{ else }}`, `{{ end }}`. Verificado com `html/template` do Go: os três HTML compilam e os nomes são escapados.
 
 ## Procedimento para colar
 
-1. Painel Supabase > Authentication > Emails.
-2. Para cada linha da tabela: abrir o separador do template, pôr o Subject da tabela, apagar o corpo e colar o conteúdo do `.html` (modo Source). Guardar.
-3. Enviar um convite de teste a um email próprio e ver no telemóvel e no desktop; com e sem o escritório.
-4. Em URL Configuration, confirmar que `AUTH_REDIRECT_URL` está nos Redirect URLs (ver `supabase/functions/README.md`).
+0. Pré-requisito: SMTP próprio configurado (Authentication > Emails > SMTP Settings) ou plano pago. Sem isso o Supabase recusa (ver Estado).
+1. Authentication > Emails > Templates.
+2. Para cada linha da tabela: abrir o template, pôr o Subject, apagar o corpo, colar o `.html` inteiro (Source). Guardar.
+3. Teste: criar um cliente de teste (convite), pedir um link no ecrã Entrar sem pedido pendente (link de entrada), convidar um mediador de teste, e "Esqueci-me da palavra-passe". Ver cada um no telemóvel e no desktop, com imagens desligadas.
+4. URL Configuration: `AUTH_REDIRECT_URL` nos Redirect URLs (ver `supabase/functions/README.md`).
 
-Alternativa por API de gestão: `PATCH /v1/projects/aboducqavmsmlzslrseu/config/auth` com `mailer_subjects_invite|magic_link|recovery` e `mailer_templates_invite_content|magic_link_content|recovery_content`.
+Alternativa por API: `PATCH https://api.supabase.com/v1/projects/aboducqavmsmlzslrseu/config/auth` só com `mailer_subjects_invite`, `mailer_subjects_magic_link`, `mailer_subjects_recovery`, `mailer_templates_invite_content`, `mailer_templates_magic_link_content`, `mailer_templates_recovery_content` (os nomes são válidos: a API não os rejeita).
 
 ## Estado (2026-11-26)
 
-Não aplicados. A API de gestão recusa (`entitlement_required`): personalizar templates não está disponível no plano gratuito com o email por defeito do Supabase. É preciso configurar um SMTP próprio (decisão já prevista antes de uso real) ou mudar de plano; só depois se colam os templates.
+Não aplicados. PATCH (templates e, à parte, só assuntos) devolve 400 `entitlement_required` (`auth.email_templates`): "Email template modification is not available for free tier projects using the default email provider". GET confirma que os campos continuam nos valores por defeito. Falta SMTP próprio (`smtp_host` vazio) ou mudar de plano; depois cola-se pelo painel ou repete-se o PATCH.

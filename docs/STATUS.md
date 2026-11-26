@@ -20,6 +20,7 @@ Atualizado: 2026-11-26 (fecho do marco "001 Fundação: design aprovado, backend
 ## Decisões abertas
 
 - Domínio próprio (verificar marca ProDossier no INPI/TMview e .pt/.com) e fornecedor de email (recomendado Brevo, precisa do domínio); entretanto o email por defeito do Supabase (limite de 2 por hora).
+- Templates de email (`supabase/templates/`) prontos mas **por aplicar** até haver SMTP próprio; depois, colar segundo o README ou repetir o PATCH (ver tarefa 4d). Fechar o envio de link mágico a mediador/admin (Send Email Hook ou filtro) quando houver SMTP.
 - Criar o projeto Cloudflare Pages e trocar `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL`, site_url e Redirect URLs pelo endereço final.
 - Parecer jurídico (briefing em `docs/business/research/08-juridico.md`); apagamento RGPD de clientes (DELETE bloqueado por desenho).
 - Por validar: diferenciação face a concorrentes, templates de seguradora (fase 2), preços.
