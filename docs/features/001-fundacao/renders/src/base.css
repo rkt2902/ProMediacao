@@ -178,3 +178,53 @@ main.frame { flex: 1; padding-bottom: var(--s48); }
 
 @media (min-width: 640px) { .so-compacto { display: none !important; } }
 @media (max-width: 639px) { .nao-compacto { display: none !important; } }
+
+/* ---- Estados (revisão de 2026-11-26) ---- */
+
+/* OfflineBar: fundo tinta à largura da janela, conteúdo alinhado com a moldura */
+.offline { background: var(--tinta); color: var(--sobreTinta); }
+.offline .in { display: flex; gap: var(--s12); align-items: flex-start; padding: var(--s12) 0; }
+.offline .ic { color: var(--sobreTinta); margin-top: 2px; }
+
+/* LabeledField com erro: contorno erro, mensagem por baixo com ícone */
+.campo.erro .caixa { border-color: var(--erro); }
+.msg-erro { display: flex; gap: var(--s8); align-items: flex-start; color: var(--erro); font-size: 15px; line-height: 22px; font-weight: 600; }
+.msg-erro .ic { margin-top: 2px; }
+
+/* InlineNotice de erro e de sucesso */
+.aviso.erro .ic { color: var(--erro); }
+.aviso .acoes.sem-recuo { padding-left: 0; }
+
+/* Regras da palavra-passe: ícone muda de forma (vazio, visto, erro) e o texto fica */
+.regras { list-style: none; display: flex; flex-direction: column; gap: var(--s4); }
+.regras li { display: flex; gap: var(--s8); align-items: flex-start; font-size: 15px; line-height: 22px; }
+.regras li .ic { margin-top: 2px; }
+.regras li.falta { color: var(--tintaMedia); }
+.regras li.ok { color: var(--tinta); }
+.regras li.erro { color: var(--erro); font-weight: 600; }
+
+/* Skeleton: blocos esqueleto, opacidade a pulsar (AppMotion.pulsar), nunca shimmer */
+.esq { background: var(--esqueleto); border-radius: var(--r-carimbo); }
+.esq.l-titulo { height: 32px; } .esq.l-corpo { height: 18px; } .esq.l-peq { height: 14px; }
+.esq.l-carimbo { height: 26px; width: 104px; } .esq.l-numero { height: 56px; width: 72px; }
+.esq.w30 { width: 30%; } .esq.w40 { width: 40%; } .esq.w50 { width: 50%; } .esq.w60 { width: 60%; } .esq.w70 { width: 70%; } .esq.w80 { width: 80%; } .esq.w90 { width: 90%; } .esq.w100 { width: 100%; }
+@keyframes pulsar { from { opacity: 1; } to { opacity: 0.55; } }
+.animar .esq { animation: pulsar 600ms cubic-bezier(0.65, 0, 0.35, 1) infinite alternate; }
+
+/* Linha acabada de criar/alterar: fundo realce (desvanece em AppMotion.realce na app) */
+.realce-linha { background: var(--realce); }
+
+/* Animações usadas só no protótipo navegável (classe .animar no body) */
+@keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialogo-entrar { from { opacity: 0; transform: translate(-50%, -50%) scale(0.98); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes folha-subir { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes folha-direita { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.animar .veu { animation: aparecer 200ms cubic-bezier(0.33, 1, 0.68, 1); }
+.animar .dialogo { animation: dialogo-entrar 200ms cubic-bezier(0.33, 1, 0.68, 1); }
+.animar .folha-inferior { animation: folha-subir 320ms cubic-bezier(0.33, 1, 0.68, 1); }
+.animar .folha-lateral { animation: folha-direita 320ms cubic-bezier(0.33, 1, 0.68, 1); }
+.animar .aviso, .animar .offline, .animar .resultado { animation: aparecer 200ms cubic-bezier(0.33, 1, 0.68, 1); }
+@media (prefers-reduced-motion: reduce) { .animar * { animation: none !important; } }
+
+/* Estado por parâmetro ?estado=: cada bloco diz em que estados aparece com data-em="a b c" */
+[data-em] { display: none !important; }

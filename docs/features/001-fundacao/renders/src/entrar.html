@@ -6,13 +6,15 @@
 <title>Entrar · referência 001</title>
 <link rel="stylesheet" href="base.css">
 <style>
-  [data-estado="form"] .so-enviado, [data-estado="enviado"] .so-form { display: none; }
   /* Alternativa por link: separada da entrada principal por uma régua à largura da coluna */
   .alternativa { border-top: var(--fino) solid var(--regua); padding-top: var(--s24); margin-top: var(--s24); }
 </style>
 </head>
-<body data-estado="form">
-<script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'form';</script>
+<!-- Estados: normal, enviado, erro (credenciais), rede, validacao, sessao, offline -->
+<body>
+<div class="offline" data-em="offline"><div class="frame"><div class="in">
+  <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Precisa de ligação para entrar.</p>
+</div></div></div>
 <div class="frame"><div class="in">
   <header class="top"><span class="brand">ProDossier</span></header>
 </div></div>
@@ -22,28 +24,50 @@
     <div class="col-form">
       <h1 class="titulo mt32">Entrar</h1>
 
-      <section class="so-form">
+      <div class="aviso mt16" role="status" data-em="sessao"><div class="linha"><span class="ic g">&#xe33d;</span><p class="corpo">A sua sessão terminou. Entre de novo para continuar.</p></div></div>
+
+      <section data-fora="enviado">
         <div class="stack16 mt24">
-          <div class="campo">
+          <div class="campo" data-fora="validacao">
             <label class="rotulo">Email</label>
             <div class="caixa"><span class="valor">maria.figueiredo@exemplo.pt</span></div>
           </div>
-          <div class="campo">
+          <div class="campo erro" data-em="validacao">
+            <label class="rotulo">Email</label>
+            <div class="caixa"><span class="valor">maria.figueiredo@exemplo</span></div>
+            <p class="msg-erro"><span class="ic">&#xe238;</span><span>Escreva um email completo, por exemplo nome@exemplo.pt.</span></p>
+          </div>
+          <div class="campo" data-fora="validacao">
             <label class="rotulo">Palavra-passe</label>
             <div class="caixa pw"><span class="valor">••••••••••••</span><span class="acao"><span class="t">Mostrar</span></span></div>
           </div>
+          <div class="campo erro" data-em="validacao">
+            <label class="rotulo">Palavra-passe</label>
+            <div class="caixa pw"><span class="valor vazio">.</span><span class="acao"><span class="t">Mostrar</span></span></div>
+            <p class="msg-erro"><span class="ic">&#xe238;</span><span>Escreva a palavra-passe.</span></p>
+          </div>
         </div>
-        <div class="btn cheio principal largo mt24">Entrar</div>
+
+        <div class="aviso erro mt24" role="alert" data-em="erro">
+          <div class="linha"><span class="ic g">&#xe238;</span><div><p class="corpoForte">Email ou palavra-passe incorretos.</p><p class="corpoPequeno media mt4">Se ainda não criou palavra-passe, use Receber link de acesso por email.</p></div></div>
+        </div>
+        <div class="aviso erro mt24" role="alert" data-em="rede">
+          <div class="linha"><span class="ic g">&#xe238;</span><p class="corpo">Não foi possível ligar. Verifique a ligação e tente de novo.</p></div>
+        </div>
+
+        <div class="btn cheio principal largo mt24" data-fora="offline">Entrar</div>
+        <div data-em="offline"><div class="btn desativado principal largo mt24">Entrar</div><p class="razao mt8">Sem ligação. Tente quando voltar a ligação.</p></div>
         <div class="mt8"><span class="acao"><span class="t">Esqueci-me da palavra-passe</span></span></div>
 
         <div class="alternativa">
           <p class="corpoForte">Prefere entrar sem palavra-passe?</p>
           <p class="corpoPequeno media mt4">Enviamos um link para o email acima. Só para clientes.</p>
-          <div class="btn contorno principal largo mt16">Receber link de acesso por email</div>
+          <div class="btn contorno principal largo mt16" data-fora="offline">Receber link de acesso por email</div>
+          <div class="btn desativado principal largo mt16" data-em="offline">Receber link de acesso por email</div>
         </div>
       </section>
 
-      <section class="so-enviado mt24">
+      <section class="mt24" data-em="enviado">
         <div class="aviso" role="status">
           <div class="linha">
             <span class="ic g">&#xe3c4;</span>
@@ -59,5 +83,6 @@
     </div>
   </div>
 </div></main>
+<script src="estado.js"></script>
 </body>
 </html>
