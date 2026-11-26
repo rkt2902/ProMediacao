@@ -87,7 +87,8 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 | --- | --- |
 | Vazio | Mediador sem clientes: mensagem e botão "Criar cliente". Cliente sem concessões: "Ainda não partilhas dados com nenhum escritório". Admin sem escritórios: botão "Criar escritório". Contagens a 0. |
 | A carregar | Indicador em listas e ações; botões desativados durante envio para evitar duplicados (criar cliente, aceitar, retirar). |
-| Erro | Copy em PT-PT com tratamento formal (ex.: "Introduza o seu email"). Mensagem com ação de repetir; link expirado ou inválido com explicação e pedido de novo link; email duplicado; falha de envio de email. Palavra-passe errada: "Email ou palavra-passe incorretos", igual exista ou não a conta. Palavra-passe fraca (menos de 8 caracteres) ou confirmação diferente: mensagem junto ao campo. Nunca mostrar erros técnicos. |
+| Erro | Copy em PT-PT com tratamento formal (ex.: "Introduza o seu email"). Mensagem com ação de repetir; link expirado ou inválido com explicação e pedido de novo link; email duplicado; falha de envio de email. Palavra-passe errada: "Email ou palavra-passe incorretos", igual exista ou não a conta. Palavra-passe fraca: uma mensagem por regra em falta, junto ao campo. Nunca mostrar erros técnicos. |
+| Entrada e criar palavra-passe: carregar, erro, offline | A carregar: botão desativado com indicador durante entrar, pedir link ou guardar, sem duplicar envios. Erro de rede ou servidor: "Não foi possível concluir. Tente novamente." com o texto escrito preservado. Offline: aviso visível e "Entrar", "Enviar link" e "Guardar" bloqueados; nunca dar a palavra-passe como guardada sem confirmação do servidor. Se a gravação falhar, o cliente mantém a sessão e a palavra-passe anterior. |
 | Palavra-passe adiada | Cliente sem palavra-passe: entra por link; convite "Criar palavra-passe / Agora não" na entrada por link e sempre disponível na conta; nenhuma funcionalidade bloqueada. |
 | Offline | Sem ligação: aviso visível e ações de escrita bloqueadas; nunca mostrar como retirado ou aceite algo não confirmado pelo servidor. |
 | Sem permissão | Acesso a dados de outro escritório ou sem concessão devolve vazio ou "Sem acesso", sem revelar se o registo existe. Sessão do cliente com concessão retirada: mediador deixa de ver o cliente na lista. |
@@ -106,7 +107,7 @@ Pressupostos: decisões 1 e 2 abaixo assumidas como A. Se o Henrique escolher ou
 | Texto de consentimento (versão, conteúdo) | Utilizadores autenticados | Admin/migração | Só leitura na app | Novo |
 | Contagens (escritórios, mediadores, clientes) | Admin | n/a | Função agregada sem dados pessoais; ver nota de risco com poucos escritórios | Novo |
 
-**Credenciais (Supabase Auth):** email e palavra-passe ficam no Auth, não em tabelas da app; cada pessoa só altera a sua palavra-passe, com sessão válida. Sem novas tabelas nem alterações à matriz de isolamento.
+**Credenciais (Supabase Auth):** email e palavra-passe ficam no Auth, não em tabelas da app; cada pessoa só altera a sua palavra-passe, com sessão válida. Política de palavra-passe (mín. 10, maiúscula, minúscula, número, especial) configurada no Auth e aplicada a todos os perfis, incluindo recuperação. Sem novas tabelas nem alterações à matriz de isolamento.
 
 ## Decisões tomadas (gate 1 aprovado)
 
