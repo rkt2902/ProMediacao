@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'mediator_screens_test.dart' as m;
 void main() {
   testWidgets('dbg', (tester) async {
@@ -13,8 +14,14 @@ void main() {
     await tester.tap(find.text('Criar e enviar pedido'));
     for (var i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 60));
-      final e = tester.takeException();
-      if (e != null) { print('STEP $i: ${e.toString().split("\n").first}'); }
+      void walk(RenderObject r) {
+        if (r is RenderFlex && r.hasSize && r.size.height == 24 && r.constraints.maxWidth < 150 && r.constraints.maxWidth>100) {
+          r.visitChildren((ch) { if (ch is RenderParagraph) print('P ${ch.text.toPlainText()} ${ch.size}'); });
+        }
+        r.visitChildren(walk);
+      }
+      walk(tester.binding.renderViews.first);
+      tester.takeException();
     }
   });
 }

@@ -217,7 +217,12 @@ void main() {
         expect(find.text('Desde 12 nov 2026'), findsOneWidget);
         expect(find.text('Enviado a 26 nov 2026, 15:04'), findsOneWidget);
         expect(find.text('Recusado a 20 nov 2026, 09:12'), findsOneWidget);
-        // Colofão do mediador.
+        // Colofão do mediador (no fim do scroll).
+        await tester.drag(
+          find.byType(CustomScrollView).first,
+          const Offset(0, -3000),
+        );
+        await tester.pumpAndSettle();
         expect(
           find.textContaining(
             'Ana Martins, Ribeira Seguros',
@@ -362,7 +367,6 @@ void main() {
       await tester.tap(find.text('Criar cliente'), warnIfMissed: false);
       await tester.pumpAndSettle();
       expect(find.text('Nome completo'), findsNothing);
-      h.connectivity.dispose();
     });
 
     testWidgets('paginação: 25 por página e "Mostrar mais 25"', (tester) async {
