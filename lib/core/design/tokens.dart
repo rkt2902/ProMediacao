@@ -25,7 +25,6 @@ abstract final class AppColors {
   static const Color sombra = Color(0x1F1B1E24);
 
   /// Tinta a 40%: véu atrás de diálogos e folhas.
-  /// TOKEN ACRESCENTADO (não estava no DESIGN.md): ver handoff.
   static const Color veu = Color(0x661B1E24);
 
   /// Sem cor (para animar de/para um fundo).
@@ -90,7 +89,6 @@ abstract final class AppSize {
   static const double folhaLateral = 440;
   static const double separadorAltura = 40;
 
-  // TOKENS ACRESCENTADOS (usados pelo 03-design.md, sem nome no DESIGN.md):
   /// Ícones de interface (resumo do consentimento, spinner).
   static const double icone = 24;
 
@@ -99,6 +97,20 @@ abstract final class AppSize {
 
   /// Largura do diálogo de confirmação em médio/largo.
   static const double dialogo = 480;
+
+  /// Coluna de formulários (Entrar, recuperar palavra-passe, link expirado).
+  static const double larguraFormulario = 400;
+
+  /// Largura mínima da zona de texto de uma linha antes de empilhar.
+  static const double textoMinimo = 240;
+
+  /// Altura mínima de uma linha de tabela.
+  static const double linhaTabela = 72;
+
+  /// Colunas fixas das tabelas (Estado, Data, Ação).
+  static const double colunaEstado = 140;
+  static const double colunaData = 200;
+  static const double colunaAcao = 160;
 }
 
 enum Breakpoint { compacto, medio, largo }
@@ -109,6 +121,13 @@ abstract final class AppBreakpoints {
 
   /// `largo` > 1100.
   static const double largo = 1100;
+
+  /// Altura da janela abaixo da qual as barras fixas encolhem (telemóvel
+  /// deitado).
+  static const double alturaBaixa = 480;
+
+  static bool lowHeight(BuildContext context) =>
+      MediaQuery.sizeOf(context).height < alturaBaixa;
 
   static Breakpoint of(double width) {
     if (width < medio) return Breakpoint.compacto;

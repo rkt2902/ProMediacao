@@ -270,8 +270,9 @@ class DestructiveButton extends StatelessWidget {
   );
 }
 
-/// Ação de linha sublinhada. Alvo mínimo de 48 de altura. Se estiver
-/// desativada, `disabledReason` vai para o tooltip e para a leitura de ecrã.
+/// Ação de linha sublinhada. Alvo mínimo de 48 x 48 em todos os tamanhos
+/// (nunca encolhe em desktop). Se estiver desativada, `disabledReason`
+/// aparece escrita por baixo e na leitura de ecrã.
 class TextAction extends StatelessWidget {
   const TextAction({
     super.key,
@@ -281,6 +282,9 @@ class TextAction extends StatelessWidget {
     this.loadingLabel,
     this.disabledReason,
     this.danger = false,
+    this.icon,
+    this.autofocus = false,
+    this.semanticsLabel,
   });
 
   final String label;
@@ -290,6 +294,15 @@ class TextAction extends StatelessWidget {
   final String? disabledReason;
   final bool danger;
 
+  /// Ícone antes da palavra (ex.: `logout`, `arrow_back`).
+  final IconData? icon;
+
+  /// Ignorado em compacto (abriria o teclado/saltaria o contexto).
+  final bool autofocus;
+
+  /// Substitui a etiqueta falada (ex.: "Sair da conta de Ana Martins").
+  final String? semanticsLabel;
+
   @override
   Widget build(BuildContext context) {
     final active = onPressed != null && !loading;
@@ -297,11 +310,12 @@ class TextAction extends StatelessWidget {
 
     Widget action = AppPressable(
       onPressed: active ? onPressed : null,
+      autofocus: autofocus,
       semanticsLabel: loading
           ? (loadingLabel ?? label)
           : (!active && disabledReason != null
-                ? '$label. $disabledReason'
-                : null),
+                ? '${semanticsLabel ?? label}. $disabledReason'
+                : semanticsLabel),
       builder: (context, s) {
         final color = !s.enabled && !loading
             ? AppColors.tintaTenue
@@ -316,7 +330,10 @@ class TextAction extends StatelessWidget {
               : AppStroke.fino,
         );
         return ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.alvoMinimo),
+          constraints: const BoxConstraints(
+            minHeight: AppSize.alvoMinimo,
+            minWidth: AppSize.alvoMinimo,
+          ),
           child: Center(
             widthFactor: 1,
             child: Padding(
@@ -346,7 +363,21 @@ class TextAction extends StatelessWidget {
                           ),
                         ],
                       )
-                    : Text(label, key: const ValueKey('label'), style: style),
+                    : Row(
+                        key: const ValueKey('label'),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (icon != null) ...[
+                            Icon(
+                              icon,
+                              size: AppSize.iconePequeno,
+                              color: color,
+                            ),
+                            const SizedBox(width: AppSpace.s8),
+                          ],
+                          Flexible(child: Text(label, style: style)),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -355,7 +386,18 @@ class TextAction extends StatelessWidget {
     );
 
     if (!active && !loading && disabledReason != null) {
-      action = Tooltip(message: disabledReason!, child: action);
+      // A razão está sempre escrita (não só em tooltip).
+      action = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          action,
+          Text(
+            disabledReason!,
+            style: AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
+          ),
+        ],
+      );
     }
     return action;
   }
