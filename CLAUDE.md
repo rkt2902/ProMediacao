@@ -51,6 +51,10 @@ O detalhe fica no ficheiro do pacote, não no resumo.
 - Menos tokens sem perder qualidade: prompts com objetivo, ficheiros de entrada e de saída, critério de feito e o que não fazer; passar caminhos em vez de colar conteúdo; retomar um agente com SendMessage em vez de lançar outro do zero; um único agente por ficheiro; `flutter analyze` e `flutter test` só uma vez no fim de cada tarefa; regenerar só os renders afetados; o lead lê os handoffs, não os ficheiros.
 - Sempre que uma tarefa tiver partes de dificuldade diferente, divide-a: a parte crítica em opus e a rotineira em sonnet.
 
+## Limite de uso (regra do Henrique)
+- Nunca gastar os créditos da sessão até ao fim: parar por volta dos 93% do limite de 5 horas.
+- O lead não vê a percentagem exata. Por isso: depois de cada tarefa concluída, o estado fica em commit e no `STATUS.md`; ao primeiro aviso de limite próximo (mensagem do sistema, um agente parado por limite, ou uma sessão longa com vários agentes Opus em paralelo), não lança agentes novos, guarda tudo (commit e push, `STATUS.md` com o ponto de retoma) e avisa o Henrique. Prefere menos agentes Opus em paralelo quando a sessão já vai longa.
+
 ## Design primeiro (regra do Henrique)
 - Nenhum ecrã é implementado antes de o Henrique ver e aprovar uma referência visual dele (renders em PNG, ou página navegável, por ecrã e nos três tamanhos: telemóvel, tablet, desktop; admin só desktop e um tamanho pequeno). O texto do `03-design.md` não chega.
 - O designer produz primeiro as referências (em `docs/features/NNN-slug/renders/`), o lead mostra-as no gate 2, e só com aprovação o flutter-dev implementa. Mudanças pedidas voltam ao designer.

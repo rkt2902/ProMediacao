@@ -445,7 +445,7 @@ void main() {
       await pumpMediator(tester, repo, clock: clock);
       await tester.tap(find.text('Reenviar pedido').last);
       await tester.pumpAndSettle();
-      expect(find.text('Pode reenviar às 15:05'), findsOneWidget);
+      expect(find.text('Pode reenviar às 15:05'), findsNWidgets(2));
       expect(find.textContaining('Não foi possível'), findsNothing);
     });
 
@@ -502,8 +502,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Escreva o nome do cliente.'), findsOneWidget);
 
-      await tester.enterText(find.byType(TextField).first, '  Maria Teste ');
-      await tester.enterText(find.byType(TextField).last, 'sem-arroba');
+      await tester.enterText(find.byType(EditableText).first, '  Maria Teste ');
+      await tester.enterText(find.byType(EditableText).last, 'sem-arroba');
       await tester.tap(find.text('Criar e enviar pedido'));
       await tester.pumpAndSettle();
       expect(
@@ -513,7 +513,7 @@ void main() {
       expect(repo.created, isEmpty);
 
       await tester.enterText(
-        find.byType(TextField).last,
+        find.byType(EditableText).last,
         'maria.teste@exemplo.pt',
       );
       await tester.testTextInput.receiveAction(
@@ -598,8 +598,11 @@ void main() {
       await pumpMediator(tester, repo, clock: clock);
       await tester.tap(find.text('Criar cliente'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Maria');
-      await tester.enterText(find.byType(TextField).last, 'maria@exemplo.pt');
+      await tester.enterText(find.byType(EditableText).first, 'Maria');
+      await tester.enterText(
+        find.byType(EditableText).last,
+        'maria@exemplo.pt',
+      );
       await tester.tap(find.text('Criar e enviar pedido'));
       await tester.pumpAndSettle();
       expect(
@@ -623,8 +626,8 @@ void main() {
       await pumpMediator(tester, failing, clock: clock);
       await tester.tap(find.text('Criar cliente'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Rui Novo');
-      await tester.enterText(find.byType(TextField).last, 'rui@exemplo.pt');
+      await tester.enterText(find.byType(EditableText).first, 'Rui Novo');
+      await tester.enterText(find.byType(EditableText).last, 'rui@exemplo.pt');
       await tester.tap(find.text('Criar e enviar pedido'));
       await tester.pumpAndSettle();
       expect(
@@ -644,8 +647,11 @@ void main() {
       await pumpMediator(tester, repo, clock: clock);
       await tester.tap(find.text('Criar cliente'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Maria');
-      await tester.enterText(find.byType(TextField).last, 'maria@exemplo.pt');
+      await tester.enterText(find.byType(EditableText).first, 'Maria');
+      await tester.enterText(
+        find.byType(EditableText).last,
+        'maria@exemplo.pt',
+      );
       await tester.tap(find.text('Criar e enviar pedido'));
       await tester.pumpAndSettle();
       expect(

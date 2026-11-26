@@ -184,6 +184,7 @@ Future<AppServices> pumpClientApp(
   String location = '/cliente',
   AppConnectivity? connectivity,
   bool settle = true,
+  String? notice,
 }) async {
   ConsentHandoff.take();
   final auth = FakeAuthRepository(
@@ -197,6 +198,7 @@ Future<AppServices> pumpClientApp(
     prompts: MemoryPasswordPromptStore(),
     connectivity: connectivity ?? AppConnectivity(),
   );
+  if (notice != null) services.session.setNotice(notice);
   await tester.pumpWidget(
     ProMediacaoApp(
       services: services,
