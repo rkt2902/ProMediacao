@@ -76,6 +76,7 @@ class ConfirmSheet extends StatelessWidget {
 
     return Semantics(
       scopesRoute: true,
+      explicitChildNodes: true,
       namesRoute: true,
       label: title,
       child: Padding(
@@ -110,16 +111,11 @@ class ConfirmSheet extends StatelessWidget {
                 ],
               )
             else
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  cancelButton,
-                  if (confirmButton != null) ...[
-                    const SizedBox(width: AppSpace.s12),
-                    confirmButton,
-                  ],
-                ],
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: AppSpace.s12,
+                runSpacing: AppSpace.s12,
+                children: [cancelButton, ?confirmButton],
               ),
           ],
         ),

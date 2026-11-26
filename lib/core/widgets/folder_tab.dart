@@ -92,54 +92,58 @@ class FolderTabs extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Expanded(
-                child: AppPressable(
-                  selected: i == selectedIndex,
-                  borderRadius: AppRadius.separadorBorda,
-                  onPressed: () => onChanged(i),
-                  builder: (context, s) {
-                    final selected = i == selectedIndex;
-                    return AnimatedContainer(
-                      duration: dur,
-                      curve: AppMotion.mudar,
-                      constraints: const BoxConstraints(
-                        minHeight: AppSize.alvoMinimo,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpace.s12,
-                        vertical: AppSpace.s8,
-                      ),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? AppColors.cartolina
-                            : (s.hovered ? AppColors.realce : AppColors.papel),
-                        borderRadius: AppRadius.separadorBorda,
-                        border: selected
-                            ? null
-                            : Border.all(
-                                color: AppColors.regua,
-                                width: AppStroke.fino,
-                              ),
-                      ),
-                      child: Text(
-                        items[i].label,
-                        textAlign: TextAlign.center,
-                        style: AppType.rotulo.copyWith(
-                          color: selected
-                              ? AppColors.tinta
-                              : AppColors.tintaMedia,
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < items.length; i++)
+                Expanded(
+                  child: AppPressable(
+                    selected: i == selectedIndex,
+                    borderRadius: AppRadius.separadorBorda,
+                    onPressed: () => onChanged(i),
+                    builder: (context, s) {
+                      final selected = i == selectedIndex;
+                      return AnimatedContainer(
+                        duration: dur,
+                        curve: AppMotion.mudar,
+                        constraints: const BoxConstraints(
+                          minHeight: AppSize.alvoMinimo,
                         ),
-                      ),
-                    );
-                  },
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpace.s12,
+                          vertical: AppSpace.s8,
+                        ),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? AppColors.cartolina
+                              : (s.hovered
+                                    ? AppColors.realce
+                                    : AppColors.papel),
+                          borderRadius: AppRadius.separadorBorda,
+                          border: selected
+                              ? null
+                              : Border.all(
+                                  color: AppColors.regua,
+                                  width: AppStroke.fino,
+                                ),
+                        ),
+                        child: Text(
+                          items[i].label,
+                          textAlign: TextAlign.center,
+                          style: AppType.rotulo.copyWith(
+                            color: selected
+                                ? AppColors.tinta
+                                : AppColors.tintaMedia,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
         const AppRule(),
       ],

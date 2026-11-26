@@ -104,28 +104,34 @@ class _AppButton extends StatelessWidget {
                 opacity: loading ? 0 : 1,
                 child: Text(label, style: style, textAlign: TextAlign.center),
               ),
-              AnimatedOpacity(
-                duration: dur,
-                curve: AppMotion.mudar,
-                opacity: loading ? 1 : 0,
-                child: ExcludeSemantics(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: AppSize.iconePequeno,
-                        height: AppSize.iconePequeno,
-                        child: CircularProgressIndicator(
-                          strokeWidth: AppStroke.controlo,
-                          color: fg,
+              // A camada de carregamento só existe a carregar (assim o
+              // texto não aparece duplicado na árvore nem o spinner gira
+              // sem ser preciso).
+              if (loading)
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: dur,
+                  curve: AppMotion.mudar,
+                  builder: (context, t, child) =>
+                      Opacity(opacity: t, child: child),
+                  child: ExcludeSemantics(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: AppSize.iconePequeno,
+                          height: AppSize.iconePequeno,
+                          child: CircularProgressIndicator(
+                            strokeWidth: AppStroke.controlo,
+                            color: fg,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpace.s8),
-                      Text(loadingLabel ?? label, style: style),
-                    ],
+                        const SizedBox(width: AppSpace.s8),
+                        Text(loadingLabel ?? label, style: style),
+                      ],
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         );

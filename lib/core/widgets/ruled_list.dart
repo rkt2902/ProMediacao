@@ -72,13 +72,14 @@ class RuledRow extends StatelessWidget {
     }
 
     if (onTap != null) {
+      final inner = content;
       content = AppPressable(
         onPressed: onTap,
         borderRadius: BorderRadius.zero,
         semanticsLabel: semanticsLabel,
         builder: (context, s) => ColoredBox(
           color: s.hovered ? AppColors.realce : AppColors.nenhuma,
-          child: content,
+          child: inner,
         ),
       );
     } else if (semanticsLabel != null) {
@@ -118,6 +119,7 @@ class _SkeletonRowsState extends State<SkeletonRows>
     final reduced = AppMotion.reduced(context);
     if (reduced && _started) {
       _controller.stop();
+      _controller.value = 0;
       _started = false;
     } else if (!reduced && !_started) {
       _controller.repeat(reverse: true);
