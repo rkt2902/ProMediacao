@@ -8,16 +8,27 @@ import '../domain/auth_repository.dart';
 
 enum ClientLinkStatus { idle, sending, sent, failed }
 
-/// Pedido de link de acesso do cliente (entrada e link expirado partilham-no:
-/// mesmo comportamento e confirmação). Bloqueia 60 s após cada envio.
+/// Pedido de um link por email: link de acesso do cliente (entrada e link
+/// expirado partilham-no: mesmo comportamento e confirmação) ou, com
+/// [ClientLinkController.passwordReset], o link de recuperação de
+/// palavra-passe. Bloqueia 60 s após cada envio e trata o "demasiado cedo"
+/// do servidor como um envio normal: a resposta é igual exista ou não a
+/// conta.
 class ClientLinkController extends ChangeNotifier {
   ClientLinkController(
-    this._repo,
+    AuthRepository repo,
     this._connectivity, {
     this.cooldownSeconds = 60,
-  });
+  }) : _send = repo.requestClientLink;
 
-  final AuthRepository _repo;
+  /// "Recuperar palavra-passe" (`sendPasswordReset`).
+  ClientLinkController.passwordReset(
+    AuthRepository repo,
+    this._connectivity, {
+    this.cooldownSeconds = 60,
+  }) : _send = repo.sendPasswordReset;
+
+  final Future<void> Function(String email) _send;
   final AppConnectivity _connectivity;
   final int cooldownSeconds;
 
@@ -47,7 +58,7 @@ class ClientLinkController extends ChangeNotifier {
     _failure = null;
     notifyListeners();
     try {
-      await _repo.requestClientLink(email);
+      await _send(email);
       _connectivity.reportReachable();
       _sent(email, cooldownSeconds);
     } on AuthFailure catch (f) {

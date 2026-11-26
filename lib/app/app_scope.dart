@@ -14,10 +14,14 @@ class AppServices {
     SessionController? session,
     AppConnectivity? connectivity,
     ClientLinkController? clientLink,
+    ClientLinkController? passwordReset,
   }) : connectivity = connectivity ?? AppConnectivity(probe: auth.isReachable),
        session = session ?? SessionController(auth, prompts: prompts) {
     this.clientLink =
         clientLink ?? ClientLinkController(auth, this.connectivity);
+    this.passwordReset =
+        passwordReset ??
+        ClientLinkController.passwordReset(auth, this.connectivity);
   }
 
   final AuthRepository auth;
@@ -25,8 +29,13 @@ class AppServices {
   final AppConnectivity connectivity;
   late final ClientLinkController clientLink;
 
+  /// "Recuperar palavra-passe": vive fora do ecrã para o bloqueio de 60 s
+  /// sobreviver a "Voltar a entrar" e a voltar a abrir o ecrã.
+  late final ClientLinkController passwordReset;
+
   void dispose() {
     clientLink.dispose();
+    passwordReset.dispose();
     session.dispose();
     connectivity.dispose();
   }
