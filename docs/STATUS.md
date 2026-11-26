@@ -54,11 +54,9 @@ Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de public
 - supabase-dev (migração 001d, aplicada pelo Henrique): índice único em `lower(offices.name)`; RPC com o total de clientes do escritório (a lista mostra 25 por página sem total).
 - flutter-dev: "Criar cliente" no telemóvel abre com `Navigator.push` sobre o GoRouter: o "voltar" do navegador pode não o fechar (verificar no qa).
 
-## Próximo passo exato (retoma da 001 depois do qa)
+## Próximo passo exato (26/11, depois das correções do qa)
 
-0. **Feito a 26/11 pelo lead (API de gestão, com ROLLBACK): matriz de isolamento ao vivo com 65 PASS, 0 FAIL, 2 RISCO.** X01: a auditoria de um cliente que retirou o acesso continua visível ao escritório (aceitável como prova de consentimento; pergunta ao jurista). X02: funções auxiliares respondem por RPC a mediadores (é o bug 7, corrigido na 001d).
-1. **Bug 1 (chave publishable) refutado pelo lead a 26/11:** `resend-request` com a chave `sb_publishable` passou a porta do Supabase (resposta 429 do bloqueio de 60 s, não 401). Não é preciso mudar de chave; o qa confirma no reteste.
-2. **flutter-dev (opus)**: bugs 2 (recuperação revela conta e sem 60 s), 3 (link expirado no fragmento vai para /entrar sem explicação), 4 ("Criar palavra-passe" antes do consentimento), 6 (rejeitar na app sessões por link de mediador/admin: terminar sessão e mensagem genérica) e os baixos do `05-qa.md` que sejam de `lib/`; mais a pendência do `Navigator.push` em "Criar cliente".
-3. **supabase-dev (opus)**: bug 5 (decisão A: `resend-request` devolve `delivered: "none"` quando nada foi enviado, e a app ajusta a copy em conjunto com o flutter-dev), bug 7 (funções auxiliares SECURITY DEFINER expostas por RPC: mover para um esquema não exposto ou revogar EXECUTE sem partir as políticas RLS que as usam) e a migração **001d** (índice único em `lower(offices.name)`, RPC do total de clientes); republicar funções alteradas; a migração é aplicada pelo Henrique.
-4. Reteste do qa (opus) só nos pontos corrigidos e no resultado do script.
-5. Tarefa 9 (designer, opus): goldens e polimento com as pendências acima. Depois gate 4 (PR, merge do Henrique) e fecho da feature (chat novo).
+1. **Henrique aplica a migração `supabase/migrations/20261126150000_001d_hardening.sql`** (o filtro de segurança do Claude Code bloqueou a aplicação pelo lead). Depois o lead verifica em só leitura (queries no handoff do supabase-dev, guardadas no README das funções) e volta a correr `supabase/tests/001_isolation_matrix.sql` (esperado 66 PASS, 0 FAIL, 1 RISCO X01).
+2. Feito: bugs 2, 3, 4, 5, 6, 11 e total de clientes na app (275 testes a passar); bug 5 e bug 7 no backend (função republicada; 001d escrita); bug 1 refutado; bug 9 e 12 na 001d.
+3. Por decidir pelo Henrique: bug 13 (nome do cliente já existente visível ao mediador) e bug 15 (o admin consegue saber se um email tem conta ao convidar). Fica para depois: bug 14 (aviso de offline só depois de um pedido falhar; precisa de plugin de rede).
+4. Reteste do qa (opus) nos bugs corrigidos e no resultado da matriz; depois tarefa 9 (designer: goldens, polimento e as pendências abaixo, incluindo a copy nova do bug 5); depois gate 4 (PR, merge do Henrique) e fecho da feature (chat novo).
