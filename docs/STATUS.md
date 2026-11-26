@@ -13,9 +13,10 @@ Atualizado: 2026-11-26 (fecho do marco "001 Fundação: fundação visual e aute
 
 1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md` e `docs/features/001-fundacao/04-plan.md`.
 2. Se o Flutter não existir (`flutter --version`), corre `bash docs/cloud/setup-flutter.sh`.
-3. Pergunta ao Henrique quais pontos da checklist abaixo já estão feitos. Sem o ponto 1 e 2 (migrações aplicadas e admin criado) não se lançam as tarefas 5, 6 e 7.
+3. **Primeiro passo de trabalho: tarefa 4b.** O Henrique quer ver referências visuais de cada ecrã antes de implementar (regra "Design primeiro" no `CLAUDE.md`). Lança o `designer` para produzir os renders PNG da 001 em `docs/features/001-fundacao/renders/` (telemóvel, tablet, desktop; admin desktop e um tamanho pequeno), mostra-os ao Henrique e só com aprovação avançam as tarefas 5, 6 e 7. Os renders não dependem do gate 3.
+3b. Pergunta ao Henrique quais pontos da checklist abaixo já estão feitos. Sem o ponto 1 e 2 (migrações aplicadas e admin criado) não se lançam as tarefas 5, 6 e 7.
 4. Pequeno arranjo antes da tarefa 5/6 (flutter-dev): o `PageFrame` ganhou `accountName`/`onSignOut` e `AccountActions` (telemóvel só "Sair"); o `AccountMenu` em `lib/features/auth/` deve passar a usá-los. A copy nova "Não foi possível concluir. Tente de novo." e "Precisa de ligação à internet." precisa de validação do designer.
-5. Lançar as tarefas 5, 6 e 7 (flutter-dev, pastas separadas; os marcadores trocam-se só em `lib/app/route_builders.dart`), depois 8 (qa) e 9 (designer), depois gate 4 (PR com o resumo do `05-qa.md`; o merge é do Henrique).
+5. Depois da aprovação dos renders (4b) e do gate 3, lança as tarefas 5, 6 e 7 (flutter-dev, pastas separadas; os marcadores trocam-se só em `lib/app/route_builders.dart`), depois 8 (qa) e 9 (designer), depois gate 4 (PR com o resumo do `05-qa.md`; o merge é do Henrique).
 6. Critérios transversais: tudo testado em telemóvel/tablet/desktop (admin desktop-first); sem clientes reais até haver parecer jurídico; texto de consentimento `v0-rascunho` é provisório; migrações só como ficheiros, aplicadas pelo Henrique.
 
 ## Decisões abertas
