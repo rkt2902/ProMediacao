@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo pedido · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  .barra-fixa .resumo .corpoForte { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .previa-vazia { padding: var(--s24); border: var(--fino) dashed var(--reguaForte); border-radius: var(--r-superficie); }
+  .inerte { pointer-events: none; }
+  .inerte .ck.on { background: var(--tintaMedia); border-color: var(--tintaMedia); }
+</style>
+</head>
+<!-- Estados (?estado=): normal, escolher, inicio, repetido, acrescentar, lista-vazia, a-carregar, a-criar, erro,
+     sem-concessao, erro-catalogo, offline, sem-clientes, sem-acesso (&motivo=pendente|recusada|retirada) -->
+<body data-colofao="mediador">
+<div id="offline"></div>
+<main class="frame"><div class="in" id="pagina"></div></main>
+<div class="barra-fixa" id="barra"></div>
+<script src="catalogo.js"></script>
+<script src="estado.js"></script>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const e = document.body.dataset.estado;
+  const motivo = q.get('motivo') || 'pendente';
+  const MARIA = { nome: 'Maria do Carmo Figueiredo', email: 'maria.figueiredo@exemplo.pt' };
+
+  // Seleção por estado
+  let sel = ['Automóvel', 'Vida'];
+  if (e === 'escolher' || e === 'inicio' || e === 'sem-clientes' || e === 'sem-acesso' || e === 'a-carregar' || e === 'erro-catalogo') sel = [];
+  if (e === 'repetido') sel = ['Multirriscos Habitação', 'Automóvel'];
+  if (e === 'acrescentar') sel = ['Automóvel'];
+  sel.sort((a, b) => tipo(a).id - tipo(b).id); // a pré-visualização segue a ordem do catálogo
+  const cp = !['inicio', 'escolher', 'repetido', 'acrescentar'].includes(e);
+  const temCliente = e !== 'escolher';
+  const vindoDaFicha = e !== 'escolher' && e !== 'sem-clientes';
+  const offline = e === 'offline';
+  const aCriar = e === 'a-criar';
+
+  if (offline) document.getElementById('offline').innerHTML = F.offline();
+
+  const voltar = `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">${vindoDaFicha ? MARIA.nome : 'Clientes'}</span></span></div>`;
+  const pasta = `<div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span>${F.sair()}</div></div>`;
+  const cab = `<h1 class="titulo mt32">Novo pedido</h1><p class="corpo media mt8 col-leitura">Um pedido por tipo de seguro. O cliente recebe um email curto e vê a lista na app.</p>`;
+  const P = document.getElementById('pagina');
+
+  // ---------- Estados sem formulário ----------
+  if (e === 'sem-clientes') {
+    P.innerHTML = voltar + pasta + cab + `
+      <section class="col-leitura mt48">
+        <h2 class="subtitulo">Ainda não tem clientes com acesso ativo</h2>
+        <p class="corpo mt8">Só pode criar pedidos para clientes que aceitaram partilhar os dados com este escritório. Crie um cliente, ou reenvie o pedido de partilha a quem ainda não respondeu.</p>
+        <div class="btn cheio mt24 nao-compacto">Criar cliente</div>
+        <div class="btn cheio principal largo mt24 so-compacto">Criar cliente</div>
+        <div class="mt8"><span class="acao"><span class="t">Ver clientes pendentes</span></span></div>
+      </section>`;
+    document.getElementById('barra').remove();
+    return;
+  }
+  if (e === 'sem-acesso') {
+    const M = {
+      pendente: ['pendente', 'Pendente', IC.pendente, 'Enviado a 25 nov 2026, 15:04', 'Ainda não aceitou. Reenvie o pedido de partilha.', 'Reenviar pedido de partilha', 'Construções Teixeira &amp; Irmão, Unipessoal Lda.', 'geral@construcoes-teixeira-exemplo.pt'],
+      recusada: ['inativo', 'Recusado', IC.recusado, 'Recusado a 20 nov 2026, 09:12', 'Recusou a partilha. Não é possível criar pedidos.', '', 'Rita Fonseca (exemplo)', 'rita.fonseca@exemplo.pt'],
+      retirada: ['inativo', 'Retirado', IC.retirado, 'Retirado a 26 nov 2026, 15:02', 'Retirou o acesso. Só volta a ser possível se aceitar de novo.', '', 'Paulo Santos (exemplo)', 'paulo.santos@exemplo.pt'],
+    }[motivo];
+    P.innerHTML = `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">Clientes</span></span></div>` + pasta + cab + `
+      <section class="col-leitura mt32">
+        <p class="rotulo media">Cliente</p>
+        <p class="corpoForte mt4">${M[6]}</p>
+        <p class="corpoPequeno media" style="overflow-wrap:anywhere">${M[7]}</p>
+        <div class="estado mt8">${F.carimbo(M[0], M[1], M[2])}<span class="registo tenue">${M[3]}</span></div>
+        <div class="aviso mt24" role="status"><div class="linha"><span class="ic g">${IC.aviso}</span><div><p class="corpoForte">Não é possível criar pedidos para este cliente.</p><p class="corpo">${M[4]}</p></div></div>
+          ${M[5] ? `<div class="acoes mt12"><div class="btn contorno">${M[5]}</div></div>` : ''}</div>
+        <div class="mt24"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">Voltar a Clientes</span></span></div>
+      </section>`;
+    document.getElementById('barra').remove();
+    return;
+  }
+
+  // ---------- 1. Cliente ----------
+  let s1;
+  if (temCliente) {
+    s1 = `<div class="escolhido"><div class="tx"><p class="corpoForte">${MARIA.nome}</p><p class="corpoPequeno media" style="overflow-wrap:anywhere">${MARIA.email}</p></div>
+      <span class="acao ${offline || aCriar ? 'off' : ''}"><span class="t">Mudar</span></span></div>`;
+  } else {
+    const ops = [
+      ['Maria do Carmo Figueiredo', 'maria.figueiredo@exemplo.pt', true],
+      ['Manuel Sousa (exemplo)', 'manuel.sousa@exemplo.pt', false],
+      ['Marta Lopes Unipessoal, Lda. (exemplo)', 'geral@marta-lopes-exemplo.pt', false],
+    ];
+    s1 = `<div class="campo"><label class="rotulo">Procurar por nome ou email</label>
+      <div class="caixa ativa"><span class="valor">Ma<span style="border-left:1.5px solid var(--tinta);margin-left:1px"></span></span><span class="ic g media">${IC.procurar}</span></div></div>
+      <div class="opcoes" role="listbox" aria-label="Clientes com acesso ativo">
+        ${ops.map(([n, m, f]) => `<div class="op ${f ? 'foco-op' : ''}" role="option"><p class="corpoForte um"><span style="text-decoration:underline;text-decoration-thickness:1px">Ma</span>${n.slice(2)}</p><p class="corpoPequeno media um">${m}</p></div>`).join('')}
+        <div class="rodape-op"><p class="corpoPequeno media">Só aparecem clientes que aceitaram partilhar os dados com este escritório.</p></div>
+      </div>`;
+  }
+
+  // ---------- 2. Tipos ----------
+  let s2;
+  if (e === 'a-carregar') {
+    s2 = `<div class="tipos" aria-busy="true" aria-label="A carregar os tipos de seguro">${[60, 45, 55, 70, 65, 40, 60, 50, 80, 85, 30, 60, 35].map((w) => `<div class="tipo esq-l"><div class="esq" style="width:var(--icone);height:var(--icone)"></div><div class="esq l-corpo" style="width:${w}%"></div></div>`).join('')}</div>`;
+  } else if (e === 'erro-catalogo') {
+    s2 = `<div class="aviso erro" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar os tipos de seguro. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
+  } else {
+    s2 = `<div class="tipos ${aCriar ? 'inerte' : ''}" role="group" aria-label="Tipos de seguro">` + CATALOGO.map((t) => {
+      const on = sel.includes(t.nome);
+      const emCurso = t.nome === 'Multirriscos Habitação' && temCliente;
+      const aviso = e === 'repetido' && emCurso ? `<div class="aviso" role="alert"><div class="linha"><span class="ic g">${IC.aviso}</span><div><p class="corpoForte">Já existe um pedido de Multirriscos Habitação em curso.</p><p class="corpoPequeno">Criado a 20 nov 2026, ainda na etapa 1 de 4. Sem confirmar, este tipo não é criado.</p></div></div>
+          <div class="acoes mt12 sem-recuo"><div class="btn contorno">Criar outro na mesma</div><span class="acao"><span class="t">Tirar este tipo</span></span></div></div>` : '';
+      return `<div class="tipo ${on ? 'on' : ''}"><span class="ck ${on ? 'on' : ''}">${on ? `<span class="ic">${IC.check}</span>` : ''}</span><div class="tx"><p class="corpo">${t.nome}</p>${emCurso ? `<p class="registo tenue">Em curso desde 20 nov 2026</p>` : ''}${aviso}</div></div>`;
+    }).join('') + `</div>`;
+  }
+
+  // ---------- 3. Condições particulares ----------
+  const s3 = `<div class="tipo ${cp ? 'on' : ''}" style="border-top:1px solid var(--regua)"><span class="ck ${cp ? 'on' : ''}">${cp ? `<span class="ic">${IC.check}</span>` : ''}</span><div class="tx"><p class="corpo">Permitir condições particulares</p><p class="corpoPequeno media mt4">O cliente pode enviar as condições particulares da apólice atual em vez dos documentos um a um. Vale para todos os tipos escolhidos.</p></div></div>`;
+
+  // ---------- 4. Mensagem ----------
+  const msg = cp ? 'Bom dia, D. Maria. Para a renovação do seguro automóvel e para o novo seguro de vida, preciso destes elementos até ao fim do mês. Qualquer dúvida, ligue-me.' : '';
+  const s4 = `<div class="campo"><label class="rotulo">Para o cliente <span class="media" style="font-weight:400">(opcional)</span></label>
+    <div class="caixa area"><span class="corpo" style="white-space:normal">${msg}</span></div>
+    <div class="pe"><p class="corpoPequeno media">Vai no email e na app. Não escreva dados de saúde.</p><p class="registo tenue" style="flex:none">${msg.length} / 500</p></div></div>`;
+
+  const sec = (n, t, corpo, apoio) => `<section class="sec"><div class="sec-cab"><span class="num">${n}</span><h2 class="subtitulo">${t}</h2></div>${apoio ? `<p class="corpoPequeno media mt4 sec-corpo">${apoio}</p>` : ''}<div class="sec-corpo mt16">${corpo}</div></section>`;
+  const escolhas = `<div>${sec(1, 'Cliente', s1)}${sec(2, 'Tipos de seguro', s2, 'É criado um pedido por tipo.')}${sec(3, 'Condições particulares', s3)}${sec(4, 'Mensagem', s4)}</div>`;
+
+  // ---------- Pré-visualização ----------
+  function bloco(nome, i, n) {
+    const t = tipo(nome);
+    let itens = t.itens.map(([k, x]) => ({ k, x }));
+    let tirados = 0;
+    if (nome === 'Automóvel' && e !== 'repetido') { itens = itens.filter((it) => !it.x.startsWith('Franquias')); tirados = 1; itens.push({ k: 'D', x: 'Fotografias do veículo (frente, traseira e lados)', novo: true }); }
+    if (nome === 'Vida' && e === 'lista-vazia') { tirados = itens.length; itens = []; }
+    const repetido = e === 'repetido' && nome === 'Multirriscos Habitação';
+    const lista = itens.length ? `<div class="itens mt16">${itens.map((it) => `<div class="item ${it.novo && e === 'normal' ? 'realce-linha' : ''}">${F.natureza(it.k)}<div class="txt"><p class="corpo">${it.x}</p>${it.novo ? `<p class="registo tenue">Acrescentado neste pedido</p>` : ''}</div><span class="acao ${aCriar ? 'off' : ''}" aria-label="Tirar ${it.x}"><span class="ic">${IC.tirar}</span><span class="t">Tirar</span></span></div>`).join('')}</div>`
+      : `<div class="aviso erro mt16" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">A lista de Vida está vazia. Acrescente um item ou reponha a lista; sem itens, este pedido não é criado.</p></div></div>`;
+    const novoItem = e === 'acrescentar' ? `<div class="novo-item">
+        <div class="campo"><label class="rotulo">Novo item</label><div class="caixa ativa"><span class="valor">Fotografias do veículo (frente, traseira e lados)</span></div></div>
+        <p class="rotulo mt16">É um</p>
+        <div class="escolha2" role="radiogroup"><span><span class="ic g">${IC.radioOn}</span><span class="corpo">Documento</span></span><span><span class="ic g media">${IC.radioOff}</span><span class="corpo">Dado a preencher</span></span></div>
+        <div class="mt12" style="display:flex;gap:var(--s16);align-items:center;flex-wrap:wrap"><div class="btn contorno">Acrescentar</div><span class="acao"><span class="t">Cancelar</span></span></div>
+      </div>` : '';
+    return `<article class="previa" aria-label="Pedido de ${nome}">
+      <div class="previa-cab"><h3 class="subtitulo">${nome}</h3><span class="registo tenue">${repetido ? 'À espera da sua confirmação' : `Pedido ${i} de ${n}`}</span></div>
+      ${cp ? `<div class="nota mt12"><span class="ic">${IC.info}</span><p class="corpoPequeno media">Pode enviar as condições particulares da apólice atual em vez dos documentos um a um.</p></div>` : ''}
+      ${t.nota ? `<div class="nota mt8"><span class="ic">${IC.info}</span><p class="corpoPequeno media">${t.nota}</p></div>` : ''}
+      ${lista}
+      ${novoItem}
+      <div class="pe-lista">${e === 'acrescentar' ? '<span></span>' : `<span class="acao ${aCriar || offline && false ? 'off' : ''}"><span class="ic">${IC.acrescentar}</span><span class="t">Acrescentar item</span></span>`}
+        ${tirados ? `<span class="corpoPequeno media">${tirados === 1 ? '1 item tirado' : `${tirados} itens tirados`} · <span class="acao" style="min-width:0;padding:0"><span class="t">Repor lista</span></span></span>` : ''}</div>
+    </article>`;
+  }
+  const n = sel.length;
+  const nCriar = e === 'repetido' ? 1 : n;
+  let previa;
+  if (e === 'a-carregar') {
+    previa = `<div class="previa" aria-busy="true"><div class="esq l-titulo w40"></div><div class="esq l-peq w80 mt16"></div>${[70, 50, 80, 60, 40].map((w) => `<div class="regua-b" style="padding:var(--s12) 0"><div class="esq l-corpo" style="width:${w}%"></div></div>`).join('')}</div>`;
+  } else if (!n) {
+    previa = `<div class="previa-vazia"><p class="corpo media">${temCliente ? 'Escolha pelo menos um tipo de seguro para ver aqui a lista que o cliente vai receber.' : 'Escolha o cliente e pelo menos um tipo de seguro para ver aqui a lista que o cliente vai receber.'}</p></div>`;
+  } else {
+    let k = 0;
+    previa = sel.map((s) => bloco(s, (e === 'repetido' && s === 'Multirriscos Habitação') ? 0 : ++k, nCriar)).join('');
+  }
+  const zonaPrevia = `<section aria-labelledby="t-previa"><h2 class="subtitulo" id="t-previa">O cliente vai receber</h2><p class="corpoPequeno media mt4">Tirar ou acrescentar itens muda só este pedido, não a lista do tipo de seguro.</p><div class="mt16">${previa}</div></section>`;
+
+  // ---------- Avisos de topo ----------
+  let topo = '';
+  if (e === 'erro') topo = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível criar os pedidos. Nada foi criado. A sua escolha mantém-se: tente de novo.</p></div></div>`;
+  if (e === 'sem-concessao') topo = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><div><p class="corpoForte">Este cliente já não partilha dados consigo.</p><p class="corpo">Nenhum pedido foi criado. Só pode voltar a pedir se ele aceitar um novo pedido de partilha.</p></div></div><div class="acoes mt12"><div class="btn contorno">Voltar a Clientes</div></div></div>`;
+
+  P.innerHTML = (temCliente ? voltar : `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">Clientes</span></span></div>`) + pasta + cab + topo + `<div class="np mt48">${escolhas}${zonaPrevia}</div>`;
+
+  // ---------- Barra fixa ----------
+  let resumo, sub, botao, razao = '';
+  const nomes = sel.filter((s) => !(e === 'repetido' && s === 'Multirriscos Habitação')).join(', ');
+  if (!temCliente) { resumo = 'Escolha o cliente'; sub = 'Ainda sem tipos de seguro'; }
+  else if (!n) { resumo = `Nenhum pedido para ${MARIA.nome}`; sub = 'Escolha pelo menos um tipo de seguro'; }
+  else { resumo = `${nCriar} ${nCriar === 1 ? 'pedido' : 'pedidos'} para ${MARIA.nome}`; sub = nomes + (cp ? ' · com condições particulares' : '') + (e === 'repetido' ? ' · Multirriscos Habitação à espera de confirmação' : ''); }
+  const rotulo = n ? `Criar ${nCriar} ${nCriar === 1 ? 'pedido' : 'pedidos'}` : 'Criar pedidos';
+  const desativado = !temCliente || !n || offline || e === 'lista-vazia' || e === 'sem-concessao' || e === 'a-carregar' || e === 'erro-catalogo';
+  if (offline) razao = 'Sem ligação. A sua escolha fica guardada neste ecrã; pode criar quando a ligação voltar.';
+  else if (e === 'lista-vazia') razao = 'A lista de Vida está vazia.';
+  else if (e === 'sem-concessao') razao = 'Este cliente já não partilha dados consigo.';
+  else if (!temCliente) razao = 'Escolha o cliente e pelo menos um tipo.';
+  else if (!n && e !== 'a-carregar' && e !== 'erro-catalogo') razao = 'Escolha pelo menos um tipo de seguro.';
+  if (aCriar) botao = `<div class="btn cheio principal"><span class="spin"></span>A criar…</div>`;
+  else botao = `<div class="btn ${desativado ? 'desativado' : 'cheio'} principal">${rotulo}</div>`;
+  document.getElementById('barra').innerHTML = `<div class="frame"><div class="in">
+    <div class="resumo"><p class="corpoForte">${resumo}</p><p class="corpoPequeno media">${sub}</p></div>
+    <div class="lado">${botao}${razao ? `<p class="razao">${razao}</p>` : ''}</div></div></div>`;
+})();
+</script>
+<script src="colofao.js"></script>
+</body>
+</html>

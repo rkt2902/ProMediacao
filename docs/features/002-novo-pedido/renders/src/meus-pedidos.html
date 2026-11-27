@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Os meus pedidos · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  .pag-notif { display: none; }
+  @media (max-width: 639px) {
+    [data-folha="notificacoes"] main.principal-pag, [data-folha="notificacoes"] .veu, [data-folha="notificacoes"] .folha-lateral { display: none; }
+    [data-folha="notificacoes"] .pag-notif { display: block; }
+  }
+  @media (max-width: 1100px) { .folha-lateral { width: var(--folhaLateral); } }
+  .sino.aberto { background: var(--cartolina); border-radius: var(--r-controlo); }
+</style>
+</head>
+<!-- Estados: normal, vazio, a-carregar, erro, offline · ?folha=notificacoes&lista=normal|vazio|lidas|a-carregar|erro|offline -->
+<body data-colofao="cliente">
+<div id="offline"></div>
+<main class="frame principal-pag"><div class="in" id="pagina"></div></main>
+<div class="veu folha"></div>
+<aside class="folha folha-lateral superficie" role="dialog" aria-modal="true" aria-labelledby="t-notif" id="painel"></aside>
+<main class="frame pag-notif form-pagina"><div class="in" id="pagina-notif"></div></main>
+<script src="catalogo.js"></script>
+<script src="estado.js"></script>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const e = document.body.dataset.estado;
+  const lista = q.get('lista') || 'normal';
+  const aberto = document.body.dataset.folha === 'notificacoes';
+  const off = e === 'offline';
+  if (off) document.getElementById('offline').innerHTML = F.offline();
+  const porLer = lista === 'normal' || lista === 'offline' ? 2 : lista === 'a-carregar' || lista === 'erro' ? 2 : 0;
+  const nSino = e === 'vazio' ? 0 : porLer;
+  const pasta = (abertoAqui) => `<div class="pasta"><div class="separador rotulo">Os meus dados</div><div class="conta">${F.sino(nSino).replace('class="sino"', `class="sino${abertoAqui ? ' aberto' : ''}"`)}${F.sair()}</div></div>`;
+
+  // ---------- Os meus pedidos ----------
+  const ped = (tipoN, esc, data, nD, nI, retirado) => `<div class="ped">
+    <div class="texto"><p class="subtitulo">${tipoN}</p>
+      <p class="corpoPequeno media mt4">Do escritório ${esc}</p>
+      ${retirado ? `<div class="estado mt8">${F.carimbo('inativo', 'Acesso retirado', IC.retirado)}<span class="registo tenue">Criado a ${data}</span></div>`
+        : `<div class="meta mt8">${F.trilho(1, 'Etapa 1 de 4: Pedido criado')}<span class="registo tenue">${data}</span></div>`}
+      <p class="corpoPequeno mt8">${nD} ${nD === 1 ? 'documento' : 'documentos'} e ${nI} ${nI === 1 ? 'dado' : 'dados'} pedidos</p></div>
+    <div class="acoes"><div class="btn contorno">Ver o pedido</div></div></div>`;
+  let corpo;
+  if (e === 'a-carregar') corpo = `<div aria-busy="true"><div class="esq l-corpo w50 mt24"></div><div class="esq l-peq w30 mt32"></div><div class="lista mt8">${[40, 30, 50].map((w) => `<div class="linha"><div class="esq l-titulo" style="width:${w}%"></div><div class="esq l-peq w60 mt8"></div><div class="esq l-peq w40 mt12"></div></div>`).join('')}</div></div>`;
+  else if (e === 'erro') corpo = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar os seus pedidos. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
+  else if (e === 'vazio') corpo = `<section class="mt24"><p class="corpoForte">Ainda não tem pedidos.</p><p class="corpo media mt4">Quando um escritório lhe pedir documentos para um seguro, o pedido aparece aqui e recebe também um email.</p></section>`;
+  else corpo = `<p class="corpoForte mt8">Tem 3 pedidos em curso.</p>
+    <div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. O envio pela app chega em breve; até lá, combine o envio com o escritório.</p></div></div>
+    <h2 class="rotulo media mt32">Em curso</h2>
+    <div class="lista mt8" style="border-top:0">${ped('Automóvel', 'Ribeira Seguros', '27 nov 2026, 10:14', 4, 2)}${ped('Vida', 'Ribeira Seguros', '27 nov 2026, 10:14', 1, 4)}${ped('Saúde', 'Gabinete de Mediação de Seguros Vale do Sousa &amp; Filhos, Lda.', '22 nov 2026, 17:48', 1, 3)}</div>
+    <h2 class="rotulo media mt32">Com o acesso retirado</h2>
+    <p class="corpoPequeno media mt4">Estes escritórios já não veem os pedidos nem os seus dados. Se voltar a dar acesso, os pedidos continuam onde estavam.</p>
+    <div class="lista mt8" style="border-top:0">${ped('Multirriscos Habitação', 'Seguros Lima &amp; Viana (exemplo)', '20 nov 2026, 16:40', 2, 6, true)}</div>`;
+  const partilha = e === 'a-carregar' || e === 'erro' ? '' : `<section class="mt48 regua-t" style="padding-top:var(--s24)"><h2 class="subtitulo">Com quem partilho</h2>
+    <p class="corpo mt4">Partilha os seus dados com 2 escritórios.</p><div class="btn contorno mt16">Ver com quem partilho</div></section>`;
+  document.getElementById('pagina').innerHTML = pasta(aberto) + `<div class="col-leitura"><h1 class="titulo mt32">Os meus pedidos</h1>${corpo}${partilha}</div>`;
+
+  // ---------- Notificações ----------
+  const N = [
+    ['Novo pedido: Automóvel', 'Ribeira Seguros', '27 nov 2026, 10:14', true],
+    ['Novo pedido: Vida', 'Ribeira Seguros', '27 nov 2026, 10:14', true],
+    ['Novo pedido: Saúde', 'Gabinete de Mediação de Seguros Vale do Sousa &amp; Filhos, Lda.', '22 nov 2026, 17:48', false],
+    ['Novo pedido: Multirriscos Habitação', 'Seguros Lima &amp; Viana (exemplo)', '20 nov 2026, 16:40', false],
+  ];
+  const linhaN = ([t, esc, d, nova]) => `<div class="notif ${nova && lista !== 'lidas' ? '' : 'lida'}" role="link">
+    <span class="marca" aria-hidden="true"></span>
+    <div style="min-width:0"><p class="corpoForte t1">${t}</p><p class="corpoPequeno media">${esc}</p><p class="registo tenue mt4">${nova && lista !== 'lidas' ? 'Por ler · ' : ''}${d}</p></div>
+    <span class="ic">${IC.seguir}</span></div>`;
+  let ln;
+  if (lista === 'a-carregar') ln = `<div aria-busy="true">${[60, 45, 70, 50].map((w) => `<div class="notif lida"><span></span><div><div class="esq l-corpo" style="width:${w}%"></div><div class="esq l-peq w60 mt8"></div><div class="esq l-peq w30 mt8"></div></div><span></span></div>`).join('')}</div>`;
+  else if (lista === 'erro') ln = `<div class="aviso erro mt16" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar as notificações. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
+  else if (lista === 'vazio') ln = `<div class="mt24"><p class="corpoForte">Sem notificações</p><p class="corpo media mt4">Quando um escritório lhe enviar um pedido, o aviso aparece aqui.</p></div>`;
+  else ln = (lista === 'offline' ? `<div class="aviso mt16" role="status"><div class="linha"><span class="ic g">${IC.offline}</span><p class="corpoPequeno">Sem ligação. Está a ver as notificações de 27 nov 2026, 10:20. Abrir uma notificação só a marca como lida quando a ligação voltar.</p></div></div>` : '') + `<div>${N.map(linhaN).join('')}</div>`;
+  const resumo = ['vazio', 'erro', 'a-carregar'].includes(lista) ? '' : `<span class="registo tenue">${porLer ? `${porLer} por ler` : 'Todas lidas'}</span>`;
+  document.getElementById('painel').innerHTML = `<div class="cab-folha"><div class="meta"><h2 class="subtitulo" id="t-notif">Notificações</h2>${resumo}</div><span class="acao"><span class="ic">${IC.tirar}</span><span class="t">Fechar</span></span></div><div class="corpo-folha">${ln}</div>`;
+  document.getElementById('pagina-notif').innerHTML = `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">Os meus pedidos</span></span></div>` + pasta(true) + `<div class="meta mt32"><h1 class="titulo">Notificações</h1>${resumo}</div><div class="mt8">${ln}</div>`;
+})();
+</script>
+<script src="colofao.js"></script>
+</body>
+</html>

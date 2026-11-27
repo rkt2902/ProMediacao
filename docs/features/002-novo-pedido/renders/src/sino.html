@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sino · estados · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  /* Folha de estados do sino na linha do separador (não é um ecrã). */
+  body { padding: var(--s32); }
+  .caso { display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: var(--s24); align-items: end; padding: var(--s16) 0; border-bottom: var(--fino) solid var(--regua); }
+  .caso .pasta { width: 100%; }
+  .estreito { max-width: 358px; }
+  .estreito .sino .palavra { display: none; }
+</style>
+</head>
+<body>
+<p class="registo tenue">ProDossier · feature 002 · sino na linha do separador (cliente)</p>
+<div class="mt16" id="casos"></div>
+<script src="catalogo.js"></script>
+<script>
+  const linha = (sino, estreito) => `<div class="pasta ${estreito ? 'estreito' : ''}"><div class="separador rotulo">Os meus dados</div><div class="conta">${sino}${F.sair()}</div></div>`;
+  const casos = [
+    ['0 por ler: só o sino, sem contador', F.sino(0)],
+    ['2 por ler', F.sino(2)],
+    ['Mais de 9: "9+"', F.sino('9+')],
+    ['Foco de teclado: anel foco 2 + afastamento 2', F.sino(2).replace('class="sino"', 'class="sino foco"')],
+    ['Painel aberto (médio/largo): fundo cartolina', F.sino(2).replace('class="sino"', 'class="sino" style="background:var(--cartolina);border-radius:var(--r-controlo)"')],
+    ['Compacto (390): ícone + contador; o nome está na leitura de ecrã', F.sino(2), true],
+  ];
+  document.getElementById('casos').innerHTML = casos.map(([t, s, e]) => `<div class="caso"><p class="corpoPequeno media">${t}</p>${linha(s, e)}</div>`).join('');
+</script>
+</body>
+</html>
