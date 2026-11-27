@@ -1,10 +1,10 @@
 # Estado do projeto
 
-Atualizado: 2026-11-27 (**feature 001 Fundação fechada**; à espera do merge do PR #3)
+Atualizado: 2026-11-27 (**feature 001 Fundação fechada e no `main`**; Cloudflare adiado pelo Henrique; a seguir: propor a 002)
 
 ## Agora
 
-- **001 Fundação: PASSA COM RESSALVAS** (`docs/features/001-fundacao/05-qa.md`). PR para o main: https://github.com/rkt2902/ProMediacao/pull/3 (o merge é do Henrique; fecha o gate 4).
+- **001 Fundação: PASSA COM RESSALVAS** (`docs/features/001-fundacao/05-qa.md`). PR https://github.com/rkt2902/ProMediacao/pull/3 com merge feito no `main` (gate 4 fechado).
 - App Flutter web-first e responsiva (entrada, palavra-passe, consentimento, Com quem partilho, clientes do mediador, admin com contagens), design aprovado e goldens da app real em `test/design_review/001_fundacao/`. `flutter analyze` limpo, 275 testes.
 - Supabase ao vivo: migrações 001 a 001e aplicadas e verificadas; matriz de isolamento 66 PASS, 0 FAIL, 1 RISCO (X01); regressão 001d/001e 15 PASS; 3 funções publicadas; Auth com palavra-passe forte, registo público desativado, URLs provisórios `http://localhost:8080`; `private` fora dos esquemas expostos.
 - Regras de trabalho do Henrique no `CLAUDE.md`: design primeiro, fecho de marco no fim de cada feature, gestão de modelos por tarefa, limite de uso (parar aos 93%), o lead aplica migrações com resumo prévio.
@@ -12,8 +12,8 @@ Atualizado: 2026-11-27 (**feature 001 Fundação fechada**; à espera do merge d
 ## Como retomar (chat novo)
 
 1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md` e `docs/business/backlog.md`. Se o Flutter faltar: `bash docs/cloud/setup-flutter.sh`.
-2. **Publicar a app no Cloudflare Pages** (decidido): o Henrique cria a conta/projeto e dá um token da API do Cloudflare pelo pedido de credencial; o lead faz `flutter build web` com `SUPABASE_URL` e a chave publishable e publica; depois troca `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
-3. Com a app online, o Henrique faz a **checklist manual de 8 passos** do `05-qa.md` (sessões e emails reais; o email por defeito envia 2 por hora). Os bugs que aparecerem são corrigidos antes da 002.
+2. **Publicar a app no Cloudflare Pages** (decidido; **adiado a 27/11**: o Henrique ainda não criou a conta, só retomar quando ele disser). Token: My Profile > API Tokens > Custom Token com só Account > Cloudflare Pages > Edit, pedido por `request_credential` para `api.cloudflare.com`. Projeto `promediacao` criado pelo lead (upload direto). Chave publishable: API de gestão, `GET /v1/projects/aboducqavmsmlzslrseu/api-keys`. Passos: o Henrique cria a conta/projeto e dá um token da API do Cloudflare pelo pedido de credencial; o lead faz `flutter build web` com `SUPABASE_URL` e a chave publishable e publica; depois troca `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
+3. Com a app online (bloqueado pelo passo 2: os links mágicos apontam para `localhost`), o Henrique faz a **checklist manual de 8 passos** do `05-qa.md` (sessões e emails reais; o email por defeito envia 2 por hora). Os bugs que aparecerem são corrigidos antes da 002.
 4. Bugs baixos herdados: 16 (botões anunciados duas vezes, `app_pressable.dart:72`), 14 (aviso offline só depois de um pedido falhar; plugin de rede), 10 (ver `05-qa.md`).
 5. **Próxima feature (002):** propor ao Henrique a partir do backlog; candidata natural: "Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir" (o mediador cria pedidos por tipo de seguro), que assenta na 001. Correr `/feature` com bizdev e pm; design primeiro com renders.
 
