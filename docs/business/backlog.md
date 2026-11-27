@@ -6,7 +6,7 @@ Estados: proposta / aprovada / em curso / feita / descartada. Tudo veio da threa
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-11-25 | Login e perfis admin, mediador e cliente | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | Painel do mediador com os pedidos, o progresso e filtros por estado | produto | | | aprovada (planeamento) | |
-| 2026-11-25 | Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir | produto | | | aprovada (planeamento) | |
+| 2026-11-25 | Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir | produto | | | em curso (002, escolhida a 27/11) | |
 | 2026-11-25 | Opção "condições particulares" em vez dos documentos individuais | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | Envio do pedido ao cliente por link seguro (email ou SMS) | produto | | | aprovada (planeamento) | |
 | 2026-11-25 | Cliente carrega documentos e preenche dados, com indicação de progresso | produto | | | aprovada (planeamento) | |
