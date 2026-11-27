@@ -1,6 +1,6 @@
 # Estado do projeto
 
-Atualizado: 2026-11-27 (**feature 001 Fundação fechada e no `main`**; Cloudflare adiado pelo Henrique; a seguir: propor a 002)
+Atualizado: 2026-11-27 (**feature 001 Fundação fechada e no `main`**; Cloudflare adiado pelo Henrique; 002 escolhida e roadmap dos pedidos aprovado)
 
 ## Agora
 
@@ -13,7 +13,7 @@ Atualizado: 2026-11-27 (**feature 001 Fundação fechada e no `main`**; Cloudfla
 
 1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md` e `docs/business/backlog.md`. Se o Flutter faltar: `bash docs/cloud/setup-flutter.sh`.
 2. **Publicar a app no Cloudflare Pages** (decidido; **adiado a 27/11**: o Henrique ainda não criou a conta, só retomar quando ele disser). Token: My Profile > API Tokens > Custom Token com só Account > Cloudflare Pages > Edit, pedido por `request_credential` para `api.cloudflare.com`. Projeto `promediacao` criado pelo lead (upload direto). Chave publishable: API de gestão, `GET /v1/projects/aboducqavmsmlzslrseu/api-keys`. Passos: o Henrique cria a conta/projeto e dá um token da API do Cloudflare pelo pedido de credencial; o lead faz `flutter build web` com `SUPABASE_URL` e a chave publishable e publica; depois troca `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
-3. Com a app online (bloqueado pelo passo 2: os links mágicos apontam para `localhost`), o Henrique faz a **checklist manual de 8 passos** do `05-qa.md` (sessões e emails reais; o email por defeito envia 2 por hora). Os bugs que aparecerem são corrigidos antes da 002.
+3. Com a app online (bloqueado pelo passo 2: os links mágicos apontam para `localhost`), o Henrique faz a **checklist manual de 8 passos** do `05-qa.md` (sessões e emails reais; o email por defeito envia 2 por hora). Os bugs que aparecerem são corrigidos logo (a 002 avança sem esperar pela checklist, por decisão de 27/11).
 4. Bugs baixos herdados: 16 (botões anunciados duas vezes, `app_pressable.dart:72`), 14 (aviso offline só depois de um pedido falhar; plugin de rede), 10 (ver `05-qa.md`).
 5. **Próxima feature (002): escolhida pelo Henrique a 27/11, "Novo pedido" + ecrã de clientes com o estado dos pedidos.** Sequência 002 a 007 e modelo Pedido / Destinatário / Proposta em `docs/business/roadmap.md` (a 002 já prepara o modelo para pedidos do cliente, vários destinatários e propostas). Arranque: o Henrique escreve `/feature Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir, e ecrã de clientes com o estado dos pedidos (ver docs/business/roadmap.md)`. Descrição original: "Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir" (o mediador cria pedidos por tipo de seguro), que assenta na 001. Correr `/feature` com bizdev e pm; design primeiro com renders.
 
