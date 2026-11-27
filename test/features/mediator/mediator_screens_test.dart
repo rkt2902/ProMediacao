@@ -20,6 +20,7 @@ import 'package:promediacao/features/mediator/presentation/clients_list.dart';
 import 'package:promediacao/features/mediator/presentation/mediator_home_page.dart';
 
 import '../auth/auth_test_helpers.dart';
+import '../requests/fake_requests_repository.dart';
 
 /// Repositório de teste: tudo controlável, sem rede.
 class FakeMediatorRepository implements MediatorRepository {
@@ -66,6 +67,7 @@ class FakeMediatorRepository implements MediatorRepository {
     items.add(
       OfficeClient(
         grantId: 'g-new-${created.length}',
+        clientId: 'c-new-${created.length}',
         fullName: fullName,
         email: email,
         status: ClientStatus.pendente,
@@ -82,6 +84,7 @@ class FakeMediatorRepository implements MediatorRepository {
     final c = items[i];
     items[i] = OfficeClient(
       grantId: c.grantId,
+      clientId: c.clientId,
       fullName: c.fullName,
       email: c.email,
       status: c.status,
@@ -96,9 +99,11 @@ OfficeClient client(
   String name,
   String email,
   ClientStatus status,
-  DateTime at,
-) => OfficeClient(
+  DateTime at, {
+  String? clientId,
+}) => OfficeClient(
   grantId: id,
+  clientId: clientId ?? 'c-$id',
   fullName: name,
   email: email,
   status: status,
@@ -134,6 +139,7 @@ List<OfficeClient> fixtures() => [
     'maria.figueiredo@exemplo.pt',
     ClientStatus.ativo,
     DateTime(2026, 11, 12, 10, 4),
+    clientId: 'c-maria',
   ),
 ];
 
@@ -162,6 +168,7 @@ Future<Harness> pumpMediator(
   double textScale = 1.0,
   DateTime Function()? clock,
   bool settle = true,
+  FakeRequestsRepository? requests,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -172,6 +179,7 @@ Future<Harness> pumpMediator(
     auth: auth,
     prompts: MemoryPasswordPromptStore(),
     connectivity: connectivity,
+    requests: requests ?? FakeRequestsRepository(),
   );
   await services.session.start();
   await tester.pumpWidget(
@@ -249,14 +257,19 @@ void main() {
 
     testWidgets('desktop: tabela de 4 colunas com cabeçalhos', (tester) async {
       await pumpMediator(tester, repoWith(), clock: clock);
-      for (final h in ['Cliente', 'Estado', 'Data']) {
+      for (final h in ['Cliente', 'Estado', 'Pedidos']) {
         expect(find.text(h), findsOneWidget);
       }
-      // "Criar cliente" na linha do título, à direita.
+      // "Novo pedido" (principal) na linha do título, à direita, com "Criar
+      // cliente" (secundário) à esquerda dele.
       final title = tester.getTopLeft(find.text('Clientes')).dy;
       final button = tester.getRect(
-        find.widgetWithText(PrimaryButton, 'Criar cliente'),
+        find.widgetWithText(PrimaryButton, 'Novo pedido'),
       );
+      final secondary = tester.getRect(
+        find.widgetWithText(SecondaryButton, 'Criar cliente'),
+      );
+      expect(secondary.right, lessThan(button.left));
       expect(button.top - title, lessThan(60));
       expect(button.height, AppSize.alvoMinimo);
     });
@@ -270,7 +283,7 @@ void main() {
         size: const Size(768, 1024),
         clock: clock,
       );
-      expect(find.text('Estado'), findsOneWidget);
+      expect(find.text('Estado e pedidos'), findsOneWidget);
       expect(find.text('Data'), findsNothing);
       final stamp = tester.getRect(find.text('ATIVO'));
       final date = tester.getRect(find.text('Desde 12 nov 2026'));
@@ -289,10 +302,15 @@ void main() {
         expect(find.text('Cliente'), findsNothing);
         expect(find.text('Estado'), findsNothing);
         final button = tester.getRect(
-          find.widgetWithText(PrimaryButton, 'Criar cliente'),
+          find.widgetWithText(PrimaryButton, 'Novo pedido'),
         );
         expect(button.height, AppSize.alvoPrincipal);
         expect(button.width, 390 - 2 * AppSpace.s16);
+        final secondary = tester.getRect(
+          find.widgetWithText(SecondaryButton, 'Criar cliente'),
+        );
+        expect(secondary.top, greaterThan(button.bottom));
+        expect(secondary.width, 390 - 2 * AppSpace.s16);
       },
     );
 
@@ -300,7 +318,8 @@ void main() {
       ClientsLayout l(double w, Breakpoint b, [double s = 1]) =>
           chooseClientsLayout(width: w, breakpoint: b, textScale: s);
       expect(l(1040, Breakpoint.largo), ClientsLayout.table4);
-      expect(l(1040, Breakpoint.largo, 1.3), ClientsLayout.table4);
+      expect(l(1040, Breakpoint.largo, 1.3), ClientsLayout.table3);
+      expect(l(880, Breakpoint.largo), ClientsLayout.table3);
       expect(l(900, Breakpoint.largo, 1.3), ClientsLayout.table3);
       expect(l(704, Breakpoint.medio), ClientsLayout.table3);
       expect(l(576, Breakpoint.medio), ClientsLayout.stacked);
@@ -374,8 +393,9 @@ void main() {
       expect(find.textContaining('Sem ligação à internet'), findsOneWidget);
       expect(
         find.text('Precisa de ligação.'),
-        findsNWidgets(3),
-      ); // criar + 2 reenvios
+        findsNWidgets(4),
+      ); // novo pedido + criar cliente + 2 reenvios
+      expect(find.text('Precisa de ligação para criar.'), findsOneWidget);
       await tester.tap(find.text('Criar cliente'), warnIfMissed: false);
       await tester.pumpAndSettle();
       expect(find.text('Nome completo'), findsNothing);
@@ -443,6 +463,8 @@ void main() {
         final repo = repoWith();
         await pumpMediator(tester, repo, size: e.value, clock: clock);
         // O pedido g2 (25 nov) pode ser reenviado.
+        await tester.ensureVisible(find.text('Reenviar pedido').last);
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Reenviar pedido').last);
         await tester.pumpAndSettle();
         expect(repo.resent, ['g2']);
@@ -671,6 +693,7 @@ void main() {
       final services = AppServices(
         auth: FakeAuthRepository(session: _mediator),
         prompts: MemoryPasswordPromptStore(),
+        requests: FakeRequestsRepository(),
       );
       await tester.pumpWidget(
         ProMediacaoApp(

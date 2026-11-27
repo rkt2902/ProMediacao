@@ -36,7 +36,9 @@ class _ClientRequestPageState extends State<ClientRequestPage> {
       services.requests,
       services.connectivity,
       requestId: widget.requestId,
-    )..start();
+    );
+    final controller = _controller!;
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.start());
   }
 
   @override

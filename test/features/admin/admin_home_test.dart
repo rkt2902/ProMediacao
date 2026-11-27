@@ -114,7 +114,7 @@ void main() {
       expect(find.text('Ainda não há escritórios.'), findsOneWidget);
       expect(find.textContaining('Crie o primeiro escritório'), findsOneWidget);
       expect(find.text('Criar escritório'), findsOneWidget);
-      expect(find.text('0'), findsNWidgets(3));
+      expect(find.text('0'), findsNWidgets(4));
       expect(tester.takeException(), isNull);
     });
 
@@ -279,6 +279,8 @@ void main() {
     ) async {
       final repo = FakeAdminRepository();
       await _pump(tester, repo, size: e.value);
+      await tester.ensureVisible(find.text('Convidar mediador').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Convidar mediador').first);
       await tester.pumpAndSettle();
       expect(find.byType(InviteMediatorForm), findsOneWidget);

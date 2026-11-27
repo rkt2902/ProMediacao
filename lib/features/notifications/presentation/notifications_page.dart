@@ -29,7 +29,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
-    AppScope.of(context).notifications.loadFirstPage();
+    final controller = AppScope.of(context).notifications;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadFirstPage();
+    });
   }
 
   void _open(AppNotification n) {

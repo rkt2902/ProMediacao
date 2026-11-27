@@ -77,7 +77,11 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
     super.didChangeDependencies();
     if (_started) return;
     _started = true;
-    AppScope.of(context).notifications.loadFirstPage();
+    // Depois da construção: `loadFirstPage` notifica o sino (noutro ramo).
+    final controller = AppScope.of(context).notifications;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadFirstPage();
+    });
   }
 
   /// `open` marca como lida sem esperar; o contador desce quando o servidor

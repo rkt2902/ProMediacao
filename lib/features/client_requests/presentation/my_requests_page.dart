@@ -62,8 +62,12 @@ class _MyRequestsPageState extends State<MyRequestsPage> {
       services.requests,
       services.connectivity,
     );
-    _controller!.start();
-    _loadGrants();
+    final controller = _controller!;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      controller.start();
+      _loadGrants();
+    });
   }
 
   /// Pedidos de acesso pendentes e nº de escritórios com acesso. Se falhar,
