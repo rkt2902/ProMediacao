@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../app/connectivity.dart';
+import '../../requests/domain/request_models.dart';
+import '../../requests/domain/requests_repository.dart';
 import '../domain/mediator_models.dart';
 import '../domain/mediator_repository.dart';
 
@@ -36,6 +38,7 @@ class ClientsController extends ChangeNotifier {
   ClientsController(
     this._repo,
     this._connectivity, {
+    this._requests,
     this.pageSize = 25,
     this.cooldown = const Duration(seconds: 60),
     DateTime Function()? now,
@@ -46,6 +49,9 @@ class ClientsController extends ChangeNotifier {
 
   final MediatorRepository _repo;
   final AppConnectivity _connectivity;
+
+  /// Coluna "Pedidos" (002). Sem ele, a coluna fica por saber.
+  final RequestsRepository? _requests;
   final int pageSize;
   final Duration cooldown;
   final DateTime Function() _now;
@@ -62,6 +68,19 @@ class ClientsController extends ChangeNotifier {
   final Set<String> _sending = {};
   Timer? _timer;
   bool _disposed = false;
+
+  Map<String, ClientRequestsSummary> _summary = const {};
+  bool _requestsKnown = false;
+  int? _openRequests;
+
+  /// O resumo de pedidos chegou (senão a coluna não diz "Sem pedidos").
+  bool get requestsKnown => _requestsKnown;
+
+  /// "{n} pedidos em curso" do escritório, se se soube.
+  int? get openRequests => _openRequests;
+
+  /// Resumo de pedidos de um cliente ativo; nulo = "Sem pedidos".
+  ClientRequestsSummary? summaryFor(OfficeClient c) => _summary[c.clientId];
 
   ClientsLoad get load => _load;
   List<OfficeClient> get items => _items;
@@ -131,6 +150,7 @@ class ClientsController extends ChangeNotifier {
       _connectivity.reportReachable();
       _applyFirstPage(rows, pageSize);
       await _loadTotal();
+      await _loadRequests();
       _load = ClientsLoad.ready;
     } on MediatorFailure catch (f) {
       _reportNetwork(f);
@@ -154,6 +174,33 @@ class ClientsController extends ChangeNotifier {
     }
   }
 
+  /// Resumo dos pedidos dos clientes ativos no ecrã e contagem do escritório.
+  /// Falha silenciosa: a coluna fica por saber, a lista não se estraga.
+  Future<void> _loadRequests() async {
+    final repo = _requests;
+    if (repo == null) return;
+    final ids = [
+      for (final c in _items)
+        if (c.status == ClientStatus.ativo) c.clientId,
+    ].take(maxRows).toList();
+    try {
+      final results = await Future.wait<Object>([
+        ids.isEmpty
+            ? Future.value(const <String, ClientRequestsSummary>{})
+            : repo.officeRequestsSummary(ids),
+        repo.officeOpenRequestCount(),
+      ]);
+      _summary = results[0] as Map<String, ClientRequestsSummary>;
+      _openRequests = results[1] as int;
+      _requestsKnown = true;
+    } on RequestFailure catch (f) {
+      if (f.kind == RequestFailureKind.network) {
+        _connectivity.reportNetworkFailure();
+      }
+      _requestsKnown = false;
+    }
+  }
+
   Future<void> loadMore() async {
     if (_loadingMore || !_hasMore) return;
     _loadingMore = true;
@@ -173,6 +220,7 @@ class ClientsController extends ChangeNotifier {
           if (!known.contains(c.grantId)) c,
       ];
       _hasMore = more;
+      await _loadRequests();
     } on MediatorFailure catch (f) {
       _reportNetwork(f);
       _loadMoreFailed = true;
@@ -193,6 +241,7 @@ class ClientsController extends ChangeNotifier {
       _connectivity.reportReachable();
       _applyFirstPage(rows, wanted);
       await _loadTotal();
+      await _loadRequests();
       _load = ClientsLoad.ready;
       if (highlightId != null) {
         _highlight = highlightId;

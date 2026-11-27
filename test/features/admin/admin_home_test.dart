@@ -102,7 +102,12 @@ void main() {
         tester,
         FakeAdminRepository(
           offices: [],
-          counts: const AdminCounts(offices: 0, mediators: 0, clients: 0),
+          counts: const AdminCounts(
+            offices: 0,
+            mediators: 0,
+            clients: 0,
+            requests: 0,
+          ),
         ),
         size: e.value,
       );

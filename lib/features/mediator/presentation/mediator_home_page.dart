@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../app/app_scope.dart';
 import '../../../app/connectivity.dart';
+import '../../../app/routes.dart';
 import '../../../core/design/tokens.dart';
 import '../../../core/design/typography.dart';
 import '../../../core/widgets/widgets.dart';
@@ -14,6 +15,7 @@ import '../domain/mediator_repository.dart';
 import 'clients_list.dart';
 import 'create_client_form.dart';
 import 'mediator_copy.dart';
+import 'request_parts.dart';
 
 /// Ecrã inicial do mediador: "Clientes" (03-design.md, ecrã 5). Sem
 /// [repository] usa o Supabase da app; os testes passam um fake.
@@ -44,6 +46,7 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
     _controller = ClientsController(
       widget.repository ?? SupabaseMediatorRepository(Supabase.instance.client),
       connectivity,
+      requests: AppScope.of(context).requests,
       now: widget.now,
     )..start();
     _connectivity = connectivity..addListener(_onConnectivity);
@@ -79,6 +82,12 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
       onSignOut: services.session.signOut,
     );
   }
+
+  void _newRequest([OfficeClient? c]) =>
+      goTo(context, AppRoutes.mediatorNewRequestFor(c?.clientId));
+
+  void _openClient(OfficeClient c) =>
+      goTo(context, AppRoutes.mediatorClient(c.clientId));
 
   void _resend(OfficeClient c) => controller.resend(
     c,
@@ -165,7 +174,13 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
       children: [
         // Nome e email selecionáveis para copiar (rato e toque longo).
         SelectionArea(
-          child: ClientsList(controller: c, online: online, onResend: _resend),
+          child: ClientsList(
+            controller: c,
+            online: online,
+            onResend: _resend,
+            onNewRequest: _newRequest,
+            onOpenClient: _openClient,
+          ),
         ),
         if (c.loadMoreFailed) ...[
           const SizedBox(height: AppSpace.s16),
@@ -204,8 +219,9 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
     );
   }
 
-  /// Título, contagem e "Criar cliente": à direita do título em médio/largo,
-  /// por baixo da contagem e a toda a largura em compacto.
+  /// Título, contagem e botões: "Novo pedido" (principal) e "Criar cliente"
+  /// (secundário) à direita do título em médio/largo; por baixo da contagem e
+  /// a toda a largura em compacto.
   Widget _header(bool online, {required bool showSummary}) {
     final c = controller;
     final compact = AppBreakpoints.fromContext(context) == Breakpoint.compacto;
@@ -223,14 +239,21 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
                     .length,
                 partial: c.hasMore,
                 officeTotal: c.total,
+                openRequests: c.openRequests,
               ),
               style: AppType.registo,
             ),
           )
         : const SizedBox.shrink();
-    final button = PrimaryButton(
-      label: MediatorCopy.createClient,
+    final newRequest = PrimaryButton(
+      label: MediatorCopy.newRequest,
       principal: compact,
+      expand: compact,
+      onPressed: online ? _newRequest : null,
+      disabledReason: online ? null : MediatorCopy.needsConnection,
+    );
+    final createClient = SecondaryButton(
+      label: MediatorCopy.createClient,
       expand: compact,
       onPressed: online ? _create : null,
       disabledReason: online ? null : MediatorCopy.needsConnection,
@@ -243,7 +266,9 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
           _title(),
           summary,
           const SizedBox(height: AppSpace.s24),
-          button,
+          newRequest,
+          const SizedBox(height: AppSpace.s12),
+          createClient,
         ],
       );
     }
@@ -257,7 +282,9 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
           ),
         ),
         const SizedBox(width: AppSpace.s16),
-        button,
+        createClient,
+        const SizedBox(width: AppSpace.s16),
+        newRequest,
       ],
     );
   }

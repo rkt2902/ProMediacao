@@ -14,6 +14,7 @@ import 'package:promediacao/features/consent/presentation/client_home_page.dart'
 import 'package:promediacao/features/consent/presentation/consent_page.dart';
 
 import '../auth/auth_test_helpers.dart';
+import '../notifications/fake_notifications_repository.dart';
 
 /// Repositório de teste que imita o servidor: só muda estados permitidos
 /// (pendente -> ativa | recusada, ativa -> retirada) e devolve o que
@@ -185,6 +186,7 @@ Future<AppServices> pumpClientApp(
   AppConnectivity? connectivity,
   bool settle = true,
   String? notice,
+  FakeNotificationsRepository? notifications,
 }) async {
   ConsentHandoff.take();
   final auth = FakeAuthRepository(
@@ -197,6 +199,7 @@ Future<AppServices> pumpClientApp(
     auth: auth,
     prompts: MemoryPasswordPromptStore(),
     connectivity: connectivity ?? AppConnectivity(),
+    notifications: notifications ?? FakeNotificationsRepository(),
   );
   if (notice != null) services.session.setNotice(notice);
   await tester.pumpWidget(
@@ -205,6 +208,8 @@ Future<AppServices> pumpClientApp(
       initialLocation: location,
       builders: RouteBuilders(
         clientHome: (c) =>
+            ConsentScope(repository: consent, child: const ClientHomePage()),
+        clientSharing: (c) =>
             ConsentScope(repository: consent, child: const ClientHomePage()),
         consent: (c, id) => ConsentScope(
           repository: consent,

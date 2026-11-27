@@ -32,6 +32,7 @@ class SupabaseMediatorRepository implements MediatorRepository {
           out.add(
             OfficeClient(
               grantId: '${r['grant_id']}',
+              clientId: '${r['client_id']}',
               fullName: '${r['full_name'] ?? ''}',
               email: '${r['email'] ?? ''}',
               status: status,

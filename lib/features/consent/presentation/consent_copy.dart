@@ -7,6 +7,9 @@ abstract final class ConsentCopy {
   static const tabMyData = 'Os meus dados';
   static const backToHome = 'Com quem partilho';
 
+  /// Regresso de "Com quem partilho" ao ecrã inicial do cliente (002).
+  static const backToRequests = 'Os meus pedidos';
+
   // Consentimento (ecrã 3)
   static const requestsAccess = 'pede acesso aos seus dados';
   static String sentBy(String name) => 'Enviado por $name';

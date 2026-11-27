@@ -5,6 +5,7 @@ abstract final class AdminCopy {
   static const offices = 'Escritórios';
   static const mediators = 'Mediadores';
   static const clients = 'Clientes';
+  static const requests = 'Pedidos';
   static const privacyNote =
       'Só contagens. Por privacidade, a administração não vê nomes, '
       'emails nem documentos.';

@@ -2,14 +2,16 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/design/motion.dart';
 import '../../../core/design/tokens.dart';
 import '../../../core/design/typography.dart';
 import '../../../core/format/dates.dart';
 import '../../../core/widgets/widgets.dart';
 import '../application/clients_controller.dart';
+import '../../requests/domain/request_models.dart';
 import '../domain/mediator_models.dart';
 import 'mediator_copy.dart';
+import 'request_copy.dart';
+import 'request_parts.dart';
 
 /// Composição da lista (03-design.md, ecrã 5).
 enum ClientsLayout { table4, table3, stacked }
@@ -26,7 +28,7 @@ ClientsLayout chooseClientsLayout({
   const gap = AppSpace.s16;
   final four =
       width -
-      (AppSize.colunaEstado + AppSize.colunaData + AppSize.colunaAcao) * s -
+      (AppSize.colunaData + AppSize.colunaEtapa + AppSize.colunaAcao) * s -
       3 * gap;
   final three = width - (AppSize.colunaData + AppSize.colunaAcao) * s - 2 * gap;
   var level = switch (breakpoint) {
@@ -73,11 +75,19 @@ class ClientsList extends StatelessWidget {
     required this.controller,
     required this.online,
     required this.onResend,
+    required this.onNewRequest,
+    required this.onOpenClient,
   });
 
   final ClientsController controller;
   final bool online;
   final void Function(OfficeClient) onResend;
+
+  /// "Novo pedido" da linha (cliente ativo).
+  final void Function(OfficeClient) onNewRequest;
+
+  /// Nome do cliente ativo: abre a ficha.
+  final void Function(OfficeClient) onOpenClient;
 
   @override
   Widget build(BuildContext context) {
@@ -119,42 +129,65 @@ class ClientsList extends StatelessWidget {
     Key? key,
   }) {
     final highlighted = controller.highlightId == item.grantId;
-    final action = item.status == ClientStatus.pendente
-        ? _ResendAction(
-            controller: controller,
-            item: item,
-            online: online,
-            onResend: onResend,
-          )
+    final Widget? action = switch (item.status) {
+      ClientStatus.pendente => _ResendAction(
+        controller: controller,
+        item: item,
+        online: online,
+        onResend: onResend,
+      ),
+      ClientStatus.ativo => TextAction(
+        label: RequestCopy.newRequest,
+        icon: Icons.add,
+        semanticsLabel: '${RequestCopy.newRequest} para ${item.fullName}',
+        onPressed: online ? () => onNewRequest(item) : null,
+        disabledReason: online ? null : MediatorCopy.needsConnectionToCreate,
+      ),
+      ClientStatus.recusado => null,
+    };
+    final link = item.status == ClientStatus.ativo
+        ? () => onOpenClient(item)
         : null;
+    final requests = _RequestsCell(controller: controller, item: item);
     final label =
         '${item.fullName}, ${item.email}. ${_stamp(item.status).spoken}. '
-        '${_dateText(item)}.';
+        '${_dateText(item)}. ${requests.spoken}';
 
     final Widget body = switch (layout) {
-      ClientsLayout.stacked => _StackedBody(item: item, action: action),
+      ClientsLayout.stacked => _StackedBody(
+        item: item,
+        action: action,
+        requests: requests,
+        onOpen: link,
+      ),
       ClientsLayout.table3 => _TableBody(
         item: item,
         action: action,
         scale: scale,
-        withDateColumn: false,
+        columns: 3,
+        requests: requests,
+        onOpen: link,
       ),
       ClientsLayout.table4 => _TableBody(
         item: item,
         action: action,
         scale: scale,
-        withDateColumn: true,
+        columns: 4,
+        requests: requests,
+        onOpen: link,
       ),
     };
     final isTable = layout != ClientsLayout.stacked;
     return KeyedSubtree(
       key: key,
-      child: _Entering(
+      child: Entering(
         enabled: highlighted,
         child: RuledRow(
           highlight: highlighted,
           padding: isTable
-              ? const EdgeInsets.symmetric(vertical: AppSpace.s12)
+              ? EdgeInsets.symmetric(
+                  vertical: link == null ? AppSpace.s12 : AppSpace.s4,
+                )
               : const EdgeInsets.symmetric(vertical: AppSpace.s16),
           // Sem ação: a leitura de ecrã lê a linha toda e diz que não há ações.
           semanticsLabel: action == null
@@ -172,35 +205,6 @@ class ClientsList extends StatelessWidget {
               : body,
         ),
       ),
-    );
-  }
-}
-
-/// Linha nova ou alterada: entra com opacidade e altura (`lento` / `entrar`).
-class _Entering extends StatelessWidget {
-  const _Entering({required this.enabled, required this.child});
-
-  final bool enabled;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!enabled) return child;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: AppMotion.resolve(context, AppMotion.lento),
-      curve: AppMotion.entrar,
-      builder: (context, t, child) => Opacity(
-        opacity: t,
-        child: ClipRect(
-          child: Align(
-            alignment: Alignment.topCenter,
-            heightFactor: t,
-            child: child,
-          ),
-        ),
-      ),
-      child: child,
     );
   }
 }
@@ -226,11 +230,11 @@ class _Header extends StatelessWidget {
           Expanded(child: Text(MediatorCopy.colClient, style: style)),
           gap,
           if (layout == ClientsLayout.table4) ...[
-            col(MediatorCopy.colState, AppSize.colunaEstado * scale),
-            gap,
-            col(MediatorCopy.colDate, AppSize.colunaData * scale),
-          ] else
             col(MediatorCopy.colState, AppSize.colunaData * scale),
+            gap,
+            col(MediatorCopy.colRequests, AppSize.colunaEtapa * scale),
+          ] else
+            col(MediatorCopy.colStateAndRequests, AppSize.colunaData * scale),
           gap,
           // "Ação": só para leitura de ecrã, visualmente vazio.
           SizedBox(
@@ -247,10 +251,17 @@ class _Header extends StatelessWidget {
 }
 
 class _ClientCell extends StatelessWidget {
-  const _ClientCell({required this.item, required this.maxLines});
+  const _ClientCell({
+    required this.item,
+    required this.maxLines,
+    required this.onOpen,
+  });
 
   final OfficeClient item;
   final int maxLines;
+
+  /// Só o cliente ativo tem ligação para a ficha.
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +282,19 @@ class _ClientCell extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        text(item.fullName, AppType.corpoForte),
+        if (onOpen != null)
+          truncates
+              ? Tooltip(
+                  message: item.fullName,
+                  child: NameLink(
+                    label: item.fullName,
+                    maxLines: 1,
+                    onPressed: onOpen,
+                  ),
+                )
+              : NameLink(label: item.fullName, onPressed: onOpen)
+        else
+          text(item.fullName, AppType.corpoForte),
         text(
           item.email,
           AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
@@ -286,13 +309,19 @@ class _TableBody extends StatelessWidget {
     required this.item,
     required this.action,
     required this.scale,
-    required this.withDateColumn,
+    required this.columns,
+    required this.requests,
+    required this.onOpen,
   });
 
   final OfficeClient item;
   final Widget? action;
   final double scale;
-  final bool withDateColumn;
+
+  /// 4 (Estado, Pedidos separados) ou 3 (Estado e pedidos juntos).
+  final int columns;
+  final _RequestsCell requests;
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -302,28 +331,31 @@ class _TableBody extends StatelessWidget {
       semanticsDetail: _spokenDetail(item),
     );
     final date = Text(_dateText(item), style: AppType.registo);
+    final state = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        stamp,
+        const SizedBox(height: AppSpace.s4),
+        date,
+        if (columns == 3 && requests.visible) ...[
+          const SizedBox(height: AppSpace.s8),
+          requests,
+        ],
+      ],
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(child: _ClientCell(item: item, maxLines: 1)),
+        Expanded(
+          child: _ClientCell(item: item, maxLines: 1, onOpen: onOpen),
+        ),
         gap,
-        if (withDateColumn) ...[
-          SizedBox(width: AppSize.colunaEstado * scale, child: stamp),
+        SizedBox(width: AppSize.colunaData * scale, child: state),
+        if (columns == 4) ...[
           gap,
-          SizedBox(width: AppSize.colunaData * scale, child: date),
-        ] else
-          SizedBox(
-            width: AppSize.colunaData * scale,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                stamp,
-                const SizedBox(height: AppSpace.s4),
-                date,
-              ],
-            ),
-          ),
+          SizedBox(width: AppSize.colunaEtapa * scale, child: requests),
+        ],
         gap,
         SizedBox(
           width: AppSize.colunaAcao * scale,
@@ -337,10 +369,17 @@ class _TableBody extends StatelessWidget {
 }
 
 class _StackedBody extends StatelessWidget {
-  const _StackedBody({required this.item, required this.action});
+  const _StackedBody({
+    required this.item,
+    required this.action,
+    required this.requests,
+    required this.onOpen,
+  });
 
   final OfficeClient item;
   final Widget? action;
+  final _RequestsCell requests;
+  final VoidCallback? onOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -348,7 +387,7 @@ class _StackedBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _ClientCell(item: item, maxLines: 2),
+        _ClientCell(item: item, maxLines: 2, onOpen: onOpen),
         const SizedBox(height: AppSpace.s12),
         // A data desce para a linha de baixo se não couber ao lado do carimbo.
         Wrap(
@@ -363,11 +402,88 @@ class _StackedBody extends StatelessWidget {
             Text(_dateText(item), style: AppType.registo),
           ],
         ),
+        if (requests.visible) ...[
+          const SizedBox(height: AppSpace.s12),
+          Align(alignment: Alignment.centerLeft, child: requests),
+        ],
         if (action != null) ...[
           const SizedBox(height: AppSpace.s8),
           Align(alignment: Alignment.centerLeft, child: action),
         ],
       ],
+    );
+  }
+}
+
+/// Coluna "Pedidos": "3 em curso" + trilho com a etapa mais avançada, ou
+/// "Sem pedidos" (clientes ativos). Pendentes e recusados: vazio.
+class _RequestsCell extends StatelessWidget {
+  const _RequestsCell({required this.controller, required this.item});
+
+  final ClientsController controller;
+  final OfficeClient item;
+
+  bool get _active => item.status == ClientStatus.ativo;
+
+  /// Há algo para mostrar (pendentes e recusados não têm pedidos visíveis).
+  bool get visible => _active;
+
+  /// Frase para a leitura de ecrã da linha.
+  String get spoken {
+    if (!_active) return 'Sem pedidos visíveis até o cliente aceitar.';
+    if (!controller.requestsKnown) return 'Pedidos indisponíveis.';
+    final s = controller.summaryFor(item);
+    if (s == null || s.openCount == 0) {
+      return s != null && s.totalCount > 0
+          ? 'Sem pedidos em curso.'
+          : 'Sem pedidos.';
+    }
+    return '${RequestCopy.inProgress(s.openCount)}. Etapa mais avançada: '
+        '${RequestCopy.stageShort(s.maxOpenStage ?? RequestStage.created)}.';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_active) return const SizedBox.shrink();
+    final muted = AppType.corpo.copyWith(color: AppColors.tintaMedia);
+    if (!controller.requestsKnown) {
+      return Text('—', style: muted);
+    }
+    final s = controller.summaryFor(item);
+    if (s == null || s.openCount == 0) {
+      return Text(
+        s != null && s.totalCount > 0
+            ? 'Sem pedidos em curso'
+            : RequestCopy.noRequestsTitle,
+        style: muted,
+      );
+    }
+    final stage = s.maxOpenStage ?? RequestStage.created;
+    return Semantics(
+      container: true,
+      label: spoken,
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '${s.openCount}',
+                  style: AppType.corpoPequeno.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                TextSpan(text: ' em curso', style: AppType.corpoPequeno),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpace.s4),
+          StageTrack(stage: stage.number, label: RequestCopy.stageShort(stage)),
+        ],
+      ),
     );
   }
 }
