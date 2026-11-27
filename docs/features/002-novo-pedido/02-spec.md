@@ -82,7 +82,7 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
    - 7.1 Dado um pedido criado para um cliente que já tem conta ativa (já entrou alguma vez), Então é criada 1 notificação para esse cliente (1 por pedido); para um cliente que nunca entrou, não é criada (só o email, 4.1); ao primeiro acesso não aparecem notificações antigas de pedidos já visíveis no painel.
    - 7.2 Dado uma notificação, Então tem: tipo (ex.: "pedido_criado"), destinatário (utilizador), texto curto, estado lida/não lida, data e ligação ao objeto (tipo e id, ex.: pedido). Sem dados da lista, de saúde nem de outros escritórios no texto.
    - 7.3 Dado o cliente com sessão, Então vê um sino com o contador de não lidas (oculto a 0; "9+" acima de 9) e, ao abrir, a lista por data decrescente, paginada; vazio: "Sem notificações".
-   - 7.4 Dado uma notificação não lida, Quando o cliente a abre, Então passa a lida e o contador desce; o clique leva ao pedido. Se o pedido já não estiver acessível (concessão retirada), mostra "Sem acesso" sem revelar dados.
+   - 7.4 Dado uma notificação não lida, Quando o cliente a abre, Então passa a lida e o contador desce; o clique leva ao pedido. Se a concessão do escritório foi retirada, o pedido abre na mesma, com a etiqueta "Acesso retirado" e sem ações (4.3).
    - 7.5 Dado o cliente, Então só lê e marca como lidas as suas notificações; não pode criá-las, alterá-las além de lida/não lida, nem apagá-las. Mediador e admin: 0 linhas das notificações de clientes.
    - 7.6 Dado offline ou erro, Então o sino mostra o último estado conhecido com aviso, e "marcar como lida" só é dado como feito após confirmação do servidor.
    - 7.7 Dado o telemóvel, tablet e desktop, Então o sino está sempre acessível; a lista abre como painel (desktop) ou ecrã (telemóvel).
@@ -130,10 +130,14 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
 
 | Decisão | A | B | C | Recomendação |
 | --- | --- | --- | --- | --- |
-| 1. Envio do pedido ao cliente | Email curto ao criar, com link (sem lista no email); reaproveita o envio da 001 | Só registar; o mediador avisa fora da app | Email com link copiável, sem envio automático | **A**. Sem isto a 002 não é testável com cliente real. Contra: custo e limite de emails do Supabase por defeito (2 por hora, ver STATUS) |
-| 2. O que o cliente vê antes da 003 | Ecrã mínimo só de leitura com os pedidos e a lista | Nada | Ecrã completo com carregamento (é a 003) | **A**, por o email não poder apontar para um ecrã vazio; B se o prazo apertar |
-| 3. Pedido repetido (mesmo cliente e tipo em curso) | Aviso com confirmação | Bloquear | Permitir sem aviso | **A**: há casos legítimos (dois carros) |
-| 4. Condições particulares por omissão | Desativadas, o mediador liga por pedido | Ativas | Perguntar ao criar | **A** (já decidido) |
-| 5. Pedidos abertos quando a concessão é retirada | Ocultos ao escritório, não apagados, reaparecem com nova concessão; cliente vê "Acesso retirado" (coerente com a 001) | Passam a etapa "cancelado" e ficam ocultos ao escritório para sempre | Apagar os pedidos abertos | **A**: igual à regra dos dados do perfil (decisão 26/11). B/C criam estado e perdas fora do modelo de 4 etapas; apagamento RGPD fica para o parecer jurídico |
-| 6. Editar a lista no pedido | Retirar itens e acrescentar itens livres, só neste pedido (cópia) | Lista fixa do catálogo | Só retirar itens | **A**, por pedido do lead: o mediador conhece o cliente. Contra: o `01-business` previa lista fixa e editar só se a métrica falhasse; a métrica de qualidade (máx. 1 em 10 com ajuste manual) passa a medir-se pelo número de pedidos com lista alterada. Se o Henrique preferir o mínimo, B retira a US 1.4 |
-| 7. Painel geral de pedidos com filtros | Fica para depois | Incluir já uma lista simples | Incluir com filtros | **A**: a lista de Clientes chega |
+Todas decididas no gate 1, 27/11.
+
+| Decisão | Resultado |
+| --- | --- |
+| 1. Envio do pedido ao cliente | **Decidido no gate 1, 27/11** (difere da recomendação): email curto SEMPRE ao criar (US 4.1) mais notificação in-app se o cliente já tem conta ativa (US 7). Risco: limite de emails do Supabase por defeito (2 por hora) |
+| 2. O que o cliente vê antes da 003 | **Decidido no gate 1, 27/11**: o pedido aparece no painel do cliente com as 4 etapas, só leitura (US 4.2), mais o sino de notificações (US 7) |
+| 3. Pedido repetido | **Decidido no gate 1, 27/11**: A, aviso com confirmação (US 1.8) |
+| 4. Condições particulares por omissão | **Decidido no gate 1, 27/11**: A, desativadas (US 1.5) |
+| 5. Pedidos abertos na retirada | **Decidido no gate 1, 27/11**: A, ocultos ao escritório, não apagados, reaparecem com nova concessão (US 2.3, 4.3) |
+| 6. Editar a lista no pedido | **Decidido no gate 1, 27/11**: A, retirar itens e acrescentar itens livres, só neste pedido (US 1.4); a métrica de qualidade mede-se pelos pedidos com lista alterada |
+| 7. Painel geral de pedidos com filtros | **Decidido no gate 1, 27/11**: A, fica para depois |
