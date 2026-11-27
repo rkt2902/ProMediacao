@@ -248,7 +248,13 @@ class NewRequestController extends ChangeNotifier {
     ];
   }
 
-  int removedCount(String code) => _drafts[code]?.removed.length ?? 0;
+  /// Itens do catálogo tirados que ainda existem no catálogo.
+  int removedCount(String code) {
+    final d = _drafts[code];
+    if (d == null) return 0;
+    final ids = {for (final i in d.type.items) i.id};
+    return d.removed.where(ids.contains).length;
+  }
 
   bool isEmptyList(String code) => lines(code).isEmpty;
 

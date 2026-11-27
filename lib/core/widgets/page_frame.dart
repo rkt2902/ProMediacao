@@ -155,11 +155,19 @@ class PageFrame extends StatelessWidget {
         if (compact) {
           // O texto de "Sair" cresce com a escala do sistema (nunca encolhe).
           final scale = MediaQuery.textScalerOf(context).scale(1);
-          accountMax =
+          final wanted =
               (hasBell ? 4 : 2) *
               AppSize.alvoMinimo *
               (scale < 1 ? 1.0 : scale);
-          tabMax = c.maxWidth - (account != null ? accountMax : AppSpace.s48);
+          // Nunca mais do que a largura útil menos um mínimo do separador.
+          accountMax = account == null
+              ? wanted
+              : wanted.clamp(
+                  0.0,
+                  (c.maxWidth - AppSpace.s48).clamp(0.0, wanted),
+                );
+          tabMax = (c.maxWidth - (account != null ? accountMax : AppSpace.s48))
+              .clamp(0.0, double.infinity);
         } else {
           // Com o sino a conta precisa de mais espaço: o separador cede.
           tabMax = hasBell

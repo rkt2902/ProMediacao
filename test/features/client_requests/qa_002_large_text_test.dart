@@ -27,9 +27,6 @@ void main() {
         );
         expect(tester.takeException(), isNull);
       },
-      skip: c.$2 >= 2.0,
-      // Bug 6 do 05-qa.md da 002 ("BoxConstraints has non-normalized width
-      // constraints" em page_frame.dart). Tirar o skip quando corrigido.
     );
   }
 }
