@@ -9,7 +9,15 @@ enum StampStatus {
   ativo('ATIVO', 'ativo', Icons.check_circle_outline, AppColors.estadoAtivo),
   pendente('PENDENTE', 'pendente', Icons.schedule, AppColors.estadoPendente),
   recusado('RECUSADO', 'recusado', Icons.block, AppColors.estadoInativo),
-  retirado('RETIRADO', 'retirado', Icons.undo, AppColors.estadoInativo);
+  retirado('RETIRADO', 'retirado', Icons.undo, AppColors.estadoInativo),
+
+  /// Pedido de um escritório a quem o cliente retirou o acesso (002).
+  acessoRetirado(
+    'ACESSO RETIRADO',
+    'acesso retirado',
+    Icons.undo,
+    AppColors.estadoInativo,
+  );
 
   const StampStatus(this.label, this.spoken, this.icon, this.color);
 

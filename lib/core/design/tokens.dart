@@ -76,6 +76,10 @@ abstract final class AppStroke {
   static const double controlo = 1.5;
   static const double foco = 2;
 
+  /// Espessura do trilho de etapas e da barra de cada coluna da faixa de
+  /// etapas (002).
+  static const double etapa = 4;
+
   /// Afastamento do anel de foco (2, ver DESIGN.md).
   static const double focoAfastamento = 2;
 }
@@ -111,6 +115,21 @@ abstract final class AppSize {
   static const double colunaEstado = 152;
   static const double colunaData = 248;
   static const double colunaAcao = 160;
+
+  /// Coluna Pedidos / Etapa (trilho + palavra), em largo (002).
+  static const double colunaEtapa = 200;
+
+  /// Largura de cada um dos 4 segmentos do trilho de etapas (002).
+  static const double segmentoEtapa = 16;
+
+  /// Coluna "Documento" / "Dado" dos itens de um pedido (002).
+  static const double colunaNatureza = 120;
+
+  /// Altura mínima do campo de mensagem, 4 linhas (002).
+  static const double campoMensagem = 128;
+
+  /// Quadrado a `tinta` das notificações por ler (002).
+  static const double marcaNaoLida = 8;
 }
 
 enum Breakpoint { compacto, medio, largo }
