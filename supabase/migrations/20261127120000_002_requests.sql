@@ -6,8 +6,8 @@
 --            auditoria de pedido (só INSERT), notificações genéricas, RLS de
 --            todas as linhas da matriz de isolamento e RPCs.
 -- Data     : 2026-11-27
--- Estado   : NÃO APLICADA (o Henrique/lead atualiza esta linha depois de
---            aplicar pela API de gestão e verificar ao vivo).
+-- Estado   : APLICADA pelo lead a 2026-11-27 (API de gestão, gate 3 aprovado
+--            pelo Henrique); verificada ao vivo: matriz 002 35 PASS / 0 FAIL.
 --            Aplicar DEPOIS da 001, 001b, 001c, 001d e 001e.
 -- Spec     : docs/features/002-novo-pedido/02-spec.md (US 1 a 7; US 6 = matriz)
 -- Design   : docs/features/002-novo-pedido/03-design.md ("Catálogo: notas na

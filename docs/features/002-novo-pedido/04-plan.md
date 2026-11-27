@@ -36,5 +36,6 @@ Entradas comuns a todas as tarefas: `CLAUDE.md`, `docs/decisions.md` (gates 1 e 
 
 - [x] Gate 1: âmbito aprovado (2026-11-27)
 - [x] Gate 2: renders aprovados (2026-11-27)
-- [ ] Gate 3: migração aplicada e verificada ao vivo; função publicada
+- [x] Gate 3: migração 002 aplicada e verificada ao vivo (27/11: 35 PASS / 0 FAIL)
+- [ ] Função do email publicada (tarefa 2)
 - [ ] Gate 4: release aprovada
