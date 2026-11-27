@@ -7,7 +7,7 @@ Publicadas no projeto `aboducqavmsmlzslrseu` com verificação de JWT. `resend-r
 | `invite-mediator` | admin | `{ email, office_id, full_name? }`: cria o utilizador mediador, perfil, pertença ao escritório e envia o convite |
 | `create-client` | mediador | `{ full_name, email }`: cria o cliente (se não existir) e a concessão pendente do escritório do mediador e envia o pedido |
 | `resend-request` | mediador ou cliente | `{ grant_id }` (mediador, "Reenviar pedido") ou `{ email }` (cliente, link novo no ecrã de entrada) |
-| `send-request-email` (002, por publicar) | mediador | `{ batch_id }`: email curto ao cliente titular com os pedidos de uma criação; serve também o "Reenviar email" |
+| `send-request-email` (002, publicada a 27/11) | mediador | `{ batch_id }`: email curto ao cliente titular com os pedidos de uma criação; serve também o "Reenviar email" |
 
 ## `send-request-email` (feature 002): contrato para a app
 

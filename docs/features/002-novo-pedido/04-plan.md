@@ -38,5 +38,5 @@ Entradas comuns a todas as tarefas: `CLAUDE.md`, `docs/decisions.md` (gates 1 e 
 - [x] Gate 1: âmbito aprovado (2026-11-27)
 - [x] Gate 2: renders aprovados (2026-11-27)
 - [x] Gate 3: migração 002 aplicada e verificada ao vivo (27/11: 35 PASS / 0 FAIL)
-- [ ] Função do email publicada (tarefa 2)
+- [x] Função do email publicada (27/11; ACTIVE, JWT obrigatório, sem sessão dá 401; sem fornecedor responde 503 `email_unavailable`)
 - [ ] Gate 4: release aprovada
