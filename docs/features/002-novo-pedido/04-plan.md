@@ -24,6 +24,7 @@ Entradas comuns a todas as tarefas: `CLAUDE.md`, `docs/decisions.md` (gates 1 e 
 
 - "Já entrou alguma vez" = `auth.users.last_sign_in_at` não nulo, lido no servidor (a app não decide).
 - A lista do pedido é uma cópia (jsonb ou tabela de itens, à escolha do supabase-dev, justificada); itens livres têm texto ≤200 sem `<`/`>`, como os nomes da 001.
+- Depois de responder ao consentimento, o cliente vai para "Com quem partilho" (`/cliente/partilhas`), e esse ecrã ganha regresso a "Os meus pedidos" e o sino; `lib/features/consent/**` passa a ser da tarefa 5. A troca dos marcadores em `lib/app/route_builders.dart` pelos ecrãs reais é do lead, depois das tarefas 4 e 5.
 - Só a 3a toca em `lib/core/**` e só a 3 em `lib/app/**`; se 4 ou 5 precisarem de um widget novo, pedem-no ao lead.
 
 ## Riscos do plano
