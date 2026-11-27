@@ -21,6 +21,8 @@ import 'package:promediacao/features/mediator/presentation/mediator_home_page.da
 
 import '../auth/auth_test_helpers.dart';
 import '../requests/fake_requests_repository.dart';
+import 'package:promediacao/features/requests/domain/request_models.dart';
+import 'package:promediacao/features/mediator/presentation/request_parts.dart';
 
 /// Repositório de teste: tudo controlável, sem rede.
 class FakeMediatorRepository implements MediatorRepository {
@@ -452,6 +454,95 @@ void main() {
       await pumpMediator(tester, repo, clock: clock);
       expect(find.text('A mostrar 25 clientes'), findsOneWidget);
       expect(find.textContaining('Não foi possível'), findsNothing);
+    });
+  });
+
+  group('coluna Pedidos e Novo pedido (002)', () {
+    FakeRequestsRepository requestsRepo() {
+      final r = FakeRequestsRepository()
+        ..openRequestCount = 6
+        ..summary = {
+          'c-maria': ClientRequestsSummary(
+            clientId: 'c-maria',
+            openCount: 3,
+            totalCount: 3,
+            maxOpenStage: RequestStage.created,
+          ),
+        };
+      return r;
+    }
+
+    List<OfficeClient> withPaulo() => [
+      ...fixtures(),
+      client(
+        'g5',
+        'Paulo Santos (exemplo)',
+        'paulo.santos@exemplo.pt',
+        ClientStatus.ativo,
+        DateTime(2026, 11, 10, 9, 0),
+      ),
+    ];
+
+    for (final e in testSizes.entries) {
+      testWidgets('estado dos pedidos, ${e.key}', (tester) async {
+        await pumpMediator(
+          tester,
+          repoWith(withPaulo()),
+          size: e.value,
+          clock: clock,
+          requests: requestsRepo(),
+        );
+        expect(tester.takeException(), isNull);
+        expect(
+          find.text(
+            '5 clientes · 2 pendentes · 1 recusado · 6 pedidos em curso',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('em curso', findRichText: true),
+          findsWidgets,
+        );
+        expect(find.text('Criado'), findsOneWidget);
+        expect(find.byType(StageTrack), findsOneWidget);
+        expect(find.text('Sem pedidos'), findsOneWidget);
+        // "Novo pedido": cabeçalho (principal) + uma ação por cliente ativo.
+        expect(find.text('Novo pedido'), findsNWidgets(3));
+        expect(find.text('Criar cliente'), findsOneWidget);
+      });
+    }
+
+    testWidgets('nomes ativos são ligação; pendentes e recusados não', (
+      tester,
+    ) async {
+      await pumpMediator(
+        tester,
+        repoWith(withPaulo()),
+        clock: clock,
+        requests: requestsRepo(),
+      );
+      expect(find.byType(NameLink), findsNWidgets(2));
+    });
+
+    testWidgets('sem resumo (falha): não diz "Sem pedidos"', (tester) async {
+      final r = requestsRepo()
+        ..failNext = const RequestFailure(RequestFailureKind.unknown);
+      await pumpMediator(
+        tester,
+        repoWith(withPaulo()),
+        clock: clock,
+        requests: r,
+      );
+      expect(find.text('Sem pedidos'), findsNothing);
+      expect(find.text('Maria do Carmo Figueiredo'), findsOneWidget);
+    });
+
+    testWidgets('a lista inteira continua sem clientes: só "Criar cliente"', (
+      tester,
+    ) async {
+      await pumpMediator(tester, repoWith([]), clock: clock);
+      expect(find.text('Novo pedido'), findsNothing);
+      expect(find.text('Criar cliente'), findsOneWidget);
     });
   });
 

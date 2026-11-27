@@ -83,6 +83,8 @@ void main() {
       expect(find.text('3'), findsOneWidget);
       expect(find.text('4'), findsOneWidget);
       expect(find.text('12'), findsOneWidget);
+      expect(find.text('Pedidos'), findsOneWidget);
+      expect(find.text('6'), findsOneWidget);
       expect(find.textContaining('Só contagens'), findsOneWidget);
       expect(find.text('3 mediadores'), findsOneWidget);
       expect(find.text('1 mediador'), findsOneWidget);
