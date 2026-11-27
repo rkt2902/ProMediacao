@@ -1,6 +1,6 @@
 # 03 Design: 002 Novo pedido (mediador) + clientes com o estado dos pedidos
 
-> Estado: **proposta para o gate 2** (2026-11-27). Renders em `renders/` (índice em `renders/README.md`).
+> **Gate 2 aprovado (2026-11-27)** pelo Henrique, com as decisões fechadas na secção "Decisões do gate 2". Tokens novos e o carimbo "Acesso retirado" já estão em `docs/design/DESIGN.md`. Renders em `renders/` (índice em `renders/README.md`).
 > Classificação: **refinamento com extensão**. A identidade da 001 ("Dossiê arrumado", aprovada a 2026-11-26) mantém-se tal como está: papel e tinta, separador de pasta, carimbos, réguas, colofão. A 002 acrescenta quatro peças novas a esse vocabulário (a lista de tipos, a folha "O cliente vai receber", o trilho/faixa de etapas e o sino) e mexe em dois ecrãs da 001 (Clientes e o ecrã inicial do cliente). Nenhuma fonte, cor ou dependência nova.
 > Fonte do âmbito: `02-spec.md` (gate 1 fechado a 27/11). Catálogo: `docs/reference/tipos-de-seguro.md`. O protótipo antigo foi usado só como referência de fluxo (grelha de 13 tipos, caixa de condições particulares, "O cliente vai receber" ao lado).
 
@@ -111,7 +111,7 @@ Mesma composição do ecrã 5 (pedido do cliente), com o widget partilhado `Requ
 ### 4. Os meus pedidos [cliente; passa a ser o ecrã inicial do cliente]
 
 - **Hierarquia:** 1.º (se houver) o bloco "À espera da sua resposta" da 001, que continua acima de tudo; 2.º "Os meus pedidos" e a lista; 3.º a passagem para "Com quem partilho".
-- **Composição:** separador "Os meus dados" + sino + "Sair". Título "Os meus pedidos"; frase-resumo `corpoForte` "Tem 3 pedidos em curso."; `InlineNotice` informativo enquanto não existir a 003 (ver Decisões em aberto). Grupos com cabeçalho `rotulo` `tintaMedia`, coluna `larguraLeitura` 640:
+- **Composição:** separador "Os meus dados" + sino + "Sair". Título "Os meus pedidos"; frase-resumo `corpoForte` "Tem 3 pedidos em curso."; `InlineNotice` informativo enquanto não existir a 003: "Para já, aqui só pode ver o que lhe pedem. Combine o envio com o escritório." (sem promessa de data; sai quando a 003 entrar). Grupos com cabeçalho `rotulo` `tintaMedia`, coluna `larguraLeitura` 640:
   - **Em curso:** cada pedido numa linha com régua: tipo em `subtitulo`; "Do escritório {escritório}" em `corpoPequeno` `tintaMedia` (até 2 linhas); trilho "Etapa 1 de 4: Pedido criado" + `registo` com a data; `corpoPequeno` "4 documentos e 2 dados pedidos"; à direita (médio/largo) ou por baixo a toda a largura (compacto) `SecondaryButton` "Ver o pedido" (48).
   - **Com o acesso retirado** (US 4.3): apoio "Estes escritórios já não veem os pedidos nem os seus dados. Se voltar a dar acesso, os pedidos continuam onde estavam."; a linha leva o carimbo novo "Acesso retirado" (`estadoInativo`, `undo`) em vez do trilho. "Ver o pedido" continua (ver não é uma ação sobre o pedido).
   - A `s48`, depois de uma régua: "Com quem partilho" (`subtitulo`), "Partilha os seus dados com 2 escritórios." e `SecondaryButton` "Ver com quem partilho" (abre o ecrã 4 da 001, que perde o papel de ecrã inicial mas fica igual).
@@ -120,7 +120,7 @@ Mesma composição do ecrã 5 (pedido do cliente), com o widget partilhado `Requ
 ### 5. Pedido [cliente; só leitura]
 
 - **Hierarquia:** 1.º tipo e escritório; 2.º o que lhe pedem (com a mensagem antes, como contexto); 3.º as etapas.
-- **Composição** (coluna 640): regresso "Os meus pedidos"; título com o tipo; "Pedido do escritório Ribeira Seguros" (`corpoForte`); "Enviado por Ana Martins, mediadora" + `registo` data; trilho "Etapa 1 de 4: Pedido criado"; `InlineNotice` interino; "Mensagem de Ana Martins" (`rotulo` `tintaMedia`) + texto `corpo` (quebra livre, nunca cortado); "O que lhe pedem" (`subtitulo`) + `registo` "4 documentos · 2 dados"; notas (condições particulares e nota do tipo); itens com réguas (natureza + texto, sem ação); "Etapas" (`subtitulo`) e a **faixa de etapas**; rodapé "Os documentos que enviar ficam no seu dossiê; só os vê quem tem acesso aos seus dados."
+- **Composição** (coluna 640): regresso "Os meus pedidos"; título com o tipo; "Pedido do escritório Ribeira Seguros" (`corpoForte`); "Enviado por Ana Martins, mediadora" + `registo` data; trilho "Etapa 1 de 4: Pedido criado"; `InlineNotice` interino (mesmo texto de Os meus pedidos); "Mensagem de Ana Martins" (`rotulo` `tintaMedia`) + texto `corpo` (quebra livre, nunca cortado); "O que lhe pedem" (`subtitulo`) + `registo` "4 documentos · 2 dados"; notas (condições particulares e nota do tipo); itens com réguas (natureza + texto, sem ação); "Etapas" (`subtitulo`) e a **faixa de etapas**; rodapé "Os documentos que enviar ficam no seu dossiê; só os vê quem tem acesso aos seus dados."
 - **Faixa de etapas (`StageStrip`):** médio/largo, 4 colunas iguais com réguas verticais `regua`, régua de baixo, e em cima de cada coluna uma barra de `AppStroke.etapa` 4: `tinta` nas etapas feitas, `regua` nas outras. Em cada coluna: número em `subtitulo` (serifa, tabular; `tintaTenue` se por fazer), nome em `corpoPequeno` (600 se feita, `tintaMedia` se não) e o estado: `check_circle` 18 + `registo` com a data, ou `registo` "Por fazer". Compacto: 4 linhas empilhadas (número à esquerda, nome e estado à direita), a barra passa para a esquerda da linha (4 de largura) só nas feitas. Nomes: "Pedido criado", "Documentos enviados", "Em análise pelo mediador", "Enviado às seguradoras".
 - **Acesso retirado:** em vez do trilho, carimbo "Acesso retirado" + `registo` "Retirado a 26 nov 2026, 15:02" e `corpo` "O escritório Ribeira Seguros já não vê este pedido nem os seus dados. Se voltar a dar acesso, o pedido continua onde estava." Sem aviso interino e sem ações.
 - **Sem acesso / não encontrado:** "Pedido não encontrado" + "Este pedido não existe ou não é seu. Veja os seus pedidos na página inicial." + `SecondaryButton` "Ver os meus pedidos" (56).
@@ -159,7 +159,7 @@ Um email por criação (os N pedidos juntos), enviado por função de servidor (
 | `PageFrame` / `AccountActions` | existentes | A linha da conta do cliente passa a ter o sino antes de "Sair" (`s8` entre eles). A ligação de regresso por cima da linha do separador já existe no consentimento: generalizar como parâmetro do `PageFrame` em vez de cada ecrã a desenhar. |
 | Barra fixa do Novo pedido | `PageFrame.bottom` | Reutiliza a barra fixa do consentimento: resumo à esquerda, `PrimaryButton` à direita, razão por baixo do botão. |
 
-## Tokens propostos (a acrescentar em DESIGN.md e `tokens.dart` só depois do gate 2)
+## Tokens novos (em DESIGN.md desde o gate 2; o flutter-dev cria-os em `tokens.dart`)
 
 | Token | Valor | Uso |
 | --- | --- | --- |
@@ -239,15 +239,25 @@ Regras de transição da 001 ("Transições entre ecrãs") sem mudanças. Storyb
 - Escala de texto 1.3: a barra fixa do Novo pedido cresce em altura (nunca corta o botão); itens e linhas descem um nível pela regra de `textoMinimo`.
 - Contraste: todos os pares de texto já aprovados (DESIGN.md); `tintaTenue` nunca sobre `cartolina` (o sino aberto usa `tinta` sobre `cartolina`, 12.1).
 
-## Decisões em aberto (para o gate 2)
+## Decisões do gate 2 (fechadas a 2026-11-27)
 
-1. **Ecrã inicial do cliente.** A: "Os meus pedidos" passa a ser o ecrã inicial, com passagem para "Com quem partilho" no fim (renders). B: "Com quem partilho" continua inicial e ganha uma secção de pedidos no topo. C: uma só página "Os meus dados" com as duas secções. **Recomendação A**: os pedidos são o que o cliente vem fazer e as decisões de partilha merecem um ecrã próprio, calmo; o bloco de consentimento pendente da 001 continua no topo de A.
-2. **Aviso interino ao cliente até à 003** ("Para já, aqui só pode ver o que lhe pedem. O envio pela app chega em breve; até lá, combine o envio com o escritório."). A: manter (renders). B: não dizer nada. C: texto sem promessa de "em breve" ("Por agora, combine o envio dos documentos com o escritório."). **Recomendação C** se a 003 não tiver data; A se vier logo a seguir.
-3. **Notas do catálogo na voz do mediador.** As notas 8 ("pedir também o CC…"), 9 e 10 ("Pedir a apólice em vigor") falam para o mediador, mas o cliente vai lê-las. A: reescrever na voz do cliente no catálogo (renders usam "Se o condutor habitual não for o tomador, envie também o Cartão de Cidadão, a carta de condução e a morada do condutor." e "Se já tem seguro, a apólice em vigor é essencial."). B: duas notas por tipo (mediador e cliente). **Recomendação A** (o supabase-dev ajusta os dados do catálogo; a referência `docs/reference/tipos-de-seguro.md` fica como está).
-4. **Hierarquia dos botões de Clientes.** A: "Novo pedido" principal e "Criar cliente" secundário (renders). B: manter "Criar cliente" principal da 001. **Recomendação A**.
-5. **Tabela de Clientes em largo perde a coluna Data separada** (passa a carimbo + data na mesma coluna, como no médio) para caber a coluna Pedidos. Assumida; ver se o Henrique sente falta da data numa coluna à parte.
-6. **Um email por criação (N pedidos juntos) e não um por pedido.** A spec diz "email curto com os tipos pedidos", o que já sugere um; também poupa o limite de 2 emails por hora do Supabase. Assumida.
-7. **Tokens novos** (tabela acima) entram em DESIGN.md e `tokens.dart` depois de aprovados; o `StampStatus.acessoRetirado` também.
+1. **Ecrã inicial do cliente: A.** "Os meus pedidos" passa a ser o ecrã onde o cliente aterra (com o bloco pendente da 001 no topo, se houver) e tem, no fim, a passagem para "Com quem partilho", que fica igual mas deixa de ser inicial. Um link de um pedido de acesso concreto continua a abrir o consentimento.
+2. **Aviso interino: C.** "Para já, aqui só pode ver o que lhe pedem. Combine o envio com o escritório." em Os meus pedidos e no pedido do cliente (não aparece em pedidos com acesso retirado). Sem promessa de data. Sai com a 003.
+3. **Notas do catálogo na voz do cliente: aceite.** Texto final na secção seguinte.
+4. **Clientes: "Novo pedido" principal, "Criar cliente" secundário: aceite.**
+5. **Um só email por criação (N pedidos juntos): aceite.** Também ficam assumidas a coluna Estado + data em largo na tabela de Clientes e os tokens novos.
+
+## Catálogo: notas na voz do cliente
+
+Texto final das notas para os dados do catálogo (o supabase-dev usa estas frases tal como estão; `docs/reference/tipos-de-seguro.md` fica como fonte histórica). As notas são lidas pelo cliente no pedido e pelo mediador na pré-visualização, por isso estão todas na voz do cliente, em PT-PT formal, e terminam com ponto. As 10 restantes mantêm o texto do catálogo; acrescenta-se só o ponto final onde falta.
+
+| # | Tipo | Nota no catálogo original | Nota final (dados) |
+| --- | --- | --- | --- |
+| 8 | Automóvel | Se o condutor for diferente do tomador, pedir também o CC, a carta de condução e a morada do condutor | Se o condutor habitual não for o tomador, envie também o Cartão de Cidadão, a carta de condução e a morada do condutor. |
+| 9 | Acidentes de Trabalho (prémio fixo) | Pedir a apólice em vigor | Se a empresa já tem seguro, envie a apólice em vigor. |
+| 10 | Acidentes de Trabalho (prémio variável) | Pedir a apólice em vigor | Se a empresa já tem seguro, envie a apólice em vigor. |
+
+Notas sem alteração de texto (só ponto final): 1 e 2 (nota saúde), 3, 5, 6, 7, 13. Tipos 4, 11 e 12 não têm nota (a folha não mostra a linha de nota).
 
 ## Renders
 

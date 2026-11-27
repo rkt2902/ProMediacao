@@ -70,7 +70,7 @@
        <div class="meta mt8"><span class="corpoPequeno media">Enviado por Ana Martins, mediadora</span><span class="registo tenue">27 nov 2026, 10:14</span></div>`;
   const avisoRetirado = retirado ? `<div class="mt24"><div class="estado">${F.carimbo('inativo', 'Acesso retirado', IC.retirado)}<span class="registo tenue">Retirado a 26 nov 2026, 15:02</span></div>
       <p class="corpo mt12">O escritório Ribeira Seguros já não vê este pedido nem os seus dados. Se voltar a dar acesso, o pedido continua onde estava.</p></div>` : '';
-  const interino = !med && !retirado ? `<div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. O envio pela app chega em breve; até lá, combine o envio com o escritório.</p></div></div>` : '';
+  const interino = !med && !retirado ? `<div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. Combine o envio com o escritório.</p></div></div>` : '';
 
   P.innerHTML = voltar + pasta + `<article class="col-leitura">
     <h1 class="titulo mt32">Automóvel</h1>

@@ -50,7 +50,7 @@
   else if (e === 'erro') corpo = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar os seus pedidos. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
   else if (e === 'vazio') corpo = `<section class="mt24"><p class="corpoForte">Ainda não tem pedidos.</p><p class="corpo media mt4">Quando um escritório lhe pedir documentos para um seguro, o pedido aparece aqui e recebe também um email.</p></section>`;
   else corpo = `<p class="corpoForte mt8">Tem 3 pedidos em curso.</p>
-    <div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. O envio pela app chega em breve; até lá, combine o envio com o escritório.</p></div></div>
+    <div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. Combine o envio com o escritório.</p></div></div>
     <h2 class="rotulo media mt32">Em curso</h2>
     <div class="lista mt8" style="border-top:0">${ped('Automóvel', 'Ribeira Seguros', '27 nov 2026, 10:14', 4, 2)}${ped('Vida', 'Ribeira Seguros', '27 nov 2026, 10:14', 1, 4)}${ped('Saúde', 'Gabinete de Mediação de Seguros Vale do Sousa &amp; Filhos, Lda.', '22 nov 2026, 17:48', 1, 3)}</div>
     <h2 class="rotulo media mt32">Com o acesso retirado</h2>
