@@ -33,7 +33,7 @@ class PageFrame extends StatelessWidget {
 
   /// Largura reservada à conta com sino em médio/largo (sino com palavra,
   /// contador, "Sair").
-  static const double _bellAccountWidth = 340;
+  static const double _bellAccountWidth = 360;
 
   const PageFrame({
     super.key,

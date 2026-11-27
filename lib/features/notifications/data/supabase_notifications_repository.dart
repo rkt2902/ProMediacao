@@ -10,7 +10,7 @@ class SupabaseNotificationsRepository implements NotificationsRepository {
   final SupabaseClient _client;
 
   @override
-  Future<NotificationsPage> list({int limit = 25, int offset = 0}) =>
+  Future<NotificationsBatch> list({int limit = 25, int offset = 0}) =>
       _guard(() async {
         final rows = _rows(
           await _client.rpc<dynamic>(
@@ -19,13 +19,13 @@ class SupabaseNotificationsRepository implements NotificationsRepository {
           ),
         );
         if (rows.isEmpty) {
-          return NotificationsPage(
+          return NotificationsBatch(
             items: const [],
             totalCount: offset == 0 ? 0 : null,
             unreadCount: offset == 0 ? 0 : null,
           );
         }
-        return NotificationsPage(
+        return NotificationsBatch(
           items: [for (final r in rows) AppNotification.fromRow(r)],
           totalCount: _int(rows.first['total_count']),
           unreadCount: _int(rows.first['unread_count']),

@@ -7,8 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:promediacao/app/connectivity.dart';
 import 'package:promediacao/core/widgets/widgets.dart';
 import 'package:promediacao/features/client_requests/presentation/client_request_page.dart';
-import 'package:promediacao/features/notifications/domain/notification_models.dart'
-    hide NotificationsPage;
+import 'package:promediacao/features/notifications/domain/notification_models.dart';
 import 'package:promediacao/features/notifications/presentation/notifications_copy.dart';
 import 'package:promediacao/features/notifications/presentation/notifications_page.dart';
 import 'package:promediacao/features/notifications/presentation/notifications_panel.dart';

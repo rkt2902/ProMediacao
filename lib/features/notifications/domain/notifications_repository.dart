@@ -4,7 +4,7 @@ import 'notification_models.dart';
 /// sessão no servidor). Todas as falhas chegam como [NotificationFailure].
 abstract interface class NotificationsRepository {
   /// Por data decrescente (`list_my_notifications`).
-  Future<NotificationsPage> list({int limit = 25, int offset = 0});
+  Future<NotificationsBatch> list({int limit = 25, int offset = 0});
 
   /// Contador do sino (`my_unread_notification_count()`).
   Future<int> unreadCount();

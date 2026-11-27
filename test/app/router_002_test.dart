@@ -195,12 +195,15 @@ void main() {
           adminHome: (c) => const Text('admin: início'),
           mediatorHome: (c) => const Text('mediador: Clientes'),
           clientSharing: (c) => const Text('cliente: Com quem partilho'),
+          clientHome: (c) => TextButton(
+            onPressed: () => GoRouter.of(c).go(AppRoutes.clientSharing),
+            child: const Text('cliente: Os meus pedidos'),
+          ),
         ),
       );
       expect(_location(router), AppRoutes.client);
-      // Marcador por omissão (a tarefa 5 põe o ecrã real).
-      expect(find.text('Os meus pedidos'), findsOneWidget);
-      await tester.tap(find.text('Ver com quem partilho'));
+      expect(find.text('cliente: Os meus pedidos'), findsOneWidget);
+      await tester.tap(find.text('cliente: Os meus pedidos'));
       await tester.pumpAndSettle();
       expect(_location(router), AppRoutes.clientSharing);
       expect(find.text('cliente: Com quem partilho'), findsOneWidget);
@@ -248,26 +251,6 @@ void main() {
         location: AppRoutes.clientNotifications,
       );
       expect(find.text('notificações'), findsOneWidget);
-    });
-
-    testWidgets('marcadores por omissão das tarefas 4 e 5 abrem e o '
-        'regresso funciona', (tester) async {
-      final router = await _pump(
-        tester,
-        _as(AppRole.mediador),
-        location: AppRoutes.mediatorClientNewRequest('c1'),
-        builders: RouteBuilders(
-          mediatorHome: (c) => const Text('mediador: Clientes'),
-        ),
-      );
-      expect(find.text('Novo pedido'), findsOneWidget);
-      await tester.tap(find.text('Cliente'));
-      await tester.pumpAndSettle();
-      expect(_location(router), AppRoutes.mediatorClient('c1'));
-      expect(find.text('Ficha do cliente'), findsOneWidget);
-      await tester.tap(find.text('Clientes'));
-      await tester.pumpAndSettle();
-      expect(_location(router), AppRoutes.mediator);
     });
 
     testWidgets('sem sessão, o link do email abre Entrar com o destino', (

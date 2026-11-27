@@ -120,11 +120,7 @@ Future<AppServices> pumpClient(
   return services;
 }
 
-/// Sem erros de layout. Exceção conhecida (fora destes ficheiros, `lib/core`):
-/// em tablet (768) a conta com o sino e um contador reserva 340 e precisa de
-/// 343 (`PageFrame._bellAccountWidth`); fica registado no handoff.
+/// Sem erros de layout.
 void expectNoLayoutErrors(WidgetTester tester) {
-  final e = tester.takeException();
-  if (e == null) return;
-  expect('$e', contains('overflowed by 3.0 pixels on the right'));
+  expect(tester.takeException(), isNull);
 }

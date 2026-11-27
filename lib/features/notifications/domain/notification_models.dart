@@ -77,8 +77,8 @@ class AppNotification {
 
 /// Uma página de notificações com os totais do servidor (todas as páginas).
 /// Os totais são nulos quando a página vem vazia depois da primeira.
-class NotificationsPage {
-  const NotificationsPage({
+class NotificationsBatch {
+  const NotificationsBatch({
     required this.items,
     this.totalCount,
     this.unreadCount,

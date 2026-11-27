@@ -23,9 +23,9 @@ class FakeNotificationsRepository implements NotificationsRepository {
   }
 
   @override
-  Future<NotificationsPage> list({int limit = 25, int offset = 0}) async {
+  Future<NotificationsBatch> list({int limit = 25, int offset = 0}) async {
     _check();
-    return NotificationsPage(
+    return NotificationsBatch(
       items: items.skip(offset).take(limit).toList(),
       totalCount: items.length,
       unreadCount: items.where((n) => !n.isRead).length,

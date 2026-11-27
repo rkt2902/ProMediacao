@@ -1,10 +1,15 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../features/admin/presentation/admin_home_page.dart';
+import '../features/client_requests/presentation/client_request_page.dart';
+import '../features/client_requests/presentation/my_requests_page.dart';
 import '../features/consent/presentation/client_home_page.dart';
 import '../features/consent/presentation/consent_page.dart';
+import '../features/mediator/presentation/client_file_page.dart';
 import '../features/mediator/presentation/mediator_home_page.dart';
-import 'pending_screens.dart';
+import '../features/mediator/presentation/mediator_request_page.dart';
+import '../features/mediator/presentation/new_request_page.dart';
+import '../features/notifications/presentation/notifications_page.dart';
 
 /// Como se chegou ao Novo pedido.
 class NewRequestArgs {
@@ -56,18 +61,14 @@ class RouteBuilders {
   static Widget _consent(BuildContext c, String id) => ConsentPage(grantId: id);
   static Widget _sharing(BuildContext c) => const ClientHomePage();
 
-  // Marcadores até às tarefas 4 e 5 (ver `pending_screens.dart`).
-  static Widget _client(BuildContext c) => PendingScreen.myRequests();
+  static Widget _client(BuildContext c) => const MyRequestsPage();
   static Widget _newRequest(BuildContext c, NewRequestArgs a) =>
-      PendingScreen.newRequest(
-        clientId: a.clientId,
-        fromClientFile: a.fromClientFile,
-      );
+      NewRequestPage(clientId: a.clientId, fromClientFile: a.fromClientFile);
   static Widget _clientFile(BuildContext c, String clientId) =>
-      PendingScreen.clientFile(clientId);
+      ClientFilePage(clientId: clientId);
   static Widget _mediatorRequest(BuildContext c, String cid, String rid) =>
-      PendingScreen.mediatorRequest(cid, rid);
+      MediatorRequestPage(clientId: cid, requestId: rid);
   static Widget _clientRequest(BuildContext c, String id) =>
-      PendingScreen.clientRequest(id);
-  static Widget _notifications(BuildContext c) => PendingScreen.notifications();
+      ClientRequestPage(requestId: id);
+  static Widget _notifications(BuildContext c) => const NotificationsPage();
 }
