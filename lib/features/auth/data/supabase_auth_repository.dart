@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -42,19 +43,20 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<AppSession?> restoreSession() async {
     try {
-      final user = _auth.currentSession?.user;
-      if (user == null) return null;
-      return await _loadSession(user.id);
+      final session = _auth.currentSession;
+      if (session == null) return null;
+      return await _loadSession(session);
     } on Object catch (e) {
       throw _map(e);
     }
   }
 
-  Future<AppSession?> _loadSession(String userId) async {
+  Future<AppSession?> _loadSession(Session session) async {
+    final user = session.user;
     final row = await _client
         .from('profiles')
-        .select('role')
-        .eq('id', userId)
+        .select('role, full_name, created_at')
+        .eq('id', user.id)
         .maybeSingle();
     final role = AppRole.parse(row?['role']);
     if (role == null) {
@@ -62,7 +64,78 @@ class SupabaseAuthRepository implements AuthRepository {
       await _auth.signOut();
       return null;
     }
-    return AppSession(userId: userId, role: role);
+    final (method, signedInAt) = _amr(session.accessToken);
+
+    String? officeName;
+    DateTime? joinedAt;
+    if (role == AppRole.mediador) {
+      // Só para o colofão: uma falha aqui não impede a entrada.
+      try {
+        final m = await _client
+            .from('office_members')
+            .select('created_at, offices(name)')
+            .eq('user_id', user.id)
+            .maybeSingle();
+        joinedAt = _date(m?['created_at']);
+        final office = m?['offices'];
+        if (office is Map) officeName = office['name'] as String?;
+      } on Object {
+        // sem colofão completo, mas com sessão
+      }
+    }
+
+    return AppSession(
+      userId: user.id,
+      role: role,
+      email: user.email ?? '',
+      fullName: row?['full_name'] as String?,
+      createdAt: _date(row?['created_at']),
+      method: method,
+      signedInAt: signedInAt,
+      passwordSetAt: _date(user.userMetadata?[passwordSetAtKey]),
+      officeName: officeName,
+      officeJoinedAt: joinedAt,
+    );
+  }
+
+  /// Chave dos metadados do Auth onde a app regista a criação da
+  /// palavra-passe (o Auth não diz se um utilizador tem uma).
+  static const passwordSetAtKey = 'password_set_at';
+
+  static DateTime? _date(Object? v) =>
+      v is String ? DateTime.tryParse(v) : null;
+
+  /// Método e hora da entrada mais recente, a partir do claim `amr` do JWT.
+  static (SignInMethod, DateTime?) _amr(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return (SignInMethod.unknown, null);
+      final payload =
+          jsonDecode(
+                utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
+              )
+              as Map<String, dynamic>;
+      final amr = payload['amr'];
+      if (amr is! List || amr.isEmpty) return (SignInMethod.unknown, null);
+      Map? latest;
+      for (final e in amr) {
+        if (e is! Map) continue;
+        final t = e['timestamp'];
+        if (latest == null || (t is num && t > (latest['timestamp'] as num))) {
+          latest = e;
+        }
+      }
+      if (latest == null) return (SignInMethod.unknown, null);
+      final t = latest['timestamp'];
+      return (
+        SignInMethod.parse(latest['method']),
+        t is num
+            ? DateTime.fromMillisecondsSinceEpoch(t.toInt() * 1000, isUtc: true)
+            : null,
+      );
+    } on Object {
+      return (SignInMethod.unknown, null);
+    }
   }
 
   @override
@@ -75,11 +148,11 @@ class SupabaseAuthRepository implements AuthRepository {
         email: email,
         password: password,
       );
-      final user = res.user;
-      if (user == null) {
+      final current = res.session;
+      if (current == null) {
         throw const AuthFailure(AuthFailureKind.invalidCredentials);
       }
-      final session = await _loadSession(user.id);
+      final session = await _loadSession(current);
       if (session == null) {
         throw const AuthFailure(AuthFailureKind.invalidCredentials);
       }
@@ -110,11 +183,18 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> updatePassword(String newPassword) async {
+  Future<AppSession?> updatePassword(String newPassword) async {
     try {
-      await _auth.updateUser(UserAttributes(password: newPassword));
+      await _auth.updateUser(
+        UserAttributes(
+          password: newPassword,
+          data: {passwordSetAtKey: DateTime.now().toUtc().toIso8601String()},
+        ),
+      );
+      final session = _auth.currentSession;
+      return session == null ? null : await _loadSession(session);
     } on Object catch (e) {
-      throw _map(e);
+      throw _map(e, password: true);
     }
   }
 
@@ -139,11 +219,17 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
-  AuthFailure _map(Object e, {bool signIn = false}) {
+  AuthFailure _map(Object e, {bool signIn = false, bool password = false}) {
     if (e is AuthRetryableFetchException) {
       return const AuthFailure(AuthFailureKind.network);
     }
+    if (password && e is AuthWeakPasswordException) {
+      return const AuthFailure(AuthFailureKind.weakPassword);
+    }
     if (e is AuthApiException) {
+      if (password && e.code == 'weak_password') {
+        return const AuthFailure(AuthFailureKind.weakPassword);
+      }
       final status = int.tryParse(e.statusCode ?? '');
       if (status == 429) return const AuthFailure(AuthFailureKind.tooSoon);
       if (signIn && status != null && status >= 400 && status < 500) {

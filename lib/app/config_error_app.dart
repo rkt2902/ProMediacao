@@ -21,7 +21,9 @@ class ConfigErrorApp extends StatelessWidget {
       theme: AppTheme.light(),
       home: Builder(
         builder: (context) => PageFrame(
-          tabLabel: 'ProDossier',
+          tabLabel: 'Acesso',
+          maxWidth: AppSize.larguraFormulario,
+          colophon: const Colophon.signedOut(),
           child: Padding(
             padding: const EdgeInsets.only(top: AppSpace.s32),
             child: Column(

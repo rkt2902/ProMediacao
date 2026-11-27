@@ -1,5 +1,6 @@
 // create-client: o mediador cria um cliente (nome e email) e uma concessão PENDENTE
 // para o seu escritório. Corpo: { full_name, email }. Só papel mediador com escritório.
+// O nome fica na concessão (invited_name); num email que já existe o perfil não muda.
 //
 // A resposta de sucesso é sempre a mesma ({ ok: true }) e nunca diz se o email já
 // existia como cliente (de outro escritório) ou como outro papel.
@@ -67,13 +68,21 @@ serveFn(async (req, body) => {
   // do texto, e a auditoria regista o mediador como autor.
   const db = asUser(caller.jwt);
   const { data: version } = await db.rpc("current_consent_version");
-  const { error: grantError } = await db.from("consent_grants").insert({
+  // invited_name: o nome que ESTE mediador escreveu. A lista mostra-o enquanto a concessão
+  // não está ativa (bug 13), sem revelar o full_name de um perfil que já existia, e o
+  // full_name de um perfil existente nunca é alterado aqui.
+  const grant = {
     client_id: clientId,
     office_id: officeId,
     status: "pendente",
     consent_version: version,
     created_by: caller.id,
-  });
+  };
+  let { error: grantError } = await db.from("consent_grants").insert({ ...grant, invited_name: fullName });
+  if (grantError?.code === "PGRST204") {
+    // Migração 001e ainda não aplicada (coluna desconhecida): comportamento anterior.
+    ({ error: grantError } = await db.from("consent_grants").insert(grant));
+  }
   if (grantError) {
     console.error("grant_error", grantError.code ?? "unknown");
     if (created) await admin.auth.admin.deleteUser(clientId); // não deixa um cliente sem pedido

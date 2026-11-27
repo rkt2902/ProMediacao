@@ -95,11 +95,15 @@ body {
 .conta { display: flex; align-items: center; gap: var(--s16); min-width: 0; }
 .conta .nome { color: var(--tintaMedia); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 639px) { .conta .nome { display: none; } }
-main.frame { flex: 1; padding-bottom: var(--s48); }
+main.frame { flex: 1; padding-top: var(--s24); padding-bottom: var(--s48); }
+@media (max-width: 639px) { main.frame { padding-top: var(--s16); } }
 
-/* Separador de pasta: a régua corre a largura da moldura */
-.pasta { border-bottom: var(--fino) solid var(--regua); display: flex; }
-.separador { height: var(--separadorAltura); padding: 0 var(--s16); background: var(--cartolina); border-radius: var(--r-separador) var(--r-separador) 0 0; display: inline-flex; align-items: center; max-width: var(--larguraFormulario); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Separador de pasta: primeira linha do ecrã; a régua corre a largura da moldura.
+   A conta ("Sair", e o nome onde couber) fica na mesma linha, centrada com o separador, encostada à margem direita. */
+.pasta { border-bottom: var(--fino) solid var(--regua); display: flex; align-items: flex-end; gap: var(--s16); }
+.pasta .conta { margin-left: auto; flex: none; height: var(--separadorAltura); align-self: flex-end; display: flex; align-items: center; gap: var(--s16); }
+.pasta .conta .acao { margin: calc((var(--separadorAltura) - var(--alvoMinimo)) / 2) 0; }
+.separador { min-width: 0; height: var(--separadorAltura); padding: 0 var(--s16); background: var(--cartolina); border-radius: var(--r-separador) var(--r-separador) 0 0; display: inline-flex; align-items: center; max-width: var(--larguraFormulario); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 639px) { .separador { max-width: calc(100% - var(--s48)); } }
 .separadores { display: flex; width: 100%; max-width: var(--larguraFormulario); }
 @media (max-width: 639px) { .separadores { max-width: none; } }
@@ -212,7 +216,7 @@ main.frame { flex: 1; padding-bottom: var(--s48); }
 .animar .esq { animation: pulsar 600ms cubic-bezier(0.65, 0, 0.35, 1) infinite alternate; }
 
 /* Linha acabada de criar/alterar: fundo realce (desvanece em AppMotion.realce na app) */
-.realce-linha { background: var(--realce); }
+.realce-linha { background: var(--realce); margin-left: calc(-1 * var(--s8)); margin-right: calc(-1 * var(--s8)); padding-left: var(--s8) !important; padding-right: var(--s8) !important; }
 
 /* Animações usadas só no protótipo navegável (classe .animar no body) */
 @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
@@ -228,3 +232,22 @@ main.frame { flex: 1; padding-bottom: var(--s48); }
 
 /* Estado por parâmetro ?estado=: cada bloco diz em que estados aparece com data-em="a b c" */
 [data-em] { display: none !important; }
+
+/* ---- Marca: wordmark e colofão (escolhido pelo Henrique a 2026-11-26) ---- */
+
+/* Wordmark (AppType.marca): Serif 19/24, -0.2; "Pro" itálico 400 tintaMedia + "Dossier" 600 tinta */
+.wordmark { font-family: var(--serif); font-size: 19px; line-height: 24px; letter-spacing: -0.2px; color: var(--tinta); white-space: nowrap; }
+.wordmark .pro { font-style: italic; font-weight: 400; color: var(--tintaMedia); }
+.wordmark .dossier { font-weight: 600; }
+
+/* Colofão: última coisa da página, depois do conteúdo; empurrado para o fundo da janela quando o conteúdo é curto.
+   Distância ao conteúdo: s72 (médio/largo) / s48 (compacto) = padding-bottom de main (s48) + o que falta.
+   Régua à largura da moldura, como a da pasta. Nunca fixo, nunca dentro de folhas, diálogos ou formulários de ecrã inteiro. */
+.colofao { padding-top: var(--s24); padding-bottom: var(--s32); }
+.colofao .corpo-colofao { border-top: var(--fino) solid var(--regua); padding-top: var(--s16); display: flex; align-items: baseline; flex-wrap: wrap; column-gap: var(--s16); row-gap: var(--s4); }
+.colofao .linha-colofao { color: var(--tintaMedia); }
+.colofao .registo { color: var(--tintaTenue); }
+@media (max-width: 639px) {
+  .colofao { padding-top: 0; padding-bottom: var(--s24); }
+  .colofao .corpo-colofao { flex-direction: column; align-items: flex-start; }
+}

@@ -13,14 +13,28 @@
   .texto p + p { margin-top: var(--s16); }
 </style>
 </head>
-<body>
-<div class="frame"><div class="in">
-  <header class="top"><span class="brand">ProDossier</span><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></header>
-</div></div>
+<!-- Estados: normal, a-carregar, erro (falha ao registar), offline, aceite, recusado -->
+<body data-colofao="cliente">
+<div class="offline" data-em="offline"><div class="frame"><div class="in">
+  <span class="ic">&#xe173;</span><p class="corpoPequeno">Sem ligação à internet. Pode ver o que está no ecrã; as alterações ficam bloqueadas até a ligação voltar.</p>
+</div></div></div>
 <main class="frame"><div class="in">
   <div class="voltar"><span class="acao"><span class="ic">&#xe092;</span><span class="t">Com quem partilho</span></span></div>
-  <div class="pasta"><div class="separador rotulo">Pedido de acesso</div></div>
-  <div class="col-leitura">
+  <div class="pasta"><div class="separador rotulo">Pedido de acesso</div><div class="conta"><span class="acao"><span class="ic">&#xe3b3;</span><span class="t">Sair</span></span></div></div>
+  <div class="col-leitura" data-em="a-carregar" aria-busy="true" aria-label="A carregar o pedido">
+    <div class="esq l-titulo w60 mt32"></div>
+    <div class="esq l-corpo w50 mt8"></div>
+    <div class="esq l-peq w40 mt16"></div>
+    <div class="lista mt32">
+      <div class="linha"><div class="esq l-corpo w90"></div><div class="esq l-corpo w60 mt8"></div></div>
+      <div class="linha"><div class="esq l-corpo w80"></div><div class="esq l-corpo w40 mt8"></div></div>
+      <div class="linha"><div class="esq l-corpo w70"></div></div>
+    </div>
+    <div class="esq l-peq w30 mt48"></div>
+    <div class="esq l-corpo w100 mt16"></div><div class="esq l-corpo w90 mt8"></div><div class="esq l-corpo w100 mt8"></div>
+    <div class="esq l-corpo w80 mt8"></div><div class="esq l-corpo w100 mt8"></div><div class="esq l-corpo w60 mt8"></div>
+  </div>
+  <div class="col-leitura" data-fora="a-carregar">
     <h1 class="titulo mt32">Ribeira Seguros</h1>
     <p class="corpoForte">pede acesso aos seus dados</p>
     <p class="corpoPequeno media mt8">Enviado por Ana Martins, mediadora</p>
@@ -30,6 +44,17 @@
       <div class="linha"><span class="ic g">&#xe6be;</span><p class="corpo">Não sabe com que outros escritórios partilha, e eles não sabem deste.</p></div>
       <div class="linha"><span class="ic g">&#xe68c;</span><p class="corpo">Pode retirar o acesso quando quiser, em Com quem partilho.</p></div>
     </div>
+
+    <section class="resultado mt32" role="status" data-em="aceite">
+      <div class="estado"><span class="carimbo ativo"><span class="ic">&#xe15a;</span>Ativo</span><span class="registo tenue">Partilha ativa desde 26 nov 2026, 14:32</span></div>
+      <p class="corpo mt12">A Ribeira Seguros já pode ver os seus dados. Pode retirar o acesso quando quiser.</p>
+      <div class="btn cheio principal mt24 ver-cqp">Ver com quem partilho</div>
+    </section>
+    <section class="resultado mt32" role="status" data-em="recusado">
+      <div class="estado"><span class="carimbo inativo"><span class="ic">&#xe0e1;</span>Recusado</span><span class="registo tenue">Recusado a 26 nov 2026, 14:32</span></div>
+      <p class="corpo mt12">A Ribeira Seguros não tem acesso aos seus dados nem documentos. Se mudar de ideias, peça ao escritório um novo pedido.</p>
+      <div class="btn cheio principal mt24 ver-cqp">Ver com quem partilho</div>
+    </section>
 
     <h2 class="rotulo mt48">Texto completo</h2>
     <div class="texto corpo mt16">
@@ -49,14 +74,24 @@
     <p class="registo tenue mt24">Versão do texto: v0-rascunho</p>
   </div>
 </div></main>
-<div class="barra-fixa">
+<div class="barra-fixa" data-fora="aceite recusado">
   <div class="frame"><div class="in"><div class="col-leitura">
-    <p class="corpoPequeno media">A sua resposta fica registada com data e hora.</p>
-    <div class="par mt8">
+    <div class="aviso erro" role="alert" data-em="erro" style="margin-bottom: var(--s12)">
+      <div class="linha"><span class="ic g">&#xe238;</span><p class="corpoPequeno">Não foi possível registar a sua resposta. Nada foi alterado. Tente de novo.</p></div>
+    </div>
+    <p class="corpoPequeno media" data-fora="offline">A sua resposta fica registada com data e hora.</p>
+    <p class="razao" data-em="offline">Precisa de ligação para responder.</p>
+    <div class="par mt8" data-fora="offline a-carregar">
       <div class="btn contorno principal">Recusar</div>
       <div class="btn cheio principal">Aceitar</div>
     </div>
+    <div class="par mt8" data-em="offline a-carregar">
+      <div class="btn desativado principal">Recusar</div>
+      <div class="btn desativado principal">Aceitar</div>
+    </div>
   </div></div></div>
 </div>
+<script src="estado.js"></script>
+<script src="colofao.js"></script>
 </body>
 </html>

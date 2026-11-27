@@ -1,0 +1,12 @@
+O seu link de acesso ao ProDossier
+
+Use este link para entrar na sua conta. Foi pedido para este email.
+
+Entrar no ProDossier: {{ .ConfirmationURL }}
+
+Se não pediu este link, pode ignorar este email: sem usar o link, ninguém entra na sua conta. O link deixa de funcionar ao fim de algum tempo, por segurança, e pode pedir um novo na página de entrada.
+
+--
+ProDossier
+O dossiê dos seus seguros, partilhado só com quem autorizar.
+Enviado para {{ .Email }}

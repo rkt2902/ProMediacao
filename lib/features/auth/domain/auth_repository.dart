@@ -22,8 +22,11 @@ abstract interface class AuthRepository {
   /// Termina sem erro exista ou não a conta.
   Future<void> requestClientLink(String email);
 
-  /// Define a palavra-passe do utilizador com sessão (recuperação/convite).
-  Future<void> updatePassword(String newPassword);
+  /// Define ou altera a palavra-passe do utilizador com sessão (recuperação,
+  /// convite, criar/alterar do cliente) e regista a data nos metadados do
+  /// Auth. Devolve a sessão atualizada. Lança [AuthFailure] (`weakPassword`
+  /// se o Auth a recusar por fraca).
+  Future<AppSession?> updatePassword(String newPassword);
 
   Future<void> signOut();
 

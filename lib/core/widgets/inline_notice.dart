@@ -14,6 +14,7 @@ class InlineNotice extends StatelessWidget {
   const InlineNotice({
     super.key,
     required this.message,
+    this.detail,
     this.kind = NoticeKind.info,
     this.actionLabel,
     this.onAction,
@@ -21,6 +22,10 @@ class InlineNotice extends StatelessWidget {
   });
 
   final String message;
+
+  /// Explicação por baixo da mensagem (`corpoPequeno` `tintaMedia`); com ela,
+  /// a mensagem passa a `corpoForte` (ex.: credenciais erradas + dica do link).
+  final String? detail;
   final NoticeKind kind;
   final String? actionLabel;
   final VoidCallback? onAction;
@@ -74,7 +79,28 @@ class InlineNotice extends StatelessWidget {
                     color: iconColor,
                   ),
                   const SizedBox(width: AppSpace.s12),
-                  Expanded(child: Text(message, style: AppType.corpo)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          message,
+                          style: detail == null
+                              ? AppType.corpo
+                              : AppType.corpoForte,
+                        ),
+                        if (detail != null) ...[
+                          const SizedBox(height: AppSpace.s4),
+                          Text(
+                            detail!,
+                            style: AppType.corpoPequeno.copyWith(
+                              color: AppColors.tintaMedia,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
               if (actionLabel != null)

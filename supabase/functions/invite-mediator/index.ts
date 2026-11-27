@@ -14,7 +14,7 @@ serveFn(async (req, body) => {
     ? cleanName(email.split("@")[0])
     : cleanName(body.full_name);
 
-  const { data: office } = await admin.from("offices").select("id").eq("id", officeId).maybeSingle();
+  const { data: office } = await admin.from("offices").select("id, name").eq("id", officeId).maybeSingle();
   if (!office) throw new ApiError(404, "not_found");
 
   // Resposta neutra para email já usado (não diz se é mediador, cliente ou admin).
@@ -25,7 +25,7 @@ serveFn(async (req, body) => {
   // Cria o utilizador e envia o convite (o mediador define a palavra-passe pelo link).
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: Deno.env.get("AUTH_REDIRECT_URL"),
-    data: { full_name: fullName }, // só informativo: o papel NUNCA vem dos metadados
+    data: { full_name: fullName, office_name: office.name }, // só informativo: o papel NUNCA vem dos metadados
   });
   if (inviteError || !invited.user) {
     console.error("invite_error", inviteError?.code ?? String(inviteError?.status ?? "unknown"));

@@ -2,7 +2,7 @@
 name: bizdev
 description: Business developer. Usa para gerar e avaliar ideias de produto e negócio (receita, aquisição, retenção, parcerias, concorrência) e para validar se uma feature vale o esforço antes de ser especificada.
 tools: Read, Grep, Glob, Write, Edit, WebSearch, WebFetch
-model: opus
+model: sonnet
 permissionMode: acceptEdits
 ---
 

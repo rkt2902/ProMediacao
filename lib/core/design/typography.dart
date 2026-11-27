@@ -29,6 +29,7 @@ abstract final class AppType {
     required int weight,
     double letterSpacing = 0,
     List<FontFeature>? features,
+    Color color = AppColors.tinta,
   }) {
     return TextStyle(
       fontFamily: family,
@@ -39,7 +40,7 @@ abstract final class AppType {
       fontVariations: [FontVariation.weight(weight.toDouble())],
       letterSpacing: letterSpacing,
       fontFeatures: features,
-      color: AppColors.tinta,
+      color: color,
       leadingDistribution: TextLeadingDistribution.even,
     );
   }
@@ -142,7 +143,29 @@ abstract final class AppType {
     line: 18,
     weight: 400,
     features: _tabular,
+    color: AppColors.tintaTenue,
   );
+
+  /// Wordmark "ProDossier" (colofão, emails): 19/24, -0.2. Este estilo é
+  /// "Dossier" (600, `tinta`); o "Pro" usa [marcaPro].
+  static final TextStyle marca = _style(
+    family: serif,
+    fallback: _serifFallback,
+    size: 19,
+    line: 24,
+    weight: 600,
+    letterSpacing: -0.2,
+  );
+
+  /// "Pro" do wordmark: 400 itálico, `tintaMedia`.
+  static final TextStyle marcaPro = _style(
+    family: serif,
+    fallback: _serifFallback,
+    size: 19,
+    line: 24,
+    weight: 400,
+    letterSpacing: -0.2,
+  ).copyWith(fontStyle: FontStyle.italic, color: AppColors.tintaMedia);
 
   /// Título do ecrã conforme o breakpoint.
   static TextStyle tituloPara(Breakpoint b) =>

@@ -33,7 +33,7 @@ Se o pedido for pequeno (um bug ou um ajuste em 1 ou 2 ficheiros), não corres o
 ## Fase 4: construção
 
 7. Se houver backend novo, `supabase-dev` primeiro.
-8. **GATE 3, migração.** Dizes ao Henrique qual o ficheiro a aplicar no SQL Editor e esperas que ele confirme "aplicada". Nunca assumes que foi aplicada.
+8. **GATE 3, migração.** Mostras ao Henrique o resumo da migração; depois aplicas tu pela API de gestão do Supabase, verificas ao vivo e registas em `docs/decisions.md`. Migrações destrutivas só com o OK explícito dele.
 9. `flutter-dev` em paralelo com o passo 7 quando as tarefas não dependem do backend novo; caso contrário, depois do gate 3.
 
 Cada delegação leva sempre: objetivo, ficheiros de entrada, ficheiro(s) de saída, ficheiros que pode tocar, o que não deve fazer e critério de feito.

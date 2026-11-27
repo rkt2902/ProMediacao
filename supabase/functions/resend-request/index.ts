@@ -1,7 +1,10 @@
 // resend-request: dois usos, distinguidos pelo corpo.
 //  (1) Mediador, "Reenviar pedido": { grant_id }. Exige JWT de mediador do escritório da concessão.
+//      Responde { ok: true, delivered: "link" | "notice" | "none" } para o mediador saber se
+//      saiu algum email ("none": nada enviado, o pedido só está visível na app do cliente).
 //  (2) Cliente, "Enviar link de acesso" / link novo: { email }. Pode ser anónimo (ecrã de entrada).
-//      Resposta SEMPRE igual exista ou não a conta; o trabalho corre depois de responder.
+//      Resposta SEMPRE igual ({ ok: true }, sem "delivered") exista ou não a conta; o trabalho
+//      corre depois de responder.
 // Ambos: no máximo um envio por destinatário a cada 60 s (429 "too_soon" com retry_after_seconds).
 import { admin, requireCaller } from "../_shared/clients.ts";
 import { ApiError, cleanEmail, cleanUuid, runInBackground, serveFn } from "../_shared/http.ts";
@@ -30,14 +33,14 @@ async function mediatorResend(req: Request, grantIdRaw: unknown) {
   await admin.from("consent_grants").update({ updated_at: new Date().toISOString() }).eq("id", grant.id);
 
   const { data: office } = await admin.from("offices").select("name").eq("id", grant.office_id).maybeSingle();
-  await deliverRequest({
+  const delivered = await deliverRequest({
     userId: grant.client_id,
     email: client.email,
     mode: "auto", // cliente com conta: só aviso, sem link
     officeName: office?.name ?? "",
     mediatorName: caller.fullName,
   });
-  return { ok: true };
+  return { ok: true, delivered };
 }
 
 async function clientSelfRequest(emailRaw: unknown) {

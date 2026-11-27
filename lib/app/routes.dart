@@ -11,6 +11,19 @@ abstract final class AppRoutes {
   static const mediator = '/mediador';
   static const client = '/cliente';
 
+  /// Convite "Criar palavra-passe" depois de entrar por link (cliente).
+  static const clientCreatePassword = '/cliente/criar-palavra-passe';
+
+  /// Criar ou alterar a palavra-passe a partir de "A sua conta" (cliente).
+  static const clientPassword = '/cliente/palavra-passe';
+
   /// Pedido de consentimento (tarefa 5).
   static const consentPattern = '/cliente/pedido/:grantId';
+
+  static String consentFor(String grantId) =>
+      '$client/pedido/${Uri.encodeComponent(grantId)}';
+
+  /// "Criar cliente" em ecrã inteiro (mediador, telemóvel): rota própria para
+  /// o "voltar" do navegador o fechar.
+  static const mediatorNewClient = '/mediador/novo-cliente';
 }

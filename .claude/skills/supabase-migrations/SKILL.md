@@ -8,7 +8,7 @@ description: Regras para migrações, RPCs e RLS em Supabase e as queries que co
 ## Escrever
 
 - Um ficheiro por migração na pasta de migrações do projeto, numerado em sequência (vê o último que existe). Cabeçalho com objetivo, data e "NÃO APLICADA" (o Henrique atualiza depois de aplicar).
-- Nunca aplicar: nem por MCP, nem por CLI (`supabase db push`), nem por SQL direto. Quem aplica é o Henrique, no SQL Editor.
+- O supabase-dev nunca aplica: nem por MCP, nem por CLI (`supabase db push`), nem por SQL direto. Quem aplica é o lead, pela API de gestão, depois de mostrar o resumo ao Henrique (destrutivas só com o OK dele).
 - `CREATE OR REPLACE FUNCTION` com uma lista de parâmetros diferente cria um overload novo em vez de substituir. Se mudares a assinatura, faz `DROP FUNCTION IF EXISTS nome(tipos antigos);` antes.
 - RPCs: a identidade vem sempre de `auth.uid()`, nunca de um parâmetro. `SECURITY DEFINER` só quando for preciso, e sempre com `search_path` fixo (por exemplo `set search_path = ''` com nomes qualificados `public.`).
 - RLS ativo em todas as tabelas novas, com uma política para cada operação usada. `INSERT ... RETURNING` precisa de política de INSERT e também de SELECT.

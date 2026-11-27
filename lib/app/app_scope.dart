@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../features/auth/application/client_link_controller.dart';
 import '../features/auth/application/session_controller.dart';
-import '../features/auth/data/entry_tab_store.dart';
+import '../features/auth/data/password_prompt_store.dart';
 import '../features/auth/domain/auth_repository.dart';
 import 'connectivity.dart';
 
@@ -10,24 +10,32 @@ import 'connectivity.dart';
 class AppServices {
   AppServices({
     required this.auth,
-    required this.tabStore,
+    PasswordPromptStore? prompts,
     SessionController? session,
     AppConnectivity? connectivity,
     ClientLinkController? clientLink,
+    ClientLinkController? passwordReset,
   }) : connectivity = connectivity ?? AppConnectivity(probe: auth.isReachable),
-       session = session ?? SessionController(auth) {
+       session = session ?? SessionController(auth, prompts: prompts) {
     this.clientLink =
         clientLink ?? ClientLinkController(auth, this.connectivity);
+    this.passwordReset =
+        passwordReset ??
+        ClientLinkController.passwordReset(auth, this.connectivity);
   }
 
   final AuthRepository auth;
-  final EntryTabStore tabStore;
   final SessionController session;
   final AppConnectivity connectivity;
   late final ClientLinkController clientLink;
 
+  /// "Recuperar palavra-passe": vive fora do ecrã para o bloqueio de 60 s
+  /// sobreviver a "Voltar a entrar" e a voltar a abrir o ecrã.
+  late final ClientLinkController passwordReset;
+
   void dispose() {
     clientLink.dispose();
+    passwordReset.dispose();
     session.dispose();
     connectivity.dispose();
   }

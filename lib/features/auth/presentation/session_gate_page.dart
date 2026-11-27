@@ -6,8 +6,9 @@ import '../../../core/widgets/widgets.dart';
 import '../application/session_controller.dart';
 import 'auth_copy.dart';
 
-/// Ecrã de passagem enquanto se confirma a sessão (skeleton, sem spinner de
-/// página) ou quando não foi possível confirmá-la.
+/// Ecrã de arranque enquanto se confirma a sessão (DESIGN.md, "Colofão"):
+/// `papel` vazio com o colofão sem sessão no fundo, sem nada ao centro e sem
+/// animação. Se não for possível confirmar, aviso com "Tentar de novo".
 class SessionGatePage extends StatelessWidget {
   const SessionGatePage({super.key});
 
@@ -17,17 +18,19 @@ class SessionGatePage extends StatelessWidget {
     return ListenableBuilder(
       listenable: session,
       builder: (context, _) => PageFrame(
-        child: Padding(
-          padding: const EdgeInsets.only(top: AppSpace.s32),
-          child: session.status == SessionStatus.failed
-              ? InlineNotice(
+        maxWidth: AppSize.larguraFormulario,
+        colophon: const Colophon.signedOut(),
+        child: session.status == SessionStatus.failed
+            ? Padding(
+                padding: const EdgeInsets.only(top: PageFrame.contentTop),
+                child: InlineNotice(
                   kind: NoticeKind.erro,
                   message: AuthCopy.networkError,
                   actionLabel: AuthCopy.retry,
                   onAction: session.retry,
-                )
-              : const SkeletonRows(count: 3),
-        ),
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }

@@ -108,7 +108,7 @@ export function cleanName(value: unknown): string {
   if (typeof value !== "string") throw new ApiError(400, "invalid_input");
   // deno-lint-ignore no-control-regex
   const name = value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
-  if (name.length < 1 || name.length > 200) throw new ApiError(400, "invalid_input");
+  if (name.length < 1 || name.length > 200 || /[<>]/.test(name)) throw new ApiError(400, "invalid_input");
   return name;
 }
 

@@ -1,6 +1,6 @@
 # Funções de servidor (edge functions)
 
-Escritas como ficheiros. Nada foi publicado. Quem publica é o Henrique.
+Publicadas no projeto `aboducqavmsmlzslrseu` com verificação de JWT. `resend-request` foi republicada a 2026-11-26 (bug 5 do qa: campo `delivered`); sem JWT responde `401`.
 
 | Função | Quem chama | O que faz |
 | --- | --- | --- |
@@ -8,11 +8,20 @@ Escritas como ficheiros. Nada foi publicado. Quem publica é o Henrique.
 | `create-client` | mediador | `{ full_name, email }`: cria o cliente (se não existir) e a concessão pendente do escritório do mediador e envia o pedido |
 | `resend-request` | mediador ou cliente | `{ grant_id }` (mediador, "Reenviar pedido") ou `{ email }` (cliente, link novo no ecrã de entrada) |
 
+### Respostas de sucesso de `resend-request`
+
+- Mediador (`{ grant_id }`): `{ "ok": true, "delivered": "link" | "notice" | "none" }`.
+  - `link`: o cliente nunca tinha entrado e recebeu o link mágico.
+  - `notice`: o cliente já tem conta e recebeu um aviso por email sem link (só com `NOTICE_EMAIL_*` configurado).
+  - `none`: não saiu nenhum email (cliente com conta e sem `NOTICE_EMAIL_*`). O pedido continua visível na app do cliente; a app deve dizê-lo ao mediador em vez de "Pedido reenviado".
+- Cliente (`{ email }`): sempre `{ "ok": true }`, sem `delivered`, exista ou não a conta (não revela contas).
+- `create-client` continua a responder só `{ "ok": true }` (a resposta para emails já existentes é neutra de propósito).
+
 Erros: `{ "error": { "code": "..." } }` com códigos fixos (`forbidden`, `invalid_input`, `already_client`, `declined`, `not_pending`, `too_soon` com `retry_after_seconds`, `send_failed`, `cannot_invite`, `not_found`, `server_error`). Nunca há texto técnico.
 
 ## O que o Henrique tem de fazer (por esta ordem)
 
-1. Aplicar no SQL Editor, por esta ordem, `migrations/20261126120000_001_fundacao.sql`, `migrations/20261126130000_001b_send_throttle.sql` (limite de 60 s) e `migrations/20261126140000_001c_declined_final.sql` ("recusada é final" na RLS e listas por data de atualização). Confirmar "aplicada".
+1. Aplicar no SQL Editor, por esta ordem, `migrations/20261126120000_001_fundacao.sql`, `migrations/20261126130000_001b_send_throttle.sql` (limite de 60 s), `migrations/20261126140000_001c_declined_final.sql` ("recusada é final" na RLS e listas por data de atualização) e `migrations/20261126150000_001d_hardening.sql` (auxiliares no esquema `private`, nome de escritório único, `office_client_count()`). Confirmar "aplicada". O esquema `private` nunca deve ser acrescentado a Settings > API > Exposed schemas.
 2. Definir os segredos (só os nomes estão aqui; os valores ficam fora do repositório):
    ```
    supabase secrets set --project-ref aboducqavmsmlzslrseu ALLOWED_ORIGINS=<origens da app web, separadas por vírgula>

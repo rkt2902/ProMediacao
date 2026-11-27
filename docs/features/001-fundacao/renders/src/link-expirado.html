@@ -9,11 +9,8 @@
   [data-estado="form"] .so-enviado, [data-estado="enviado"] .so-form { display: none; }
 </style>
 </head>
-<body data-estado="form">
+<body data-estado="form" data-colofao="sem-sessao">
 <script>document.body.dataset.estado = new URLSearchParams(location.search).get('estado') || 'form';</script>
-<div class="frame"><div class="in">
-  <header class="top"><span class="brand">ProDossier</span></header>
-</div></div>
 <main class="frame"><div class="in">
   <div class="topo-form">
     <div class="pasta"><div class="separador rotulo">Acesso</div></div>
@@ -47,5 +44,6 @@
     </div>
   </div>
 </div></main>
+<script src="colofao.js"></script>
 </body>
 </html>

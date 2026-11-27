@@ -35,3 +35,7 @@ ios/Flutter/flutter_export_environment.sh
 # Claude Code (pessoal, não partilhar)
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Ficheiros temporários da CLI do Supabase
+supabase/**/.temp/
+supabase/.temp/

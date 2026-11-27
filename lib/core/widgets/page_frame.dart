@@ -1,53 +1,66 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../design/tokens.dart';
-import '../design/typography.dart';
 import 'account_actions.dart';
 import 'folder_tab.dart';
 
-/// Moldura de ecrã: fundo `papel`, topo com a marca e a conta, separador de
-/// pasta, margens por breakpoint (16 / 32 / 48) e largura máxima.
+/// Moldura de ecrã (03-design.md, "Estrutura comum"): fundo `papel`, sem
+/// cabeçalho nem marca. A primeira linha é o [FolderTab] ([tabLabel]) a `s16`
+/// (compacto) ou `s24` (médio/largo) do topo, com a conta na mesma linha,
+/// encostada à direita e centrada com o separador. Por baixo, uma régua à
+/// largura da moldura.
 ///
-/// A moldura (marca, conta, separador, conteúdo) tem no máximo
+/// Em largo a moldura (separador, conta, conteúdo, colofão) tem no máximo
 /// [AppSize.larguraLista] e fica centrada na janela; dentro dela tudo alinha
-/// à esquerda. [maxWidth] limita só a coluna do ecrã (separador, conteúdo e
-/// [bottom]), que não é centrada.
+/// à esquerda. [maxWidth] limita só a coluna do conteúdo (e de [bottom]).
 ///
-/// Sem AppBar. Tudo o que não é o contexto vai em [child]; uma barra fixa
-/// (ex.: Recusar/Aceitar) vai em [bottom] e fica sempre visível.
+/// O [colophon] é o último elemento do scroll: encosta ao fundo da janela
+/// quando o conteúdo é curto e só aparece no fim quando é longo.
 class PageFrame extends StatelessWidget {
+  /// Espaço da linha do separador por cima dele: (alvo 48 - separador 40) / 2.
+  static const double _tabInset =
+      (AppSize.alvoMinimo - AppSize.separadorAltura) / 2;
+
+  /// Espaço entre a régua do separador e o conteúdo: `s32` menos o que sobra
+  /// da linha de 48 por baixo da régua (48 - 4 - 40 - 1 = 3).
+  static const double contentTop =
+      AppSpace.s32 -
+      (AppSize.alvoMinimo -
+          _tabInset -
+          AppSize.separadorAltura -
+          AppStroke.fino);
+
   const PageFrame({
     super.key,
     required this.child,
     this.tabLabel,
-    this.tabs,
-    this.brand = 'ProDossier',
     this.trailing,
     this.accountName,
     this.onSignOut,
+    this.topAction,
     this.banner,
     this.bottom,
+    this.colophon,
     this.maxWidth = AppSize.larguraLista,
     this.scrollable = true,
   });
 
   final Widget child;
 
-  /// Texto do [FolderTab] (ex.: "Os meus dados"). Ignorado se houver [tabs].
+  /// Texto do separador: "Acesso" sem sessão, "Os meus dados", o nome do
+  /// escritório, "Administração", "Pedido de acesso". Nulo só no ecrã de
+  /// arranque (papel vazio com o colofão no fundo).
   final String? tabLabel;
 
-  /// Alternativa ao [tabLabel]: separadores escolhíveis (ex.: `FolderTabs`).
-  final Widget? tabs;
-
-  final String brand;
-
-  /// Menu da conta, à direita da marca.
+  /// Bloco da conta na linha do separador. Se [onSignOut] existir, é
+  /// substituído por [AccountActions] (nome onde couber + "Sair").
   final Widget? trailing;
-
-  /// Atalho para a conta por tamanho (ver [AccountActions]); se [onSignOut]
-  /// existir, substitui [trailing].
   final String? accountName;
   final VoidCallback? onSignOut;
+
+  /// Linha por cima do separador, a `s8` dele (ex.: "Com quem partilho" no
+  /// consentimento).
+  final Widget? topAction;
 
   /// Faixa no topo que empurra o conteúdo (ex.: `OfflineBar`).
   final Widget? banner;
@@ -56,32 +69,39 @@ class PageFrame extends StatelessWidget {
   /// o conteúdo alinha com a coluna do ecrã.
   final Widget? bottom;
 
-  /// Largura máxima da coluna de conteúdo (`larguraLista` ou `larguraLeitura`).
+  /// `Colophon` do perfil; nulo nas passagens (formulários de ecrã inteiro).
+  final Widget? colophon;
+
+  /// Largura máxima da coluna de conteúdo (`larguraFormulario`,
+  /// `larguraLeitura` ou `larguraLista`).
   final double maxWidth;
   final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
     final bp = AppBreakpoints.fromContext(context);
+    final compact = bp == Breakpoint.compacto;
     final margin = AppBreakpoints.margin(bp);
     final lowHeight = AppBreakpoints.lowHeight(context);
 
-    /// Moldura centrada com margens; [inner] alinha à esquerda dentro dela.
-    Widget framed(Widget inner, {double? columnWidth}) => Padding(
+    /// Moldura centrada com margens (no máximo 1040), à largura toda dela.
+    Widget framed(Widget inner) => Padding(
       padding: EdgeInsets.symmetric(horizontal: margin),
       child: Center(
+        heightFactor: 1,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: AppSize.larguraLista),
-          child: Align(
-            alignment: AlignmentDirectional.topStart,
-            child: columnWidth == null
-                ? inner
-                : ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: columnWidth),
-                    child: inner,
-                  ),
-          ),
+          child: SizedBox(width: double.infinity, child: inner),
         ),
+      ),
+    );
+
+    /// Coluna do ecrã: alinhada à esquerda da moldura, até [maxWidth].
+    Widget column(Widget inner) => Align(
+      alignment: AlignmentDirectional.topStart,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: inner,
       ),
     );
 
@@ -89,45 +109,117 @@ class PageFrame extends StatelessWidget {
         ? AccountActions(name: accountName, onSignOut: onSignOut)
         : trailing;
 
-    final header = Padding(
-      padding: EdgeInsets.only(
-        top: bp == Breakpoint.compacto ? AppSpace.s16 : AppSpace.s24,
-        bottom: AppSpace.s16,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              brand,
-              style: AppType.rotulo.copyWith(color: AppColors.tintaMedia),
-            ),
-          ),
-          ?account,
-        ],
-      ),
-    );
-
-    final column = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        framed(header, columnWidth: AppSize.larguraLista),
-        framed(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+    final tabRow = LayoutBuilder(
+      builder: (context, c) {
+        // Compacto: o separador deixa 2 × alvoMinimo para "Sair" (ou s48 sem
+        // conta). Médio/largo: separador até 400; a conta usa o resto.
+        final double tabMax;
+        final double accountMax;
+        if (compact) {
+          accountMax = 2 * AppSize.alvoMinimo;
+          tabMax = c.maxWidth - (account != null ? accountMax : AppSpace.s48);
+        } else {
+          tabMax = AppSize.larguraFormulario;
+          accountMax = c.maxWidth - tabMax - AppSpace.s16;
+        }
+        // A linha tem a altura do alvo de "Sair" (48), porque um filho fora
+        // da caixa do Stack não recebe toques. O separador fica encostado à
+        // régua (que se desenha no Stack), com `_tabInset` livres por cima.
+        return SizedBox(
+          height: AppSize.alvoMinimo,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              if (tabs != null)
-                tabs!
-              else if (tabLabel != null)
-                FolderTab(label: tabLabel!),
-              child,
+              PositionedDirectional(
+                start: 0,
+                end: 0,
+                top: _tabInset + AppSize.separadorAltura,
+                child: const AppRule(),
+              ),
+              PositionedDirectional(
+                start: 0,
+                top: _tabInset,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: tabMax),
+                  child: FolderTab(label: tabLabel!, showRule: false),
+                ),
+              ),
+              if (account != null)
+                PositionedDirectional(
+                  end: 0,
+                  top: 0,
+                  height: AppSize.alvoMinimo,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: accountMax),
+                    child: Center(widthFactor: 1, child: account),
+                  ),
+                ),
             ],
           ),
-          columnWidth: maxWidth,
-        ),
-      ],
+        );
+      },
     );
+
+    final head = tabLabel == null
+        ? const SizedBox.shrink()
+        : framed(
+            Padding(
+              // Menos `_tabInset`: o separador fica onde estava.
+              padding: EdgeInsets.only(
+                top:
+                    (compact ? AppSpace.s16 : AppSpace.s24) -
+                    (topAction == null ? _tabInset : 0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (topAction != null) ...[
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: topAction,
+                    ),
+                    const SizedBox(height: AppSpace.s8 - _tabInset),
+                  ],
+                  tabRow,
+                ],
+              ),
+            ),
+          );
+
+    final content = framed(column(child));
+
+    final Widget body;
+    if (scrollable) {
+      body = CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [head, content],
+            ),
+          ),
+          if (colophon != null)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: framed(colophon!),
+              ),
+            ),
+        ],
+      );
+    } else {
+      body = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          head,
+          Expanded(child: content),
+          if (colophon != null) framed(colophon!),
+        ],
+      );
+    }
 
     final bar = bottom == null
         ? null
@@ -142,7 +234,7 @@ class PageFrame extends StatelessWidget {
               padding: EdgeInsets.symmetric(
                 vertical: lowHeight ? AppSpace.s8 : AppSpace.s16,
               ),
-              child: framed(bottom!, columnWidth: maxWidth),
+              child: framed(column(bottom!)),
             ),
           );
 
@@ -153,9 +245,7 @@ class PageFrame extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ?banner,
-            Expanded(
-              child: scrollable ? SingleChildScrollView(child: column) : column,
-            ),
+            Expanded(child: body),
             ?bar,
           ],
         ),

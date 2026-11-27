@@ -9,6 +9,3 @@ String? validateEmail(String raw) {
   if (!_email.hasMatch(v)) return AuthCopy.emailInvalid;
   return null;
 }
-
-/// Regra da nova palavra-passe (10 caracteres, DESIGN 1b).
-const int minPasswordLength = 10;

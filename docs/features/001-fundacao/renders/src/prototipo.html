@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protótipo do fluxo principal · referência 001</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  /* Protótipo navegável: cada ecrã é uma das páginas de referência dentro de um iframe;
+     as transições usam os valores de AppMotion (base 200 ms, lento 320 ms, curvas cúbicas). */
+  html, body { height: 100%; overflow: hidden; }
+  body { display: block; min-height: 0; }
+  .palco { position: fixed; inset: 0; }
+  .palco iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--papel); }
+  .email-ecra { position: absolute; inset: 0; overflow: auto; padding: var(--s24) var(--margem); background: var(--papel); }
+  .email-ecra .msg { max-width: var(--larguraFormulario); }
+  .email-ecra .cx { background: var(--folha); border: var(--fino) solid var(--regua); border-radius: var(--r-superficie); padding: var(--s24); }
+  .instr { margin-top: var(--s32); max-width: var(--larguraLeitura); }
+  .instr li { margin-top: var(--s8); }
+  button.btn { font-family: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="palco" id="palco"></div>
+<template id="email">
+  <div class="email-ecra">
+    <div class="msg">
+      <p class="registo tenue">Caixa de correio de Maria do Carmo Figueiredo</p>
+      <div class="cx mt16">
+        <p class="corpoPequeno media">De: ProDossier, em nome da Ribeira Seguros</p>
+        <h1 class="subtitulo mt8">Ribeira Seguros pede acesso aos seus dados</h1>
+        <p class="corpo mt12">Ana Martins, da Ribeira Seguros, pede-lhe acesso aos dados e documentos que guardar no ProDossier. Pode aceitar ou recusar.</p>
+        <button class="btn cheio principal largo mt24" data-ir="validar" type="button">Ver o pedido</button>
+        <!-- Colofão do email: o mesmo da app, com a data de envio -->
+        <div class="regua-t mt24" style="padding-top: var(--s16)">
+          <span class="wordmark"><span class="pro">Pro</span><span class="dossier">Dossier</span></span>
+          <p class="corpoPequeno media mt4">O dossiê dos seus seguros, partilhado só com quem autorizar.</p>
+          <p class="registo tenue mt4">Enviado a 25 nov 2026, 15:04</p>
+        </div>
+      </div>
+    </div>
+    <div class="instr corpoPequeno media">
+      <p class="corpoForte" style="color: var(--tinta)">Como usar este protótipo</p>
+      <ul>
+        <li>Carregue nos botões como faria na app: Ver o pedido, Aceitar ou Recusar, Ver com quem partilho, escrever na palavra-passe, Guardar palavra-passe ou Agora não, Retirar acesso.</li>
+        <li>O botão voltar do navegador funciona como na app: fecha primeiro o diálogo e depois recua um ecrã.</li>
+        <li>Mude a largura da janela para ver telemóvel, tablet e desktop. Com "reduzir movimento" ativo no sistema, as transições passam a corte seco.</li>
+        <li>Tecla R recomeça.</li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+const MOTION = { base: 200, lento: 320, entrar: 'cubic-bezier(0.33, 1, 0.68, 1)', sair: 'cubic-bezier(0.32, 0, 0.67, 0)', mudar: 'cubic-bezier(0.65, 0, 0.35, 1)' };
+const reduzir = matchMedia('(prefers-reduced-motion: reduce)');
+// Passos: página, e para cada texto de botão o passo seguinte e o tipo de transição.
+// Tipos: pagina (mudança de ecrã), estado (mesmo ecrã muda), folha (diálogo/folha abre por cima), auto (avança sozinho).
+const P = {
+  email: { modelo: 'email' },
+  validar: { url: 'consentimento.html?estado=a-carregar', auto: ['pedido', 1400] },
+  pedido: { url: 'consentimento.html', ir: { 'Aceitar': ['aceite', 'estado'], 'Recusar': ['recusado', 'estado'], 'Com quem partilho': ['cqp', 'pagina'] } },
+  aceite: { url: 'consentimento.html?estado=aceite', ir: { 'Ver com quem partilho': ['criar', 'pagina'] } },
+  recusado: { url: 'consentimento.html?estado=recusado', ir: { 'Ver com quem partilho': ['criar', 'pagina'] } },
+  criar: { url: 'criar-palavra-passe.html', ir: { '•••••••••': ['cumprida', 'estado'], 'Mostrar': ['cumprida', 'estado'], 'Guardar palavra-passe': ['fraca', 'estado'], 'Agora não': ['cqp', 'pagina'] } },
+  fraca: { url: 'criar-palavra-passe.html?estado=fraca', ir: { '•••••••••': ['cumprida', 'estado'], 'Mostrar': ['cumprida', 'estado'], 'Guardar palavra-passe': ['fraca', 'estado'], 'Agora não': ['cqp', 'pagina'] } },
+  cumprida: { url: 'criar-palavra-passe.html?estado=todas', ir: { 'Guardar palavra-passe': ['criada', 'pagina'], 'Agora não': ['cqp', 'pagina'] } },
+  criada: { url: 'com-quem-partilho.html?estado=criada', ir: { 'Retirar acesso': ['retirar', 'folha'], 'Responder': ['pedido', 'pagina'], 'Sair': ['entrar', 'pagina'] } },
+  cqp: { url: 'com-quem-partilho.html', ir: { 'Retirar acesso': ['retirar', 'folha'], 'Responder': ['pedido', 'pagina'], 'Criar palavra-passe': ['criar', 'pagina'], 'Sair': ['entrar', 'pagina'] } },
+  retirar: { url: 'com-quem-partilho.html?folha=retirar', ir: { 'Retirar acesso': ['retirado', 'estado'], 'Cancelar': ['<voltar>'] } },
+  retirado: { url: 'com-quem-partilho.html?estado=retirado', ir: { 'Sair': ['entrar', 'pagina'] } },
+  entrar: { url: 'entrar.html', ir: { 'Entrar': ['cqp', 'pagina'], 'Receber link de acesso por email': ['enviado', 'estado'] } },
+  enviado: { url: 'entrar.html?estado=enviado', ir: { 'Entrar com palavra-passe': ['entrar', 'estado'], 'Usar outro email': ['entrar', 'estado'] } },
+};
+const palco = document.getElementById('palco');
+let atual = null, timer = null;
+
+function dur(ms) { return reduzir.matches ? 0 : ms; }
+
+function criar(id) {
+  const p = P[id];
+  if (p.modelo) {
+    const d = document.createElement('div');
+    d.appendChild(document.getElementById(p.modelo).content.cloneNode(true));
+    d.style.position = 'absolute'; d.style.inset = '0';
+    ligar(d, id);
+    return Promise.resolve(d);
+  }
+  const f = document.createElement('iframe');
+  f.title = 'Ecrã';
+  f.src = p.url + (p.url.includes('?') ? '&' : '?') + 'animar=1';
+  f.style.opacity = '0';
+  const pronto = new Promise((ok) => f.addEventListener('load', () => { ligar(f.contentDocument, id); ok(f); }, { once: true }));
+  palco.appendChild(f); // o iframe só carrega dentro do documento; fica invisível até à transição
+  return pronto;
+}
+
+function ligar(doc, id) {
+  const p = P[id];
+  doc.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => ir(b.dataset.ir, 'pagina')));
+  if (!p.ir) return;
+  doc.querySelectorAll('.btn, .acao, .caixa .valor').forEach((el) => {
+    const txt = el.textContent.trim();
+    const alvo = p.ir[txt];
+    if (!alvo || el.offsetParent === null) return;
+    el.style.cursor = 'pointer';
+    el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button');
+    const go = (e) => { e.stopPropagation(); alvo[0] === '<voltar>' ? history.back() : ir(alvo[0], alvo[1]); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(e); } });
+  });
+  if (id === 'retirar') doc.querySelectorAll('.veu').forEach((v) => v.addEventListener('click', () => history.back()));
+  doc.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') recomecar(); if (e.key === 'Escape' && id === 'retirar') history.back(); });
+}
+
+async function mostrar(id, tipo) {
+  clearTimeout(timer);
+  const novo = await criar(id);
+  const velho = atual;
+  // folha: o ecrã de baixo não se mexe; a folha/diálogo anima-se dentro da página (véu + escala ou subida).
+  const t = tipo === 'folha' ? 0 : dur(MOTION.base);
+  novo.style.opacity = t ? '0' : '1';
+  if (novo.parentNode !== palco) palco.appendChild(novo);
+  if (t) {
+    novo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: t, easing: tipo === 'estado' ? MOTION.mudar : MOTION.entrar, fill: 'forwards' });
+    if (velho) velho.animate([{ opacity: 1 }, { opacity: 0 }], { duration: t, easing: MOTION.sair, fill: 'forwards' });
+  }
+  setTimeout(() => { if (velho) velho.remove(); novo.style.opacity = '1'; }, t);
+  atual = novo;
+  // Foco: no novo ecrã (a app põe o foco no título ou no aviso; aqui foca-se o documento).
+  if (novo.contentWindow) novo.contentWindow.focus();
+  const p = P[id];
+  if (p.auto) timer = setTimeout(() => ir(p.auto[0], 'estado', true), p.auto[1]);
+}
+
+function ir(id, tipo, substituir) {
+  const estado = { id, tipo };
+  substituir ? history.replaceState(estado, '', '#' + id) : history.pushState(estado, '', '#' + id);
+  mostrar(id, tipo);
+}
+function recomecar() { history.replaceState({ id: 'email', tipo: 'pagina' }, '', '#email'); mostrar('email', 'pagina'); }
+// Voltar do navegador: recua com a mesma transição (fechar uma folha volta ao ecrã de baixo sem cross-fade).
+addEventListener('popstate', (e) => { const s = e.state || { id: 'email' }; mostrar(s.id, P[s.id] && atual && s.id !== 'retirar' && location.hash !== '#retirar' ? 'estado' : 'pagina'); });
+addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') recomecar(); });
+const inicio = (location.hash || '#email').slice(1);
+history.replaceState({ id: P[inicio] ? inicio : 'email', tipo: 'pagina' }, '', '#' + (P[inicio] ? inicio : 'email'));
+mostrar(P[inicio] ? inicio : 'email', 'pagina');
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+tags:
+  design-review:
+    # Goldens do designer (test/design_review/): só para revisão visual, fora da regressão.

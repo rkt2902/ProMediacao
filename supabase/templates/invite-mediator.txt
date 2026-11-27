@@ -1,0 +1,12 @@
+Foi convidado para o ProDossier
+
+Foi criada uma conta de mediador para este email. Para a ativar, defina a sua palavra-passe com o link abaixo. Depois, entra sempre com o seu email e essa palavra-passe.
+
+Definir palavra-passe: {{ .ConfirmationURL }}
+
+Se não esperava este convite, pode ignorar este email: sem usar o link, a conta não fica ativa. O link deixa de funcionar ao fim de algum tempo, por segurança; se isso acontecer, peça um novo convite a quem lho enviou.
+
+--
+ProDossier
+O dossiê dos seus seguros, partilhado só com quem autorizar.
+Enviado para {{ .Email }}

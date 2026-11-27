@@ -28,11 +28,12 @@ Todos entram pelo navegador, sem instalar nada. Clientes e mediadores usam telem
 O que torna a app reconhecível num screenshot sem logótipo:
 
 1. **Papel e tinta.** Fundo cor de papel (`papel`), texto quase preto (`tinta`), e a ação principal é um botão cheio a tinta. Não há "cor de marca" a pintar botões: a autoridade vem do contraste, não do azul.
-2. **O separador de pasta.** O contexto do ecrã (o escritório, "Os meus dados" no cliente, ou "Acesso" antes de haver sessão) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. Por baixo, uma régua `regua` corre a largura da moldura (1040 em largo), mesmo quando a coluna é mais estreita: é a borda da pasta. É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver.
+2. **O separador de pasta.** O contexto do ecrã (o escritório, "Os meus dados" no cliente, ou "Acesso" antes de haver sessão) aparece num separador cor de cartolina (`cartolina`) colado ao topo da área de conteúdo, com cantos superiores arredondados (`AppRadius.separador`) e o resto reto. Por baixo, uma régua `regua` corre a largura da moldura (1040 em largo), mesmo quando a coluna é mais estreita: é a borda da pasta. O separador é a primeira linha do ecrã: não há cabeçalho nem marca por cima nos ecrãs com sessão; "Sair" (e o nome, onde couber) fica na mesma linha, encostado à direita da moldura e centrado com o separador. Sem sessão, o separador diz "Acesso". É a única forma "decorativa" da app e é sempre informativa: diz em nome de quem se está a ver. A marca não vive aqui: vive no colofão (ponto 7).
 3. **Serifa nos títulos e nos números, sans legível no resto.** Títulos, nomes de escritórios e contagens em Source Serif 4; interface e corpo em Atkinson Hyperlegible Next; datas, versões e registos em Atkinson Hyperlegible Mono.
 4. **O carimbo.** Estados (Ativo, Pendente, Recusado, Retirado) são etiquetas retangulares de canto quase reto (`AppRadius.carimbo`), com ícone + palavra, contorno de 1.5 na cor do estado e fundo `folha`. Parecem carimbos num processo, não "pills" de app.
 5. **Réguas em vez de cartões.** Listas separadas por linhas finas (`regua`), sem sombras. Só há superfície elevada (`folha`) em formulários, folhas laterais e diálogos.
 6. **A voz.** Frases curtas, verbos concretos, datas sempre por extenso curto ("26 nov 2026, 14:32"). Cada ação sensível diz o que acontece a seguir.
+7. **O colofão** (escolhido pelo Henrique a 2026-11-26). A página acaba como a última folha de um livro: uma régua `regua` à largura da moldura e, por baixo, o wordmark "*Pro*Dossier", uma linha que diz de quem é o que se está a ver e, onde houver, uma data de registo. É o único sítio onde a marca aparece na app (também no fim dos emails). Nunca é cabeçalho, nunca é fixo, nunca compete com o conteúdo: está depois dele.
 
 ## Design system
 
@@ -86,17 +87,20 @@ Famílias: **Source Serif 4** (títulos, nomes, números), **Atkinson Hyperlegib
 | `rotulo` | Sans | 14 / 20 | 600, +0.2 de espaçamento | Rótulos de campo, cabeçalhos de coluna e de grupo, texto de botão secundário |
 | `botao` | Sans | 17 / 24 | 600 | Texto de botões |
 | `carimbo` | Sans | 13 / 16 | 700, +0.6, maiúsculas | Texto dentro dos carimbos de estado |
-| `registo` | Mono | 13 / 18 | 400 | Datas, versão do texto, horas de envio |
+| `registo` | Mono | 13 / 18 | 400 | Datas, versão do texto, horas de envio. Cor `tintaTenue` por defeito (metadado); `tinta` nunca |
+| `marca` | Serif | 19 / 24, -0.2 de espaçamento | "Pro" 400 itálico `tintaMedia` + "Dossier" 600 `tinta` | Só o wordmark "ProDossier" (colofão, emails). Lido como uma palavra pela leitura de ecrã |
+
+Reticências: sempre o glifo "…" (U+2026), nunca três pontos; existe nas três famílias (Atkinson Hyperlegible Next 0,67 em, Source Serif 4 0,82 em, Mono 0,632 em), confirmado nos goldens da tarefa 9 ("A criar…" com spinner mede cerca de 136 no botão, com padding).
 
 A escala de texto do sistema é respeitada até 1.3 sem cortar ações; acima disso o texto pode fazer scroll, os botões nunca saem do ecrã.
 
 ### Espaço, raios, traços e tamanhos
 
-- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 32 da régua do separador ao título, 48 entre grupos. Entre a linha do topo e o separador: 0 (o separador cola-se à linha do topo, que tem `s16` em cima e 48 de altura). `s72` fica sem uso desde 2026-11-26 (era o vazio acima dos formulários em largo, rejeitado).
+- `AppSpace`: `s4`=4, `s8`=8, `s12`=12, `s16`=16, `s24`=24, `s32`=32, `s48`=48, `s72`=72. Ritmo: 8 dentro de um componente, 16 a 24 entre elementos de um grupo, 32 da régua do separador ao título, 48 entre grupos. Topo da janela ao separador: `s16` em compacto, `s24` em médio/largo (não há linha de cabeçalho). `s72` é a distância do fim do conteúdo à régua do colofão em médio/largo (`s48` em compacto); não volta a ser usado como vazio acima de formulários (rejeitado).
 - `AppRadius`: `carimbo`=3, `controlo`=6 (botões, campos), `superficie`=10 (folhas, diálogos), `separador`=10 só nos cantos superiores. Listas e linhas não têm raio.
 - `AppStroke`: `fino`=1 (réguas), `controlo`=1.5 (campos, botão secundário, carimbos), `foco`=2, `focoAfastamento`=2 (distância entre o controlo e o anel de foco).
 - `AppSize`: `alvoMinimo`=48, `alvoPrincipal`=56 (ações principais do cliente em todos os tamanhos; de mediador e admin em compacto), `campo`=52, `larguraLeitura`=640 (texto de consentimento, listas de leitura do cliente, diálogo só de leitura), `larguraLista`=1040 (também largura máxima da moldura em largo), `folhaLateral`=440, `separadorAltura`=40, `icone`=24 (ícones de interface: resumo do consentimento, spinner), `iconePequeno`=18 (ícones dentro de carimbos, campos, avisos e botões), `dialogo`=480 (diálogo de confirmação em médio/largo).
-- `AppSize` (proposto, para a feature 001): `larguraFormulario`=400 (coluna de Entrar, recuperar/definir/criar palavra-passe, link expirado; largura máxima do separador de pasta em médio/largo), `textoMinimo`=240 (largura mínima da zona de texto de uma linha antes de passar ao layout seguinte, mais empilhado), `linhaTabela`=72 (altura mínima de linha de tabela), `colunaEstado`=140, `colunaData`=248 (também a coluna Estado + data da tabela em médio; revisto de 200 nos renders da tarefa 4b: "Recusado a 20 nov 2026, 09:12" em `registo` mede 238), `colunaAcao`=160.
+- `AppSize` (proposto, para a feature 001): `larguraFormulario`=400 (coluna de Entrar, recuperar/definir/criar palavra-passe, link expirado; largura máxima do separador de pasta em médio/largo), `textoMinimo`=240 (largura mínima da zona de texto de uma linha antes de passar ao layout seguinte, mais empilhado), `linhaTabela`=72 (altura mínima de linha de tabela), `colunaEstado`=152 (revisto de 140: o carimbo "PENDENTE"/"RECUSADO" mede ~150 com a fonte real), `colunaData`=248 (também a coluna Estado + data da tabela em médio; revisto de 200 nos renders da tarefa 4b: "Recusado a 20 nov 2026, 09:12" em `registo` mede 238), `colunaAcao`=160.
 - `AppBreakpoints`: `compacto` < 640 (telemóvel), `medio` 640 a 1100 (tablet), `largo` > 1100 (desktop). 640 exato já é médio (a decisão diz "até 640"; 1 px sem efeito prático). Margens laterais: 16 / 32 / 48. Proposto: `alturaBaixa`=480 (altura da janela abaixo da qual as barras fixas encolhem: telemóvel deitado).
 - Sombras: nenhuma, exceto diálogos, folhas inferiores e folhas laterais (`AppShadow.superficie`: deslocamento 0 8, desfoque 24, cor `sombra`). Cartões com elevação estão proibidos.
 
@@ -121,13 +125,26 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 
 A criar em `lib/core/widgets/` na feature 001:
 
-- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + linha do topo com `s16` em cima e 0 em baixo + separador colado + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
+- `FolderTab` (separador de pasta com o contexto), `PageFrame` (papel + `s16`/`s24` de topo + linha do separador com a conta à direita + régua à largura da moldura + margens por breakpoint + largura máxima). `FolderTabs` (separadores escolhíveis) deixou de ser usado a 2026-11-26, quando Entrar passou a um só formulário para todos os perfis; não se usa separadores de pasta como controlo de navegação sem uma razão nova.
+- Geometria da linha do separador (tarefa 9): a linha tem a altura do alvo de "Sair" (`alvoMinimo` 48), o separador (`separadorAltura` 40) começa a 4 do topo dela e a régua (`fino` 1) fica a 44. Os 3 que sobram por baixo da régua (48 − 4 − 40 − 1) contam para o espaço até ao título: o título fica a `s32` da régua, não a `s32` + 3. O `PageFrame` compensa isto (expõe o espaço já gasto, ou o conteúdo começa a `s32` − 3), em vez de cada ecrã somar `s32` por conta própria.
 - `StatusStamp` (carimbo: ativo, pendente, recusado, retirado; ícone + palavra, nunca só cor).
 - `PrimaryButton` (cheio a tinta, spinner só aqui dentro), `SecondaryButton` (contorno `reguaForte` 1.5), `DestructiveButton` (cheio a `erro`), `TextAction` (sublinhado, para ações de linha).
 - `LabeledField` (rótulo por cima, nunca só placeholder; erro por baixo com ícone).
 - `RuledList` / `RuledRow` (lista com réguas), `SkeletonRows`.
 - `OfflineBar` (faixa a tinta no topo), `InlineNotice` (mensagem dentro do fluxo, com ação), `ConfirmSheet` (folha inferior em compacto, diálogo de `dialogo` 480 em médio/largo; variante só de leitura: folha alta em compacto, diálogo de `larguraLeitura` 640 em médio/largo).
 - `PageFrame` em largo: moldura de `larguraLista` 1040 centrada na janela; a barra fixa de baixo (`bottom`) tem o fundo à largura da janela e o conteúdo alinhado com a coluna do ecrã.
+- `Wordmark` ("ProDossier" em `AppType.marca`, com `semanticsLabel` "ProDossier") e `Colophon` (régua + wordmark + linha de identidade + registo opcional). O `PageFrame` desenha o `Colophon` como último elemento do scroll, depois do conteúdo; quando o conteúdo é mais curto do que a janela, o colofão fica encostado ao fundo dela. Regras em "Colofão".
+
+## Colofão
+
+Decisão do Henrique (2026-11-26), entre três propostas (as outras duas estão em "Rejeitado").
+
+- **Onde:** em todos os ecrãs de página (sem sessão, cliente, mediador, admin), como último elemento do scroll do `PageFrame`, depois do conteúdo e antes de qualquer barra fixa. Nunca dentro de folhas, diálogos ou formulários em ecrã inteiro do compacto (são passagens, não páginas); por trás de um véu continua onde está.
+- **Composição:** a `s72` do fim do conteúdo (`s48` em compacto), régua `regua` `fino` à largura da moldura (como a da pasta, mesmo quando a coluna é 400 ou 640); a `s16` dela, numa linha alinhada pela base: `Wordmark` (`marca`), a `s16` a linha de identidade em `corpoPequeno` `tintaMedia`, a `s16` o registo em `registo` `tintaTenue`. Por baixo, `s32` (`s24` em compacto) até ao fim da página. Em compacto, ou quando a linha não cabe (escala 1.3), os três empilham à esquerda com `s4`. Sem ícones, sem ligações, sem versão nem copyright.
+- **Linha de identidade e registo por perfil:** sem sessão "O dossiê dos seus seguros, partilhado só com quem autorizar." (sem registo); cliente "Dossiê de {nome}" + "Aberto a {data de criação da conta}"; mediador "{nome}, {escritório}" + "Na equipa desde {data de entrada no escritório}"; admin "Administração da plataforma" (sem nome nem registo, pela regra de privacidade do admin).
+- **Altura da janela:** quando o conteúdo é curto, o colofão encosta ao fundo da janela; quando é longo, só aparece no fim do scroll. Nunca fixo, nunca sobreposto ao conteúdo.
+- **Estados:** a carregar (cliente e mediador), só o wordmark até o perfil chegar, e a linha entra em `base` / `entrar` (nunca skeleton no colofão); erro, vazio e offline não mudam o colofão (a `OfflineBar` fica no topo).
+- **Fora da app:** emails transacionais acabam com o mesmo colofão em texto (wordmark em serifa com alternativa Georgia, a frase sem sessão e "Enviado a {data, hora}"); o ecrã de arranque (enquanto a sessão é lida) é `papel` vazio com o colofão sem sessão no fundo, sem nada ao centro e sem animação.
 
 ## Responsividade (web)
 
@@ -143,7 +160,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - **Navegador:** cada ecrã tem endereço; "voltar" fecha primeiro a folha ou o diálogo; texto de consentimento, nomes e emails selecionáveis.
 - **Teclado virtual:** campo com foco e botão de envio visíveis acima dele; sem foco automático em compacto; em formulários de ecrã inteiro (compacto) os botões vão no fluxo, não fixos.
 - **Folhas e diálogos:** compacto = folha inferior (decisões, leitura) ou ecrã inteiro (formulários); médio e largo = diálogo centrado (decisões, leitura) ou folha lateral de `folhaLateral` (formulários).
-- **Conta e navegação:** sem AppBar nem barra de navegação em nenhum tamanho enquanto cada perfil tiver poucos ecrãs; topo com a marca e a conta (compacto: só "Sair", com o nome na leitura de ecrã; médio/largo: nome + "Sair").
+- **Conta e navegação:** sem AppBar, sem barra de navegação e sem linha de cabeçalho em nenhum tamanho enquanto cada perfil tiver poucos ecrãs; a conta vive na linha do separador (compacto: só "Sair", com o nome na leitura de ecrã; médio/largo: nome + "Sair").
 - **Goldens:** cada ecrã de cliente e mediador a 390 × 844, 768 × 1024 e 1280 × 800, escala 1.0 e 1.3.
 
 ## Regras
@@ -155,11 +172,14 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Botão desativado tem sempre a razão escrita por baixo ("Sem ligação. Tente quando voltar a ligação.").
 - Nunca mostrar como feito algo que o servidor não confirmou (sem updates otimistas em consentimento).
 - Erros dizem o que aconteceu e o que fazer, em PT-PT, sem códigos técnicos.
+- Nomes de escritório nunca levam artigo nem contração à frente ("da {escritório}" falha com "Gabinete …"): "o escritório {escritório}", "acesso a {escritório}", ou "este escritório" quando o contexto já o diz.
 - Nomes e emails longos: em médio/largo, uma linha com reticências em tabelas; em compacto, até 2 linhas (emails quebram em qualquer caractere) e só depois reticências. O texto completo aparece no tooltip (hover, foco e toque longo) e na leitura de ecrã.
 - Datas: "26 nov 2026" e "26 nov 2026, 14:32", em `registo`. Nada de "há 3 dias" em consentimento (tem de ser verificável).
 - Ícones: Material Symbols Outlined (já incluídos no Flutter), traço uniforme, sempre com etiqueta visível quando o significado não é óbvio. Sem emoji.
 - Nenhum `AppBar`, `Card`, `FloatingActionButton` ou `ListTile` com estilo por defeito a definir o aspeto de um ecrã.
 - Admin: nunca mostrar nome nem email de pessoas, nem em tooltips.
+- Palavra-passe: mínimo 10 caracteres com maiúscula, minúscula, número e carácter especial, sem campo de confirmação ("Mostrar" no campo). As regras estão sempre visíveis por baixo do campo e mudam em tempo real com ícone + texto (por cumprir `circle_outlined`, cumprida `check_circle`, em erro `error_outline` a `erro`). O botão de guardar nunca fica desativado por causa das regras: ao carregar, o erro diz quantas faltam.
+- Mudança de ecrã: cross-fade `base` (entra `entrar`, sai `sair`); nada desliza entre ecrãs. Só folhas laterais e inferiores se deslocam, porque têm um sítio de onde vêm.
 - Entrada: um só formulário (email + palavra-passe) para todos os perfis; o link mágico é alternativa do cliente, com `SecondaryButton` à largura da coluna e "Só para clientes." escrito, nunca um link pequeno. Convites opcionais (ex.: criar palavra-passe) têm "Agora não" como `SecondaryButton` do mesmo tamanho, e nunca aparecem antes de uma decisão de consentimento.
 
 ## Referências
@@ -175,6 +195,9 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 
 | Data | O quê | Porquê |
 | --- | --- | --- |
+| 2026-11-26 | Marca "ProDossier" visível num cabeçalho por cima do separador, com "Sair" à parte | Parecia nota de rodapé e o "Sair" flutuava sem relação; a marca sai dos ecrãs com sessão e a conta passa para a linha do separador |
+| 2026-11-26 | Marca na "etiqueta da lombada": wordmark em serifa no separador sem sessão e monograma "pD" num campo próprio do separador com sessão | Proposta de marca não escolhida (o Henrique escolheu o colofão); não pôr a marca no separador |
+| 2026-11-26 | Marca como "selo de registo": carimbo a tinta, contorno duplo e inclinado, com "PRODOSSIER" e a data, nos momentos registados (link enviado, consentimento, acesso retirado) | Proposta de marca não escolhida (o Henrique escolheu o colofão); não usar selos de marca nos avisos |
 | 2026-11-26 | Vazio entre a linha do topo (marca + conta) e o separador de pasta: 24 + 16 nos ecrãs de lista e mais 32 / 48 / 72 nos formulários de entrada | Demasiado espaço vertical; o separador tem de ficar colado ao cabeçalho, como uma pasta |
 
 (Só rejeições do Henrique em gates. As direções descartadas pelo designer ficam no `03-design.md` de cada feature.)
