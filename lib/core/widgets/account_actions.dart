@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../design/tokens.dart';
 import '../design/typography.dart';
 import 'app_buttons.dart';
+import 'notification_bell.dart';
 
 /// Conta no topo do `PageFrame`, por tamanho (03-design.md):
 /// compacto só "Sair" (o nome fica na leitura de ecrã); médio e largo o nome
@@ -13,7 +14,19 @@ class AccountActions extends StatelessWidget {
     required this.onSignOut,
     this.name,
     this.signOutLabel = 'Sair',
+    this.onNotifications,
+    this.unreadNotifications,
+    this.notificationsOpen = false,
   });
+
+  /// Sino (só cliente): aparece antes de "Sair", a `s8`, se não for nulo.
+  final VoidCallback? onNotifications;
+
+  /// Por ler (`null` ou 0: sem contador).
+  final int? unreadNotifications;
+
+  /// Painel de notificações aberto (fundo `cartolina`).
+  final bool notificationsOpen;
 
   final VoidCallback? onSignOut;
 
@@ -38,6 +51,14 @@ class AccountActions extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpace.s16),
+        ],
+        if (onNotifications != null) ...[
+          NotificationBell(
+            onPressed: onNotifications,
+            unread: unreadNotifications,
+            open: notificationsOpen,
+          ),
+          const SizedBox(width: AppSpace.s8),
         ],
         TextAction(
           label: signOutLabel,
