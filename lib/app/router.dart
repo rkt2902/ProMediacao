@@ -29,6 +29,35 @@ AppRole? _ownerOf(String path) {
   return null;
 }
 
+/// Link do email do pedido: `/pedidos` e `/pedidos/{id}`.
+bool _isEmailLink(String path) =>
+    path == AppRoutes.emailRequests ||
+    path.startsWith('${AppRoutes.emailRequests}/');
+
+/// Para onde vai o link do email com sessão: o cliente vai aos seus pedidos
+/// (ou ao pedido indicado); os outros papéis ao seu ecrã inicial.
+String _emailLinkTarget(AppRole role, String path) {
+  if (role != AppRole.cliente) return homeFor(role);
+  final rest = path.substring(AppRoutes.emailRequests.length);
+  final id = rest.startsWith('/') ? Uri.decodeComponent(rest.substring(1)) : '';
+  return id.isEmpty ? AppRoutes.client : AppRoutes.clientRequest(id);
+}
+
+/// Destino de `?de=` depois de entrar: só caminhos desta app (nunca outro
+/// site), e nunca Entrar ou o arranque.
+String? safeReturnPath(String? value) {
+  if (value == null || !value.startsWith('/') || value.startsWith('//')) {
+    return null;
+  }
+  if (value.contains(r'\')) return null;
+  final u = Uri.tryParse(value);
+  if (u == null || u.hasScheme || u.hasAuthority) return null;
+  if (u.path == '/' || u.path == AppRoutes.entry || u.path == AppRoutes.gate) {
+    return null;
+  }
+  return value;
+}
+
 const _publicPaths = {
   AppRoutes.entry,
   AppRoutes.recover,
@@ -80,6 +109,14 @@ String? redirectFor(SessionController session, Uri uri) {
         return '${AppRoutes.expiredLink}?tipo=palavra-passe';
       }
       if (_publicPaths.contains(path)) return null;
+      // O link do email passa por Entrar e volta ao destino depois.
+      if (_isEmailLink(path)) {
+        final back = Uri(
+          path: path,
+          query: uri.hasQuery ? uri.query : null,
+        ).toString();
+        return '${AppRoutes.entry}?de=${Uri.encodeComponent(back)}';
+      }
       return AppRoutes.entry;
 
     case SessionStatus.signedIn:
@@ -93,21 +130,27 @@ String? redirectFor(SessionController session, Uri uri) {
         return path == AppRoutes.setPassword ? null : AppRoutes.setPassword;
       }
       if (path == AppRoutes.setPassword) return null;
+      if (path == AppRoutes.entry) {
+        final back = safeReturnPath(uri.queryParameters['de']);
+        if (back != null) return back;
+      }
+      if (_isEmailLink(path)) return _emailLinkTarget(role, path);
       final owner = _ownerOf(path);
       if (owner == null) return home; // entrada, "/" e rotas desconhecidas
       if (owner != role) return home; // rota de outro perfil: não existe
       if (role == AppRole.cliente) {
         // Entrada por link com um pedido pendente: a primeira paragem é o
         // pedido (03-design, ecrã 1c e fluxo 1). Uma só vez por entrada; ao
-        // voltar a "Com quem partilho" aparece o convite.
+        // voltar ao ecrã inicial ("Os meus pedidos" desde a 002) aparece o
+        // convite.
         final pending = session.pendingRequestId;
         if (path == AppRoutes.client && pending != null) {
           session.consumePendingRequest();
           return AppRoutes.consentFor(pending);
         }
-        // O convite para criar palavra-passe vem antes de "Com quem
-        // partilho", nunca antes nem durante o consentimento (o pedido tem
-        // rota própria e não passa por aqui).
+        // O convite para criar palavra-passe vem antes do ecrã inicial,
+        // nunca antes nem durante o consentimento (o pedido tem rota própria
+        // e não passa por aqui).
         if (path == AppRoutes.client && session.offerPassword) {
           return AppRoutes.clientCreatePassword;
         }
@@ -159,6 +202,97 @@ GoRouter buildRouter(
             forPassword: s.uri.queryParameters['tipo'] == 'palavra-passe',
           ),
         ),
+      ),
+      // Link do email do pedido: o redirect leva sempre a outro sítio.
+      GoRoute(
+        path: AppRoutes.emailRequests,
+        pageBuilder: (c, s) => fadePage(c, s, const SessionGatePage()),
+        routes: [
+          GoRoute(
+            path: ':requestId',
+            pageBuilder: (c, s) => fadePage(c, s, const SessionGatePage()),
+          ),
+        ],
+      ),
+      // 002: rotas de topo (não filhas de /mediador nem de /cliente), antes
+      // das iniciais. Cada `go` constrói o ecrã de novo: a ficha que se abre
+      // depois de criar não fica com o estado de antes por baixo.
+      GoRoute(
+        path: AppRoutes.mediatorNewRequest,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          Builder(
+            builder: (c) => builders.newRequest(
+              c,
+              NewRequestArgs(
+                clientId: _param(s.uri.queryParameters['cliente']),
+              ),
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.mediatorClientNewRequestPattern,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          Builder(
+            builder: (c) => builders.newRequest(
+              c,
+              NewRequestArgs(
+                clientId: s.pathParameters['clientId'],
+                fromClientFile: true,
+              ),
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.mediatorRequestPattern,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          Builder(
+            builder: (c) => builders.mediatorRequest(
+              c,
+              s.pathParameters['clientId'] ?? '',
+              s.pathParameters['requestId'] ?? '',
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.mediatorClientPattern,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          Builder(
+            builder: (c) =>
+                builders.clientFile(c, s.pathParameters['clientId'] ?? ''),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientSharing,
+        pageBuilder: (c, s) =>
+            fadePage(c, s, Builder(builder: builders.clientSharing)),
+      ),
+      GoRoute(
+        path: AppRoutes.clientRequestPattern,
+        pageBuilder: (c, s) => fadePage(
+          c,
+          s,
+          Builder(
+            builder: (c) =>
+                builders.clientRequest(c, s.pathParameters['requestId'] ?? ''),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.clientNotifications,
+        pageBuilder: (c, s) =>
+            fadePage(c, s, Builder(builder: builders.notifications)),
       ),
       GoRoute(
         path: AppRoutes.admin,
@@ -220,3 +354,5 @@ GoRouter buildRouter(
     ],
   );
 }
+
+String? _param(String? v) => v == null || v.trim().isEmpty ? null : v;
