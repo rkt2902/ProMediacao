@@ -165,19 +165,13 @@ void main() {
       expect(NewRequestController.validateFreeItem('   '), FreeItemError.empty);
     });
 
-    test(
-      'carateres de controlo C1 (U+0080 a U+009F) recusados, como o '
-      '[[:cntrl:]] do servidor ao vivo',
-      () {
-        expect(
-          NewRequestController.validateFreeItem('Fotos\u0085do carro'),
-          FreeItemError.invalidCharacters,
-        );
-      },
-      skip:
-          'Bug 1 do 05-qa.md da 002: a app aceita U+0080..U+009F e o '
-          'servidor recusa (invalid_item, "Não foi possível criar")',
-    );
+    test('carateres de controlo C1 (U+0080 a U+009F) recusados, como o '
+        '[[:cntrl:]] do servidor ao vivo', () {
+      expect(
+        NewRequestController.validateFreeItem('Fotos\u0085do carro'),
+        FreeItemError.invalidCharacters,
+      );
+    });
 
     test('espaços nas pontas aparados e & " \' guardados tal como estão; '
         'o 61.º item é recusado', () async {
@@ -248,4 +242,45 @@ void main() {
     expect(await c.submit(), isNull);
     expect(s.repo.createCalls.length, 1);
   });
+
+  for (final kind in [
+    RequestFailureKind.invalidItem,
+    RequestFailureKind.invalidInput,
+  ]) {
+    test('bug 4: catálogo mudado ($kind): recarrega o catálogo, tira o item '
+        'desativado e mantém a escolha', () async {
+      final catalog = [...FakeRequestsRepository.sampleCatalog()];
+      final s = _Setup(repo: FakeRequestsRepository(catalog: catalog));
+      await s.controller.start();
+      await pumpEventQueue();
+      final c = s.controller..toggleType('automovel');
+      c.addFreeItem('automovel', ItemKind.document, 'Extra');
+      expect(c.lines('automovel'), hasLength(4));
+      final calls = s.repo.catalogCalls;
+
+      // O catálogo muda: o último item do automóvel é desativado.
+      final auto = catalog.first;
+      catalog[0] = InsuranceType(
+        code: auto.code,
+        name: auto.name,
+        sortOrder: auto.sortOrder,
+        note: auto.note,
+        items: auto.items.sublist(0, auto.items.length - 1),
+      );
+      s.repo.createFailure = RequestFailure(kind);
+
+      expect(await c.submit(), isNull);
+      expect(s.repo.catalogCalls, calls + 1);
+      expect(c.error?.kind, kind);
+      expect(c.submitting, isFalse);
+      expect(c.catalogLoad, RequestsLoad.ready);
+      expect(c.isSelected('automovel'), isTrue);
+      expect(c.lines('automovel'), hasLength(3));
+      expect(c.lines('automovel').last.label, 'Extra');
+
+      // Com o catálogo certo, criar de novo funciona.
+      s.repo.createFailure = null;
+      expect(await c.submit(), isNotNull);
+    });
+  }
 }

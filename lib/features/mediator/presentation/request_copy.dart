@@ -137,7 +137,8 @@ abstract final class RequestCopy {
     FreeItemError.empty => 'Escreva o item a pedir.',
     FreeItemError.tooLong =>
       'Use no máximo ${NewRequestController.maxItemLength} caracteres.',
-    FreeItemError.invalidCharacters => 'Não use os caracteres < e >.',
+    FreeItemError.invalidCharacters =>
+      'Não use < nem >, nem tabulações ou outros caracteres invisíveis.',
     FreeItemError.tooMany => 'A lista já tem o máximo de itens.',
   };
 
@@ -183,6 +184,9 @@ abstract final class RequestCopy {
   static const String createFailed =
       'Não foi possível criar os pedidos. Nada foi criado. A sua escolha '
       'mantém-se: tente de novo.';
+  static const String catalogChanged =
+      'A lista de tipos ou de itens mudou. Nada foi criado. Atualizámos a '
+      'lista: confirme a sua escolha e crie de novo.';
   static const String createNetwork =
       'Não foi possível ligar. Nada foi criado. A sua escolha mantém-se: '
       'tente de novo.';

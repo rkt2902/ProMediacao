@@ -182,16 +182,17 @@ class ClientsController extends ChangeNotifier {
     final ids = [
       for (final c in _items)
         if (c.status == ClientStatus.ativo) c.clientId,
-    ].take(maxRows).toList();
+    ];
     try {
-      final results = await Future.wait<Object>([
-        ids.isEmpty
-            ? Future.value(const <String, ClientRequestsSummary>{})
-            : repo.officeRequestsSummary(ids),
-        repo.officeOpenRequestCount(),
-      ]);
-      _summary = results[0] as Map<String, ClientRequestsSummary>;
-      _openRequests = results[1] as int;
+      // O servidor aceita até [maxRows] ids por pedido: em blocos.
+      final summary = <String, ClientRequestsSummary>{};
+      for (var i = 0; i < ids.length; i += maxRows) {
+        final end = i + maxRows < ids.length ? i + maxRows : ids.length;
+        summary.addAll(await repo.officeRequestsSummary(ids.sublist(i, end)));
+      }
+      final open = await repo.officeOpenRequestCount();
+      _summary = summary;
+      _openRequests = open;
       _requestsKnown = true;
     } on RequestFailure catch (f) {
       if (f.kind == RequestFailureKind.network) {

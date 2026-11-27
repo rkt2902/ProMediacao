@@ -24,13 +24,6 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
 }
 
-/// Bug 2 do 05-qa.md da 002: em compacto o `PageFrame` reserva 2 x 48 para
-/// "Sair" sem contar com a escala do texto; a 1.3 "Sair" transborda 16 px.
-/// Tirar o `skip` quando `lib/core/widgets/page_frame.dart` for corrigido.
-String? _skip(String size) => size == 'telemóvel'
-    ? 'Bug 2 do 05-qa.md da 002: "Sair" transborda 16 px a 1.3 em compacto'
-    : null;
-
 void main() {
   for (final e in _sizes.entries) {
     testWidgets('Novo pedido a 1.3, ${e.key}: 2 tipos, condições e mensagem '
@@ -52,7 +45,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('500 / 500'), findsOneWidget);
       expect(find.text('Criar 2 pedidos'), findsOneWidget);
-    }, skip: _skip(e.key) != null);
+    });
 
     testWidgets('ficha do cliente a 1.3, ${e.key}', (tester) async {
       final repo = FakeRequestsRepository();
@@ -82,7 +75,7 @@ void main() {
         find.text('Acidentes de Trabalho (prémio variável)'),
         findsOneWidget,
       );
-    }, skip: _skip(e.key) != null);
+    });
 
     testWidgets('pedido aberto do mediador a 1.3, ${e.key}', (tester) async {
       final repo = FakeRequestsRepository();
@@ -96,6 +89,6 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       expect(find.text('Etapa 1 de 4: Pedido criado'), findsOneWidget);
-    }, skip: _skip(e.key) != null);
+    });
   }
 }

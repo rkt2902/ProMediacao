@@ -42,7 +42,7 @@ enum FreeItemError {
   /// Mais de [NewRequestController.maxItemLength] caracteres.
   tooLong,
 
-  /// Tem `<`, `>` ou caracteres de controlo.
+  /// Tem `<`, `>` ou caracteres de controlo (tab, NEL U+0085...).
   invalidCharacters,
 
   /// A lista já tem [NewRequestController.maxItems] itens.
@@ -81,7 +81,8 @@ enum SubmitBlock {
 class _TypeDraft {
   _TypeDraft(this.type);
 
-  final InsuranceType type;
+  /// Troca-se quando o catálogo é recarregado (itens desativados saem).
+  InsuranceType type;
   final Set<String> removed = {};
   final List<DraftLine> free = [];
   bool confirmRepeat = false;
@@ -320,9 +321,13 @@ class NewRequestController extends ChangeNotifier {
     ]);
   }
 
-  Future<void> loadCatalog() async {
-    _catalogLoad = RequestsLoad.loading;
-    _emit();
+  /// [silent]: recarrega sem voltar ao estado "a carregar" (a escolha não
+  /// pisca).
+  Future<void> loadCatalog({bool silent = false}) async {
+    if (!silent) {
+      _catalogLoad = RequestsLoad.loading;
+      _emit();
+    }
     try {
       _catalog = await _repo.catalog();
       _connectivity.reportReachable();
@@ -330,6 +335,10 @@ class NewRequestController extends ChangeNotifier {
       // Tipos que já não estão no catálogo saem da escolha.
       final codes = {for (final t in _catalog) t.code};
       _drafts.removeWhere((code, _) => !codes.contains(code));
+      // Os tipos que ficam passam a ter os itens atuais do catálogo.
+      for (final t in _catalog) {
+        _drafts[t.code]?.type = t;
+      }
     } on RequestFailure catch (f) {
       _report(f);
       _catalogLoad = RequestsLoad.error;
@@ -518,7 +527,7 @@ class NewRequestController extends ChangeNotifier {
     return null;
   }
 
-  static final RegExp _invalidChars = RegExp(r'[<>\x00-\x1F\x7F]');
+  static final RegExp _invalidChars = RegExp(r'[<>\x00-\x1F\x7F-\x9F]');
 
   /// Validação de um item livre (pública para o formulário a usar ao vivo).
   static FreeItemError? validateFreeItem(String label) {
@@ -582,6 +591,14 @@ class NewRequestController extends ChangeNotifier {
             _drafts[code]?.confirmRepeat = false;
           }
           _loadOpenTypes(c.clientId, _clientToken);
+        case RequestFailureKind.invalidItem:
+        case RequestFailureKind.invalidInput:
+          // O catálogo mudou entre abrir e criar: recarrega-o e a página
+          // explica (a escolha e os itens acrescentados mantêm-se).
+          _submitting = false;
+          _emit();
+          await loadCatalog(silent: true);
+          return null;
         default:
           break;
       }

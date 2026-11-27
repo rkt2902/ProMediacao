@@ -382,6 +382,8 @@ class _NewRequestPageState extends State<NewRequestPage> {
       RequestFailureKind.repeatedRequest ||
       RequestFailureKind.messageTooLong => null,
       RequestFailureKind.network => RequestCopy.createNetwork,
+      RequestFailureKind.invalidItem ||
+      RequestFailureKind.invalidInput => RequestCopy.catalogChanged,
       _ => RequestCopy.createFailed,
     };
   }
