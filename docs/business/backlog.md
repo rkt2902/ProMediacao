@@ -31,3 +31,5 @@ Estados: proposta / aprovada / em curso / feita / descartada. Tudo veio da threa
 | 2026-11-25 | Piloto com mediadores reais | produto | | | proposta | |
 | 2026-11-25 | Testar a extração com documentos reais e escolher o modelo mais barato que acerte | produto | | | proposta | |
 | 2026-11-26 | Notificações ao cliente de novos pedidos: no portal, push no telemóvel e na app (além do email) | produto | | | proposta (ideia do Henrique) | |
+| 2026-11-27 | Propostas: o escritório responde a um pedido com seguradora, prémio, coberturas, validade e PDF; o cliente vê as propostas por seguro | produto | | | aprovada (roadmap, 006) | `docs/business/roadmap.md` |
+| 2026-11-27 | Anúncio aberto: o cliente publica um resumo anónimo, escritórios aderentes mostram interesse, o cliente escolhe a quem dá acesso | produto | | | aprovada (roadmap, 007; depois do parecer jurídico) | `docs/business/roadmap.md` |
