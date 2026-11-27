@@ -164,6 +164,11 @@
 -- =============================================================================
 -- Notas de desenho
 -- =============================================================================
+--  * Validada a 27/11 num Postgres 16 local descartável (stub de auth, ACL por
+--    defeito igual ao do projeto): 001 a 001e + esta aplicadas, esta duas vezes
+--    sem erro; supabase/tests/002_isolation_matrix.sql 35 PASS / 0 FAIL;
+--    001_isolation_matrix 66 PASS / 1 RISCO (o mesmo de antes) e 001de 15 PASS.
+--    NÃO foi aplicada nem testada no projeto Supabase.
 --  * Idempotente e numa só transação (BEGIN/COMMIT): se algo falhar, nada muda.
 --    Seed com ON CONFLICT DO NOTHING: voltar a correr não apaga edições feitas
 --    ao catálogo nos dados.
