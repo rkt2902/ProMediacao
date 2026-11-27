@@ -266,14 +266,13 @@ class _CreateClientViewState extends State<CreateClientView> {
       );
     } on MediatorFailure catch (f) {
       if (!mounted) return;
-      final office = widget.officeName;
       setState(() {
         _submitting = false;
         switch (f.kind) {
           case MediatorFailureKind.alreadyClient:
-            _emailError = MediatorCopy.alreadyClient(office);
+            _emailError = MediatorCopy.alreadyClient;
           case MediatorFailureKind.declined:
-            _emailError = MediatorCopy.declined(office);
+            _emailError = MediatorCopy.declined;
           case MediatorFailureKind.invalidInput:
             _formError = MediatorCopy.formInvalid;
           case MediatorFailureKind.network:
@@ -316,7 +315,7 @@ class _CreateClientViewState extends State<CreateClientView> {
         ),
         const SizedBox(height: AppSpace.s8),
         Text(
-          MediatorCopy.sheetIntro.replaceAll('{office}', widget.officeName),
+          MediatorCopy.sheetIntro,
           style: AppType.corpo.copyWith(color: AppColors.tintaMedia),
         ),
         const SizedBox(height: AppSpace.s24),
@@ -401,14 +400,28 @@ class _CreateClientViewState extends State<CreateClientView> {
               AppSpace.s24,
               AppSpace.s16 + MediaQuery.viewInsetsOf(context).bottom,
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(flex: 2, child: _cancelButton(expand: true)),
-                const SizedBox(width: AppSpace.s12),
-                Expanded(flex: 3, child: _submitButton(online, expand: true)),
-              ],
-            ),
+            // Botões com a largura do texto, afastados; com texto grande não
+            // cabem lado a lado: ficam empilhados, a ação em cima.
+            child: MediaQuery.textScalerOf(context).scale(1) > 1.15
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _submitButton(online, expand: true),
+                      const SizedBox(height: AppSpace.s12),
+                      _cancelButton(expand: true),
+                    ],
+                  )
+                : Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppSpace.s12,
+                    runSpacing: AppSpace.s12,
+                    children: [
+                      _cancelButton(expand: false),
+                      _submitButton(online, expand: false),
+                    ],
+                  ),
           ),
         ),
       ],
@@ -424,7 +437,10 @@ class _CreateClientViewState extends State<CreateClientView> {
       onSignOut: widget.onSignOut,
       maxWidth: AppSize.larguraFormulario,
       child: Padding(
-        padding: const EdgeInsets.only(top: AppSpace.s32, bottom: AppSpace.s32),
+        padding: const EdgeInsets.only(
+          top: PageFrame.contentTop,
+          bottom: AppSpace.s32,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,

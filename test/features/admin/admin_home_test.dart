@@ -330,7 +330,10 @@ void main() {
     await tester.tap(submit);
     await tester.pumpAndSettle();
     expect(repo.invites, isEmpty);
-    expect(find.text('Escreva o nome e um email válido.'), findsOneWidget);
+    expect(
+      find.text('Escreva um email completo, por exemplo nome@exemplo.pt.'),
+      findsOneWidget,
+    );
 
     await tester.enterText(fields.at(1), 'rui.costa@exemplo.pt');
     await tester.pump();

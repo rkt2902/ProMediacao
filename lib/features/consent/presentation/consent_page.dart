@@ -226,7 +226,7 @@ class _ConsentPageState extends State<ConsentPage> {
           colophon: const SessionColophon(),
           bottom: showBar ? _actionBar(context, online) : null,
           child: Padding(
-            padding: const EdgeInsets.only(top: AppSpace.s32),
+            padding: const EdgeInsets.only(top: PageFrame.contentTop),
             child: AnimatedSwitcher(
               duration: AppMotion.resolve(context, AppMotion.base),
               switchInCurve: AppMotion.entrar,

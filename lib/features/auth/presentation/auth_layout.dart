@@ -49,7 +49,7 @@ class AuthLayout extends StatelessWidget {
             ? const SessionColophon()
             : const Colophon.signedOut(),
         child: Padding(
-          padding: const EdgeInsets.only(top: AppSpace.s32),
+          padding: const EdgeInsets.only(top: PageFrame.contentTop),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,

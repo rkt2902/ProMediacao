@@ -335,7 +335,7 @@ void main() {
           onPressed: () => showConfirmSheet<bool>(
             context,
             builder: (ctx) => ConfirmSheet(
-              title: 'Retirar o acesso da Ribeira Seguros?',
+              title: 'Retirar o acesso a Ribeira Seguros?',
               message: 'A partir de agora, ninguém vê os seus dados.',
               confirmLabel: readOnly
                   ? null

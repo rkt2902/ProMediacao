@@ -21,6 +21,15 @@ class PageFrame extends StatelessWidget {
   static const double _tabInset =
       (AppSize.alvoMinimo - AppSize.separadorAltura) / 2;
 
+  /// Espaço entre a régua do separador e o conteúdo: `s32` menos o que sobra
+  /// da linha de 48 por baixo da régua (48 - 4 - 40 - 1 = 3).
+  static const double contentTop =
+      AppSpace.s32 -
+      (AppSize.alvoMinimo -
+          _tabInset -
+          AppSize.separadorAltura -
+          AppStroke.fino);
+
   const PageFrame({
     super.key,
     required this.child,

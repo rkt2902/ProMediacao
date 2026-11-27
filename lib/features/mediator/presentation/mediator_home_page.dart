@@ -110,7 +110,7 @@ class _MediatorHomePageState extends State<MediatorHomePage> {
           banner: OfflineBar(visible: !online, message: MediatorCopy.offline),
           colophon: const SessionColophon(),
           child: Padding(
-            padding: const EdgeInsets.only(top: AppSpace.s32),
+            padding: const EdgeInsets.only(top: PageFrame.contentTop),
             child: _content(context, online),
           ),
         );

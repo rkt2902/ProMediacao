@@ -41,10 +41,10 @@ abstract final class ConsentCopy {
       'Partilha ativa desde ${AppDates.dateTime(d)}';
   static String declinedOn(DateTime d) => 'Recusado a ${AppDates.dateTime(d)}';
   static String acceptedResult(String office) =>
-      'A $office já pode ver os seus dados. Pode retirar o acesso quando '
-      'quiser.';
+      'O escritório $office já pode ver os seus dados. Pode retirar o acesso '
+      'quando quiser, em Com quem partilho.';
   static String declinedResult(String office) =>
-      'A $office não tem acesso aos seus dados nem documentos. Se mudar de '
+      'O escritório $office não tem acesso aos seus dados nem documentos. Se mudar de '
       'ideias, peça ao escritório um novo pedido.';
   static String alreadyAnswered(DateTime d) =>
       'Já respondeu a este pedido a ${AppDates.dateTime(d)}.';
@@ -86,7 +86,7 @@ abstract final class ConsentCopy {
   static const loadFailed = 'Não foi possível carregar a lista. Tente de novo.';
 
   // Retirar acesso
-  static String withdrawTitle(String office) => 'Retirar o acesso da $office?';
+  static String withdrawTitle(String office) => 'Retirar o acesso a $office?';
   static const withdrawMessage =
       'A partir de agora, ninguém deste escritório vê os seus dados e '
       'documentos no ProDossier, incluindo o que o mediador escreveu no seu '
@@ -100,12 +100,12 @@ abstract final class ConsentCopy {
       'Não foi possível confirmar a retirada por falta de ligação. Tente de '
       'novo quando a ligação voltar.';
   static String withdrawn(String office) =>
-      'Acesso retirado. A $office já não vê os seus dados.';
+      'Acesso retirado. O escritório $office já não vê os seus dados.';
 
   // Texto aceite (só leitura)
   static const acceptedTextTitle = 'Texto que aceitou';
   static String acceptedOn(String office, DateTime d) =>
-      'Aceite para a $office a ${AppDates.dateTime(d)}.';
+      'Aceite para o escritório $office a ${AppDates.dateTime(d)}.';
   static const close = 'Fechar';
   static const acceptedTextFailed =
       'Não foi possível carregar o texto. Tente de novo.';

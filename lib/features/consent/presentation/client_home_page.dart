@@ -410,11 +410,17 @@ class _PendingBlock extends StatelessWidget {
             RuledList(
               bottomRule: false,
               children: [
-                for (final g in grants)
-                  _PendingRow(
-                    grant: g,
-                    online: online,
-                    onRespond: () => onRespond(g),
+                for (var i = 0; i < grants.length; i++)
+                  RuledRow(
+                    padding: EdgeInsets.only(
+                      top: AppSpace.s24,
+                      bottom: i < grants.length - 1 ? AppSpace.s24 : 0,
+                    ),
+                    child: _PendingRow(
+                      grant: grants[i],
+                      online: online,
+                      onRespond: () => onRespond(grants[i]),
+                    ),
                   ),
               ],
             ),

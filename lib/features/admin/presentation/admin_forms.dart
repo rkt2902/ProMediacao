@@ -115,10 +115,7 @@ class _FormShell extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Semantics(
-          header: true,
-          child: Text(title, style: AppType.tituloPara(bp)),
-        ),
+        Semantics(header: true, child: Text(title, style: AppType.subtitulo)),
         if (intro != null) ...[
           const SizedBox(height: AppSpace.s12),
           Text(
@@ -349,6 +346,7 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
   );
   bool _loading = false;
   String? _error;
+  bool _submitted = false;
 
   @override
   void dispose() {
@@ -363,8 +361,15 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
       _name.text.trim().length <= 120 &&
       validateEmail(_email.text) == null;
 
+  bool get _nameValid =>
+      _name.text.trim().isNotEmpty && _name.text.trim().length <= 120;
+
   Future<void> _submit() async {
-    if (_loading || !_valid || !widget.connectivity.online) return;
+    if (_loading || !widget.connectivity.online) return;
+    if (!_valid) {
+      setState(() => _submitted = true);
+      return;
+    }
     setState(() {
       _loading = true;
       _error = null;
@@ -392,7 +397,6 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
       listenable: widget.connectivity,
       builder: (context, _) {
         final online = widget.connectivity.online;
-        final canSubmit = online && _valid;
         void changed(String _) => setState(() => _error = null);
         return _FormShell(
           title: AdminCopy.inviteMediator,
@@ -404,6 +408,10 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
               readOnly: _loading,
               autofocus: true,
               textInputAction: TextInputAction.next,
+              helperText: AdminCopy.mediatorNameHelp,
+              errorText: _submitted && !_nameValid
+                  ? AdminCopy.mediatorNameError
+                  : null,
               inputFormatters: [LengthLimitingTextInputFormatter(120)],
               onChanged: changed,
             ),
@@ -413,6 +421,9 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
               readOnly: _loading,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.done,
+              errorText: _submitted && validateEmail(_email.text) != null
+                  ? AdminCopy.emailError
+                  : null,
               onChanged: changed,
               onSubmitted: (_) => _submit(),
             ),
@@ -423,11 +434,11 @@ class _InviteMediatorFormState extends State<InviteMediatorForm> {
             ),
           ],
           error: _error,
-          reason: online ? AdminCopy.inviteReason : AdminCopy.offlineReason,
+          reason: online ? null : AdminCopy.offlineReason,
           primaryLabel: AdminCopy.sendInvite,
           loadingLabel: AdminCopy.sending,
           loading: _loading,
-          onSubmit: canSubmit || _loading ? _submit : null,
+          onSubmit: online || _loading ? _submit : null,
           onCancel: () => Navigator.of(context).pop(false),
           onSignOut: widget.onSignOut,
         );

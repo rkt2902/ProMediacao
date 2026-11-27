@@ -83,7 +83,14 @@ class ConfirmSheet extends StatelessWidget {
       namesRoute: true,
       label: title,
       child: Padding(
-        padding: const EdgeInsets.all(AppSpace.s24),
+        padding: compact
+            ? const EdgeInsets.fromLTRB(
+                AppSpace.s16,
+                AppSpace.s24,
+                AppSpace.s16,
+                AppSpace.s24,
+              )
+            : const EdgeInsets.all(AppSpace.s24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

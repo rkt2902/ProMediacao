@@ -35,7 +35,7 @@ abstract final class MediatorCopy {
   // Folha "Criar cliente"
   static const String sheetTitle = 'Criar cliente';
   static const String sheetIntro =
-      'O cliente recebe o pedido com o nome da {office} e o seu: por email '
+      'O cliente recebe o pedido com o nome do escritório e o seu: por email '
       'ou, se já usar o ProDossier, dentro da app. Só vê os dados dele '
       'depois de ele aceitar.';
   static const String fieldName = 'Nome completo';
@@ -59,10 +59,10 @@ abstract final class MediatorCopy {
   static const String formForbidden =
       'Não foi possível criar o cliente com esta conta.';
 
-  static String alreadyClient(String office) =>
-      'Este email já é cliente da $office.';
-  static String declined(String office) =>
-      'Este cliente recusou o pedido da $office. Não é possível enviar outro.';
+  static const String alreadyClient =
+      'Este email já é cliente deste escritório.';
+  static const String declined =
+      'Este cliente recusou o pedido deste escritório. Não é possível enviar outro.';
 
   static String created(String email) =>
       'Pedido enviado a $email. O acesso fica pendente até o cliente aceitar.';

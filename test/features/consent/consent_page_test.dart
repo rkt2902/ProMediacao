@@ -256,6 +256,7 @@ void main() {
     await tester.tap(find.text('Aceitar'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text(ConsentCopy.seeHome));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(ConsentCopy.seeHome));
     await tester.pumpAndSettle();
     expect(find.byType(ClientHomePage), findsOneWidget);

@@ -728,7 +728,7 @@ void main() {
       await tester.tap(find.text('Criar e enviar pedido'));
       await tester.pumpAndSettle();
       expect(
-        find.text('Este email já é cliente da Ribeira Seguros.'),
+        find.text('Este email já é cliente deste escritório.'),
         findsOneWidget,
       );
       expect(

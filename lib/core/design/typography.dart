@@ -29,6 +29,7 @@ abstract final class AppType {
     required int weight,
     double letterSpacing = 0,
     List<FontFeature>? features,
+    Color color = AppColors.tinta,
   }) {
     return TextStyle(
       fontFamily: family,
@@ -39,7 +40,7 @@ abstract final class AppType {
       fontVariations: [FontVariation.weight(weight.toDouble())],
       letterSpacing: letterSpacing,
       fontFeatures: features,
-      color: AppColors.tinta,
+      color: color,
       leadingDistribution: TextLeadingDistribution.even,
     );
   }
@@ -142,6 +143,7 @@ abstract final class AppType {
     line: 18,
     weight: 400,
     features: _tabular,
+    color: AppColors.tintaTenue,
   );
 
   /// Wordmark "ProDossier" (colofão, emails): 19/24, -0.2. Este estilo é

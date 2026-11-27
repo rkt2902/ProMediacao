@@ -92,21 +92,32 @@ class ClientsList extends StatelessWidget {
         );
         final rows = [
           for (final item in controller.items)
-            _row(layout, item, key: ValueKey(item.grantId)),
+            _row(
+              layout,
+              item,
+              math.max(1.0, scale),
+              key: ValueKey(item.grantId),
+            ),
         ];
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (layout != ClientsLayout.stacked) _Header(layout: layout),
-            RuledList(topRule: layout == ClientsLayout.stacked, children: rows),
+            if (layout != ClientsLayout.stacked)
+              _Header(layout: layout, scale: math.max(1.0, scale)),
+            RuledList(topRule: true, children: rows),
           ],
         );
       },
     );
   }
 
-  Widget _row(ClientsLayout layout, OfficeClient item, {Key? key}) {
+  Widget _row(
+    ClientsLayout layout,
+    OfficeClient item,
+    double scale, {
+    Key? key,
+  }) {
     final highlighted = controller.highlightId == item.grantId;
     final action = item.status == ClientStatus.pendente
         ? _ResendAction(
@@ -125,11 +136,13 @@ class ClientsList extends StatelessWidget {
       ClientsLayout.table3 => _TableBody(
         item: item,
         action: action,
+        scale: scale,
         withDateColumn: false,
       ),
       ClientsLayout.table4 => _TableBody(
         item: item,
         action: action,
+        scale: scale,
         withDateColumn: true,
       ),
     };
@@ -193,9 +206,10 @@ class _Entering extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.layout});
+  const _Header({required this.layout, required this.scale});
 
   final ClientsLayout layout;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {
@@ -212,15 +226,15 @@ class _Header extends StatelessWidget {
           Expanded(child: Text(MediatorCopy.colClient, style: style)),
           gap,
           if (layout == ClientsLayout.table4) ...[
-            col(MediatorCopy.colState, AppSize.colunaEstado),
+            col(MediatorCopy.colState, AppSize.colunaEstado * scale),
             gap,
-            col(MediatorCopy.colDate, AppSize.colunaData),
+            col(MediatorCopy.colDate, AppSize.colunaData * scale),
           ] else
-            col(MediatorCopy.colState, AppSize.colunaData),
+            col(MediatorCopy.colState, AppSize.colunaData * scale),
           gap,
           // "Ação": só para leitura de ecrã, visualmente vazio.
           SizedBox(
-            width: AppSize.colunaAcao,
+            width: AppSize.colunaAcao * scale,
             child: Semantics(
               label: MediatorCopy.colAction,
               child: const SizedBox.shrink(),
@@ -271,11 +285,13 @@ class _TableBody extends StatelessWidget {
   const _TableBody({
     required this.item,
     required this.action,
+    required this.scale,
     required this.withDateColumn,
   });
 
   final OfficeClient item;
   final Widget? action;
+  final double scale;
   final bool withDateColumn;
 
   @override
@@ -292,21 +308,12 @@ class _TableBody extends StatelessWidget {
         Expanded(child: _ClientCell(item: item, maxLines: 1)),
         gap,
         if (withDateColumn) ...[
-          SizedBox(
-            width: AppSize.colunaEstado,
-            // O carimbo mede ~150 com a fonte real e a coluna tem 140: encolhe
-            // só se for preciso (ver o handoff: `colunaEstado` devia ser 152).
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: stamp,
-            ),
-          ),
+          SizedBox(width: AppSize.colunaEstado * scale, child: stamp),
           gap,
-          SizedBox(width: AppSize.colunaData, child: date),
+          SizedBox(width: AppSize.colunaData * scale, child: date),
         ] else
           SizedBox(
-            width: AppSize.colunaData,
+            width: AppSize.colunaData * scale,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -319,7 +326,7 @@ class _TableBody extends StatelessWidget {
           ),
         gap,
         SizedBox(
-          width: AppSize.colunaAcao,
+          width: AppSize.colunaAcao * scale,
           child: action == null
               ? null
               : Align(alignment: Alignment.centerRight, child: action),

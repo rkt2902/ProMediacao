@@ -108,7 +108,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
           banner: OfflineBar(visible: !online),
           colophon: const SessionColophon(),
           child: Padding(
-            padding: const EdgeInsets.only(top: AppSpace.s32),
+            padding: const EdgeInsets.only(top: PageFrame.contentTop),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -120,7 +120,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   const SizedBox(height: AppSpace.s16),
                   _successNotice(c),
                 ],
-                const SizedBox(height: AppSpace.s32),
+                const SizedBox(height: AppSpace.s24),
                 if (c.state == AdminLoad.failed)
                   InlineNotice(
                     kind: NoticeKind.erro,
@@ -243,15 +243,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
   }
 
   Widget _list(AdminController c, bool online) {
+    final compact = AppBreakpoints.fromContext(context) == Breakpoint.compacto;
     return RuledList(
       children: [
         for (final o in c.offices)
           RuledRow(
             key: ValueKey(o.id),
             highlight: o.id == _highlightId,
-            child: _OfficeRow(
-              office: o,
-              onInvite: online ? () => _invite(o) : null,
+            padding: EdgeInsets.symmetric(
+              vertical: compact ? AppSpace.s16 : AppSpace.s12,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: compact ? 0 : AppSize.linhaTabela - 2 * AppSpace.s12,
+              ),
+              child: _OfficeRow(
+                office: o,
+                onInvite: online ? () => _invite(o) : null,
+              ),
             ),
           ),
       ],
@@ -397,7 +406,19 @@ class _CountsStrip extends StatelessWidget {
     );
     return MergeSemantics(
       child: row
-          ? Row(children: [number, const Spacer(), labelText])
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: AppSpace.s72 + AppSpace.s16,
+                  ),
+                  child: number,
+                ),
+                labelText,
+              ],
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [number, labelText],

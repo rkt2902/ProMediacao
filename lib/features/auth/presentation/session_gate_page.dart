@@ -22,7 +22,7 @@ class SessionGatePage extends StatelessWidget {
         colophon: const Colophon.signedOut(),
         child: session.status == SessionStatus.failed
             ? Padding(
-                padding: const EdgeInsets.only(top: AppSpace.s32),
+                padding: const EdgeInsets.only(top: PageFrame.contentTop),
                 child: InlineNotice(
                   kind: NoticeKind.erro,
                   message: AuthCopy.networkError,

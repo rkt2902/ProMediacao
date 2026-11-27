@@ -46,7 +46,11 @@ abstract final class AdminCopy {
   static const sendInvite = 'Enviar convite';
   static const sending = 'A enviar…';
   static const inviteSent = 'Convite enviado.';
-  static const inviteReason = 'Escreva o nome e um email válido.';
+  static const mediatorNameHelp =
+      'Aparece aos clientes nos pedidos que enviar.';
+  static const mediatorNameError = 'Escreva o nome do mediador.';
+  static const emailError =
+      'Escreva um email completo, por exemplo nome@exemplo.pt.';
   static const cannotInvite =
       'Não foi possível convidar este email. Pode já pertencer a um '
       'escritório.';
