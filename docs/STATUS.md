@@ -1,29 +1,27 @@
 # Estado do projeto
 
-Atualizado: 2026-11-26 (fecho do marco "001 Fundação: design aprovado, backend publicado")
+Atualizado: 2026-11-27 (**feature 001 Fundação fechada**; à espera do merge do PR #3)
 
 ## Agora
 
-- Decisões 1 a 10 da secção 7 do `docs/business/context.md` tratadas (ver `docs/decisions.md`). Nome de trabalho ProDossier. Stack: Flutter web-first e responsivo (telemóvel, tablet, desktop; admin desktop-first) + Supabase (eu-west-1) + Cloudflare Pages (alojamento, por criar).
-- **Feature 001 Fundação** (`docs/features/001-fundacao/`): 01 a 04 escritos; **gates 1, 2 e 3 aprovados**; 05-qa por escrever. Design aprovado em 152+ renders (`renders/`, índice em `renders/README.md`), incluindo estados, fluxos, transições, cabeçalho sem marca com "Sair" na linha do separador e **marca por colofão**.
-- **Backend (ao vivo, confirmado):** 8 tabelas com RLS, 3 migrações aplicadas, 1 admin; 3 funções (`invite-mediator`, `create-client`, `resend-request`) ACTIVE; Auth: palavra-passe 10+ com 4 classes, registo público desativado, URLs provisórios `http://localhost:8080`. Nunca testadas com chamadas autenticadas.
-- **App (código):** tarefas 3, 3b, 4, 4b (renders), 4c (alinhamento com o design), 4d (templates de email, por aplicar sem SMTP), 4e, 5 (cliente), 6 (mediador) e 7 (admin) **feitas e ligadas às rotas**; `flutter analyze` limpo e 245 testes a passar (26/11). **Tarefa 8 (qa) feita: veredicto FALHA com correções localizadas** (`docs/features/001-fundacao/05-qa.md`). Sem fugas no esquema e RLS ao vivo; build web e teste de fumo no navegador sem erros. Depois: tarefa 9 (designer, goldens e polimento) e gate 4. Nada foi testado com sessões reais nem num navegador.
+- **001 Fundação: PASSA COM RESSALVAS** (`docs/features/001-fundacao/05-qa.md`). PR para o main: https://github.com/rkt2902/ProMediacao/pull/3 (o merge é do Henrique; fecha o gate 4).
+- App Flutter web-first e responsiva (entrada, palavra-passe, consentimento, Com quem partilho, clientes do mediador, admin com contagens), design aprovado e goldens da app real em `test/design_review/001_fundacao/`. `flutter analyze` limpo, 275 testes.
+- Supabase ao vivo: migrações 001 a 001e aplicadas e verificadas; matriz de isolamento 66 PASS, 0 FAIL, 1 RISCO (X01); regressão 001d/001e 15 PASS; 3 funções publicadas; Auth com palavra-passe forte, registo público desativado, URLs provisórios `http://localhost:8080`; `private` fora dos esquemas expostos.
+- Regras de trabalho do Henrique no `CLAUDE.md`: design primeiro, fecho de marco no fim de cada feature, gestão de modelos por tarefa, limite de uso (parar aos 93%), o lead aplica migrações com resumo prévio.
 
 ## Como retomar (chat novo)
 
-1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md`, `docs/features/001-fundacao/04-plan.md`, `docs/design/DESIGN.md` e o `renders/README.md`. Regras do Henrique: design primeiro com renders aprovados antes de implementar; fecho de marco (parar e avisar para chat novo).
-2. Se o Flutter não existir (`flutter --version`), corre `bash docs/cloud/setup-flutter.sh`. O MCP do Supabase (só leitura) liga nesta conta.
-3. (Feito) ~~Lança a tarefa 4c~~ (flutter-dev) e a **4d** (supabase-dev, templates de email) em paralelo; ficheiros separados. Decisão já tomada para o colofão: datas de `profiles.created_at` (cliente) e `office_members.created_at` (mediador).
-4. (5, 6, 7 feitas) Seguem (flutter-dev, pastas separadas; os marcadores trocam-se só em `lib/app/route_builders.dart`), **8** (qa: matriz de isolamento ao vivo + `05-qa.md`; não há utilizadores de teste ainda, o qa propõe os scripts), **9** (designer: goldens 390×844, 768×1024, 1280×800, mais 320 e 844×390, escala de texto 1,3), e **gate 4** (PR com o resumo do `05-qa.md`; o merge é do Henrique).
-5. Critérios transversais: tudo testado em telemóvel/tablet/desktop; sem clientes reais até haver parecer jurídico; texto de consentimento `v0-rascunho` provisório; migrações só como ficheiros, aplicadas pelo Henrique (as funções foram publicadas excecionalmente a pedido dele, com token temporário).
+1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md` e `docs/business/backlog.md`. Se o Flutter faltar: `bash docs/cloud/setup-flutter.sh`.
+2. **Publicar a app no Cloudflare Pages** (decidido): o Henrique cria a conta/projeto e dá um token da API do Cloudflare pelo pedido de credencial; o lead faz `flutter build web` com `SUPABASE_URL` e a chave publishable e publica; depois troca `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
+3. Com a app online, o Henrique faz a **checklist manual de 8 passos** do `05-qa.md` (sessões e emails reais; o email por defeito envia 2 por hora). Os bugs que aparecerem são corrigidos antes da 002.
+4. Bugs baixos herdados: 16 (botões anunciados duas vezes, `app_pressable.dart:72`), 14 (aviso offline só depois de um pedido falhar; plugin de rede), 10 (ver `05-qa.md`).
+5. **Próxima feature (002):** propor ao Henrique a partir do backlog; candidata natural: "Novo pedido: escolher o cliente e o tipo de seguro, com a lista automática do que pedir" (o mediador cria pedidos por tipo de seguro), que assenta na 001. Correr `/feature` com bizdev e pm; design primeiro com renders.
 
 ## Decisões abertas
 
-- Domínio próprio (verificar marca ProDossier no INPI/TMview e .pt/.com) e fornecedor de email (recomendado Brevo, precisa do domínio); entretanto o email por defeito do Supabase (limite de 2 por hora).
-- Templates de email (`supabase/templates/`) prontos mas **por aplicar** até haver SMTP próprio; depois, colar segundo o README ou repetir o PATCH (ver tarefa 4d). Fechar o envio de link mágico a mediador/admin (Send Email Hook ou filtro) quando houver SMTP.
-- Criar o projeto Cloudflare Pages e trocar `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL`, site_url e Redirect URLs pelo endereço final.
-- Parecer jurídico (briefing em `docs/business/research/08-juridico.md`); apagamento RGPD de clientes (DELETE bloqueado por desenho).
-- Por validar: diferenciação face a concorrentes, templates de seguradora (fase 2), preços.
+- SMTP próprio (Brevo recomendado) e domínio (verificar ProDossier no INPI e .pt/.com); depois aplicar os templates de `supabase/templates/` e fechar o link mágico a mediador/admin no servidor (Send Email Hook).
+- Parecer jurídico (briefing em `docs/business/research/08-juridico.md`; inclui X01 e o apagamento RGPD).
+- Notificações ao cliente (portal, push no telemóvel e app): no backlog.
 
 ## Checklist do Henrique (marcar quando feito)
 
@@ -48,15 +46,3 @@ Não bloqueia agora, mas tem de estar feito antes de clientes reais ou de public
 
 - [ ] 13. Revogar o token de acesso do Supabase em Account > Access Tokens (foi usado para publicar as funções; já não é preciso). A credencial `api.supabase.com` fica guardada no ambiente cloud: removê-la em Settings se quiseres.
 
-## Pendências para o polimento (tarefa 9) e para uma migração 001d
-
-- Designer: campo "Nome do mediador" no convite (não está nos renders); frases "A {escritório}" com nomes masculinos; 3 px a mais por baixo da régua do separador; botões da folha lateral do mediador em 2:3; confirmar o glifo "…" na fonte (o texto "A criar…" mediu 136).
-- supabase-dev (migração 001d, aplicada pelo Henrique): índice único em `lower(offices.name)`; RPC com o total de clientes do escritório (a lista mostra 25 por página sem total).
-- flutter-dev: "Criar cliente" no telemóvel abre com `Navigator.push` sobre o GoRouter: o "voltar" do navegador pode não o fechar (verificar no qa).
-
-## Próximo passo exato (26/11, depois das correções do qa)
-
-1. Feito: migração 001d aplicada pelo lead e verificada (matriz 66 PASS, 0 FAIL, 1 RISCO X01). Migração 001e (bug 13, opção A) aplicada e verificada (matriz 66/0/1).
-2. Feito: bugs 2, 3, 4, 5, 6, 11 e total de clientes na app (275 testes a passar); bug 5 e bug 7 no backend (função republicada; 001d escrita); bug 1 refutado; bug 9 e 12 na 001d.
-3. Decidido: bug 13 opção A (001e), bug 15 aceite. Fica para depois: bug 14 (aviso de offline só depois de um pedido falhar; precisa de plugin de rede).
-4. Reteste do qa (opus) nos bugs corrigidos e no resultado da matriz; depois tarefa 9 (designer: goldens, polimento e as pendências abaixo, incluindo a copy nova do bug 5); depois gate 4 (PR, merge do Henrique) e fecho da feature (chat novo).
