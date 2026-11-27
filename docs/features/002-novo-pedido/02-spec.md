@@ -41,8 +41,8 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
    - 3.6 Dado pedidos de um cliente com vários escritórios (C2), Então o meu escritório vê só os pedidos destinados a ele.
 
 4. Como cliente, quero ver os pedidos que recebi, para saber o que o escritório me pede (só leitura; carregar é a 003).
-   - 4.1 Dado um pedido criado, Então o cliente recebe um email curto com escritório, tipos pedidos, mensagem do mediador e link para a app; o email não inclui a lista de documentos nem dados de saúde.
-   - 4.2 Dado o cliente com sessão, Então vê os seus pedidos (tipo, escritório, data, etapa, lista do que falta) sem botão de carregar; sem pedidos: "Ainda não tem pedidos".
+   - 4.1 Dado um pedido criado, Então o cliente recebe SEMPRE um email curto com escritório, tipos pedidos, mensagem do mediador e link para a app; o email não inclui a lista de documentos nem dados de saúde.
+   - 4.2 Dado o cliente com sessão, Então vê no seu painel ("Os meus pedidos") os seus pedidos (tipo, escritório, data, etapa das 4, lista do que falta) só em leitura, sem botão de carregar até à 003; sem pedidos: "Ainda não tem pedidos".
    - 4.3 Dado um pedido de escritório com concessão retirada, Então o cliente ainda o vê, com a etiqueta "Acesso retirado" e sem ações.
    - 4.4 Dado o email não enviado (falha), Então o pedido fica criado e o mediador vê "Pedido criado, mas o email não foi enviado" com "Reenviar email" (bloqueado 60 s após cada envio, como na 001).
 
@@ -70,10 +70,26 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
    | Anónimo | qualquer leitura ou escrita | 0 linhas / recusado |
    | MA | alterar o catálogo | recusado (só admin/migração) |
    | MA | ler o catálogo | permitido |
+   | C1 | ler notificações | só as suas |
+   | C1 | marcar como lida uma notificação sua / de outro cliente | permitido / recusado |
+   | C1 | criar ou apagar notificações | recusado |
+   | MA, MB, Admin, Anónimo | ler ou escrever notificações | 0 linhas / recusado |
+   | Servidor | criar notificação ao criar pedido (cliente com conta ativa) | permitido, 1 por pedido |
 
    - Dado qualquer linha, Então o resultado coincide; uma divergência bloqueia o fecho. Após retirada de C1, MA lê 0 pedidos de C1 no pedido seguinte.
 
+7. Como cliente, quero ser avisado dentro da app quando recebo um pedido, para não depender só do email. (Mecanismo genérico, reutilizável por outras features.)
+   - 7.1 Dado um pedido criado para um cliente que já tem conta ativa (já entrou alguma vez), Então é criada 1 notificação para esse cliente (1 por pedido); para um cliente que nunca entrou, não é criada (só o email, 4.1); ao primeiro acesso não aparecem notificações antigas de pedidos já visíveis no painel.
+   - 7.2 Dado uma notificação, Então tem: tipo (ex.: "pedido_criado"), destinatário (utilizador), texto curto, estado lida/não lida, data e ligação ao objeto (tipo e id, ex.: pedido). Sem dados da lista, de saúde nem de outros escritórios no texto.
+   - 7.3 Dado o cliente com sessão, Então vê um sino com o contador de não lidas (oculto a 0; "9+" acima de 9) e, ao abrir, a lista por data decrescente, paginada; vazio: "Sem notificações".
+   - 7.4 Dado uma notificação não lida, Quando o cliente a abre, Então passa a lida e o contador desce; o clique leva ao pedido. Se o pedido já não estiver acessível (concessão retirada), mostra "Sem acesso" sem revelar dados.
+   - 7.5 Dado o cliente, Então só lê e marca como lidas as suas notificações; não pode criá-las, alterá-las além de lida/não lida, nem apagá-las. Mediador e admin: 0 linhas das notificações de clientes.
+   - 7.6 Dado offline ou erro, Então o sino mostra o último estado conhecido com aviso, e "marcar como lida" só é dado como feito após confirmação do servidor.
+   - 7.7 Dado o telemóvel, tablet e desktop, Então o sino está sempre acessível; a lista abre como painel (desktop) ou ecrã (telemóvel).
+
 ## Fora de âmbito
+
+- Push no telemóvel (backlog); notificações para mediador/admin; preferências de notificação.
 
 - Upload ou resposta do cliente com documentos e condições particulares (003); revisão, extração com IA e ficha PDF/Excel (004); estados "pronto para exportar" e "exportado".
 - Pedidos iniciados pelo cliente, vários destinatários com ecrãs, propostas, anúncio aberto (005 a 007): só o modelo fica preparado.
@@ -106,6 +122,7 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
 | Proposta | Ninguém na 002 | Ninguém | Só estrutura preparada, sem permissões abertas | Novo |
 | Auditoria de pedido (criação) | Mediadores do escritório; cliente (o seu) | Só servidor, ao criar | Só INSERT, como na 001 | Novo |
 | Email do pedido | Cliente | Função de servidor ao criar; reenvio pelo mediador | Só envia para o cliente titular; limite 60 s | Novo |
+| Notificação (tipo, destinatário, texto, lida, data, ligação ao objeto) | Só o destinatário (cliente) | Criar: só servidor (ao criar pedido); o cliente só muda lida/não lida | Sem acesso de mediador, admin ou anónimo; sem DELETE | Novo |
 | Contagem de pedidos | Admin | n/a | Função agregada sem dados pessoais, junta-se às 3 existentes | Alteração |
 | Perfil e concessão (lista Clientes) | Mediador | Já existe | Reutiliza as regras da 001 | Existe |
 
