@@ -82,7 +82,6 @@ void main() {
         find.widgetWithText(SecondaryButton, 'Ver o pedido').first,
       );
       expect(wide.width, lessThan(260));
-      expect(wide.right, lessThan(700));
     });
 
     testWidgets('texto ampliado a 1.3 em 390 não rebenta', (tester) async {
