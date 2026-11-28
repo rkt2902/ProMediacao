@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../design/tokens.dart';
 import 'account_actions.dart';
+import 'app_buttons.dart';
 import 'folder_tab.dart';
 
 /// Moldura de ecrã (03-design.md, "Estrutura comum"): fundo `papel`, sem
@@ -30,6 +31,10 @@ class PageFrame extends StatelessWidget {
           AppSize.separadorAltura -
           AppStroke.fino);
 
+  /// Largura reservada à conta com sino em médio/largo (sino com palavra,
+  /// contador, "Sair").
+  static const double _bellAccountWidth = 360;
+
   const PageFrame({
     super.key,
     required this.child,
@@ -38,6 +43,11 @@ class PageFrame extends StatelessWidget {
     this.accountName,
     this.onSignOut,
     this.topAction,
+    this.backLabel,
+    this.onBack,
+    this.onNotifications,
+    this.unreadNotifications,
+    this.notificationsOpen = false,
     this.banner,
     this.bottom,
     this.colophon,
@@ -61,6 +71,17 @@ class PageFrame extends StatelessWidget {
   /// Linha por cima do separador, a `s8` dele (ex.: "Com quem partilho" no
   /// consentimento).
   final Widget? topAction;
+
+  /// Ligação de regresso por cima do separador (`TextAction` com
+  /// `arrow_back`, alvo 48), ex.: "Clientes". Usada se [topAction] for nulo.
+  final String? backLabel;
+  final VoidCallback? onBack;
+
+  /// Sino de notificações (só cliente), antes de "Sair". Só aparece se
+  /// [onNotifications] não for nulo e houver [onSignOut].
+  final VoidCallback? onNotifications;
+  final int? unreadNotifications;
+  final bool notificationsOpen;
 
   /// Faixa no topo que empurra o conteúdo (ex.: `OfflineBar`).
   final Widget? banner;
@@ -105,9 +126,25 @@ class PageFrame extends StatelessWidget {
       ),
     );
 
+    final hasBell = onSignOut != null && onNotifications != null;
     final account = onSignOut != null
-        ? AccountActions(name: accountName, onSignOut: onSignOut)
+        ? AccountActions(
+            name: accountName,
+            onSignOut: onSignOut,
+            onNotifications: onNotifications,
+            unreadNotifications: unreadNotifications,
+            notificationsOpen: notificationsOpen,
+          )
         : trailing;
+    final top =
+        topAction ??
+        (backLabel == null
+            ? null
+            : TextAction(
+                label: backLabel!,
+                icon: Icons.arrow_back,
+                onPressed: onBack,
+              ));
 
     final tabRow = LayoutBuilder(
       builder: (context, c) {
@@ -116,10 +153,30 @@ class PageFrame extends StatelessWidget {
         final double tabMax;
         final double accountMax;
         if (compact) {
-          accountMax = 2 * AppSize.alvoMinimo;
-          tabMax = c.maxWidth - (account != null ? accountMax : AppSpace.s48);
+          // O texto de "Sair" cresce com a escala do sistema (nunca encolhe).
+          final scale = MediaQuery.textScalerOf(context).scale(1);
+          final wanted =
+              (hasBell ? 4 : 2) *
+              AppSize.alvoMinimo *
+              (scale < 1 ? 1.0 : scale);
+          // Nunca mais do que a largura útil menos um mínimo do separador.
+          accountMax = account == null
+              ? wanted
+              : wanted.clamp(
+                  0.0,
+                  (c.maxWidth - AppSpace.s48).clamp(0.0, wanted),
+                );
+          tabMax = (c.maxWidth - (account != null ? accountMax : AppSpace.s48))
+              .clamp(0.0, double.infinity);
         } else {
-          tabMax = AppSize.larguraFormulario;
+          // Com o sino a conta precisa de mais espaço: o separador cede.
+          tabMax = hasBell
+              ? (c.maxWidth -
+                        AppSpace.s16 -
+                        _bellAccountWidth *
+                            MediaQuery.textScalerOf(context).scale(1))
+                    .clamp(AppSize.textoMinimo / 2, AppSize.larguraFormulario)
+              : AppSize.larguraFormulario;
           accountMax = c.maxWidth - tabMax - AppSpace.s16;
         }
         // A linha tem a altura do alvo de "Sair" (48), porque um filho fora
@@ -168,16 +225,16 @@ class PageFrame extends StatelessWidget {
               padding: EdgeInsets.only(
                 top:
                     (compact ? AppSpace.s16 : AppSpace.s24) -
-                    (topAction == null ? _tabInset : 0),
+                    (top == null ? _tabInset : 0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (topAction != null) ...[
+                  if (top != null) ...[
                     Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: topAction,
+                      child: top,
                     ),
                     const SizedBox(height: AppSpace.s8 - _tabInset),
                   ],

@@ -71,6 +71,7 @@ class AdminController extends ChangeNotifier {
             offices: c.offices + 1,
             mediators: c.mediators,
             clients: c.clients,
+            requests: c.requests,
           );
         }
         notifyListeners();

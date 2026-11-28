@@ -52,7 +52,9 @@ O detalhe fica no ficheiro do pacote, não no resumo.
 - Sempre que uma tarefa tiver partes de dificuldade diferente, divide-a: a parte crítica em opus e a rotineira em sonnet.
 
 ## Limite de uso (regra do Henrique)
-- Nunca gastar os créditos da sessão até ao fim: parar por volta dos 93% do limite de 5 horas.
+- Nunca gastar os créditos da sessão até ao fim: parar por volta dos **90%** do limite de 5 horas.
+- **Sempre que o lead para para perguntar algo ao Henrique** (gates, AskUserQuestion, fim de marco), junta a pergunta: "Quanto % do limite já foi usado, e a janela de 5 horas mudou desde a última vez?". Regista a resposta em `docs/usage-log.md` (data, %, se a janela mudou, o que foi feito desde o registo anterior e com que agentes/modelos), e usa esse histórico para estimar quanto custa cada tipo de tarefa, planear o que cabe no que resta e poupar onde der.
+- Antes de lançar trabalho pesado (agentes Opus, várias tarefas em paralelo), estima pelo `usage-log.md` se cabe abaixo dos 90%; se não couber, faz só o que cabe e guarda o ponto de retoma.
 - O lead não vê a percentagem exata. Por isso: depois de cada tarefa concluída, o estado fica em commit e no `STATUS.md`; ao primeiro aviso de limite próximo (mensagem do sistema, um agente parado por limite, ou uma sessão longa com vários agentes Opus em paralelo), não lança agentes novos, guarda tudo (commit e push, `STATUS.md` com o ponto de retoma) e avisa o Henrique. Prefere menos agentes Opus em paralelo quando a sessão já vai longa.
 
 ## Design primeiro (regra do Henrique)

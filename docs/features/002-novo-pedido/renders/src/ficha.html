@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha do cliente · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  /* Largo: Tipo flexível | Etapa 200 | Criado 248 */
+  .tp .lin { grid-template-columns: minmax(0, 1fr) var(--colunaEtapa) var(--colunaData); }
+  .tp .so-medio { display: none; }
+  @media (max-width: 1100px) {
+    .tp .lin { grid-template-columns: minmax(0, 1fr) var(--colunaData); }
+    .tp .c-etapa, .tp .c-criado { display: none; }
+    .tp .so-medio { display: flex; }
+  }
+  @media (max-width: 639px) {
+    .tp .lin.cab { display: none; }
+    .tp { border-top: var(--fino) solid var(--regua); }
+    .tp .lin { display: block; padding: var(--s16) 0; }
+    .tp .so-medio { margin-top: var(--s8); }
+  }
+  .tipo-l { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--s12); row-gap: var(--s4); }
+  .tipo-l .acao { padding: 0; min-width: 0; }
+  .ficha-cab .estado { margin-top: var(--s12); }
+  .cab-compacto { display: none; }
+  @media (max-width: 639px) { .cab-compacto { display: block; } }
+</style>
+</head>
+<!-- Estados: normal, criado, email-falhou, email-reenviado, vazio, a-carregar, erro, offline, sem-acesso -->
+<body data-colofao="mediador">
+<div id="offline"></div>
+<main class="frame"><div class="in" id="pagina"></div></main>
+<script src="catalogo.js"></script>
+<script src="estado.js"></script>
+<script>
+(function () {
+  const e = document.body.dataset.estado;
+  const off = e === 'offline';
+  if (off) document.getElementById('offline').innerHTML = F.offline();
+  const voltar = `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">Clientes</span></span></div>`;
+  const pasta = `<div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span>${F.sair()}</div></div>`;
+  const P = document.getElementById('pagina');
+
+  if (e === 'sem-acesso') {
+    P.innerHTML = voltar + pasta + `<section class="col-leitura"><h1 class="titulo mt32">Sem acesso</h1>
+      <p class="corpo mt8">Este cliente não existe ou não partilha dados com este escritório. Se retirou o acesso, os pedidos deixam de aparecer aqui; voltam se ele aceitar um novo pedido de partilha.</p>
+      <div class="btn contorno mt24">Voltar a Clientes</div></section>`;
+    return;
+  }
+
+  const novos = ['criado', 'email-falhou', 'email-reenviado'].includes(e);
+  const antigos = [['Multirriscos Habitação', false, '20 nov 2026, 16:40'], ['Acidentes de Trabalho (prémio variável)', false, '18 nov 2026, 09:02'], ['Saúde', true, '14 nov 2026, 11:30']];
+  const lista = novos ? [['Automóvel', true, '27 nov 2026, 10:14', true], ['Vida', true, '27 nov 2026, 10:14', true], ...antigos] : antigos;
+  const etapa = F.trilho(1, 'Criado');
+  const criado = (d) => `<div class="pilha"><span class="registo tenue">${d}</span><span class="corpoPequeno media">Mediador · Ana Martins</span></div>`;
+  const linha = (p) => `<div class="lin ${p[3] && e === 'criado' ? 'realce-linha' : ''}">
+    <div><div class="tipo-l"><span class="acao"><span class="corpoForte ligacao" style="font-size:17px;line-height:26px">${p[0]}</span></span>${p[1] ? '<span class="etiqueta">Condições particulares</span>' : ''}</div>
+      <div class="so-medio meta">${etapa}<span class="registo tenue">${p[2]}</span><span class="corpoPequeno media">Mediador · Ana Martins</span></div></div>
+    <div class="c-etapa">${etapa}</div>
+    <div class="c-criado">${criado(p[2])}</div></div>`;
+  const cabecalho = `<div class="lin cab rotulo media"><span>Tipo</span><span class="c-etapa">Etapa</span><span class="c-criado">Criado</span></div>`;
+
+  let aviso = '';
+  if (e === 'criado') aviso = `<div class="aviso mt24" role="status"><div class="linha"><span class="ic g">${IC.ok}</span><p class="corpo"><strong class="corpoForte">2 pedidos criados</strong>: Automóvel e Vida. Email enviado a <span style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</span>.</p></div></div>`;
+  if (e === 'email-falhou') aviso = `<div class="aviso mt24" role="alert"><div class="linha"><span class="ic g">${IC.aviso}</span><div><p class="corpoForte">2 pedidos criados, mas o email não foi enviado.</p><p class="corpo">Os pedidos já existem e estão nesta ficha. Tente enviar o email de novo; se o cliente já usa o ProDossier, também os vê na app.</p></div></div><div class="acoes mt12"><div class="btn contorno">Reenviar email</div></div></div>`;
+  if (e === 'email-reenviado') aviso = `<div class="aviso mt24" role="status"><div class="linha"><span class="ic g">${IC.ok}</span><p class="corpo">Email reenviado a <span style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</span>.</p></div><div class="acoes mt12"><div class="btn desativado">Reenviar email</div></div><p class="razao mt8 aviso-razao" style="padding-left:calc(var(--icone) + var(--s12))">Pode reenviar às 10:17</p></div>`;
+  if (e === 'erro') aviso = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar os pedidos. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
+
+  const n = lista.length;
+  let corpo;
+  if (e === 'a-carregar') corpo = `<div class="tabela tp mt16" aria-busy="true">${cabecalho}${[50, 30, 70].map((w) => `<div class="lin"><div><div class="esq l-corpo" style="width:${w}%"></div></div><div class="c-etapa"><div class="esq l-peq w70"></div></div><div class="c-criado"><div class="esq l-peq w70"></div><div class="esq l-peq w50 mt8"></div></div></div>`).join('')}</div>`;
+  else if (e === 'erro') corpo = '';
+  else if (e === 'vazio') corpo = `<div class="col-leitura mt16 regua-t" style="padding-top:var(--s24)"><p class="corpoForte">Sem pedidos</p><p class="corpo media mt4">Crie o primeiro pedido para este cliente: escolhe os tipos de seguro e ele recebe a lista do que precisa.</p>
+      <div class="btn ${off ? 'desativado' : 'cheio'} mt24 nao-compacto">Novo pedido</div><div class="btn ${off ? 'desativado' : 'cheio'} principal largo mt24 so-compacto">Novo pedido</div></div>`;
+  else corpo = `<div class="tabela tp mt16">${cabecalho}${lista.map(linha).join('')}</div>`;
+
+  const bp = off ? 'desativado' : 'cheio';
+  P.innerHTML = voltar + pasta + `
+    <div class="cabeca mt32 ficha-cab">
+      <div style="min-width:0"><h1 class="titulo">Maria do Carmo Figueiredo</h1>
+        <p class="corpoPequeno media mt4" style="overflow-wrap:anywhere">maria.figueiredo@exemplo.pt</p>
+        <div class="estado">${F.carimbo('ativo', 'Ativo', IC.ok)}<span class="registo tenue">Desde 12 nov 2026, 10:04</span></div></div>
+      ${e === 'vazio' ? '' : `<div class="botoes-cab"><div class="btn ${bp}">Novo pedido</div></div>`}
+    </div>
+    ${e === 'vazio' ? '' : `<div class="cab-compacto"><div class="btn ${bp} principal largo mt16">Novo pedido</div></div>`}
+    ${off ? `<p class="razao mt8">Sem ligação. Pode ver os pedidos; criar fica disponível quando a ligação voltar.</p>` : ''}
+    ${aviso}
+    <div class="mt48" style="display:flex;align-items:baseline;gap:var(--s12);flex-wrap:wrap"><h2 class="subtitulo">Pedidos deste escritório</h2>${['vazio', 'a-carregar', 'erro'].includes(e) ? '' : `<span class="registo tenue">${n} em curso</span>`}</div>
+    ${corpo}`;
+})();
+</script>
+<script src="colofao.js"></script>
+</body>
+</html>

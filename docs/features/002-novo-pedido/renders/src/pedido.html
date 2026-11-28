@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedido (só leitura) · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  .etapas .n { display: block; }
+  @media (max-width: 639px) { .etapas .n { display: block; } }
+  .msg { white-space: pre-line; }
+</style>
+</head>
+<!-- ?perfil=cliente|mediador · Estados: normal, a-carregar, erro, offline, retirado (cliente), sem-acesso -->
+<body>
+<div id="offline"></div>
+<main class="frame"><div class="in" id="pagina"></div></main>
+<script src="catalogo.js"></script>
+<script>
+  // O colofão depende do perfil: decide-se antes de estado.js / colofao.js correrem.
+  document.body.dataset.colofao = new URLSearchParams(location.search).get('perfil') === 'mediador' ? 'mediador' : 'cliente';
+</script>
+<script src="estado.js"></script>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const med = q.get('perfil') === 'mediador';
+  const e = document.body.dataset.estado;
+  const off = e === 'offline';
+  if (off) document.getElementById('offline').innerHTML = F.offline();
+  const P = document.getElementById('pagina');
+  const voltar = `<div class="voltar"><span class="acao"><span class="ic">${IC.voltar}</span><span class="t">${med ? 'Maria do Carmo Figueiredo' : 'Os meus pedidos'}</span></span></div>`;
+  const pasta = med
+    ? `<div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span>${F.sair()}</div></div>`
+    : `<div class="pasta"><div class="separador rotulo">Os meus dados</div><div class="conta">${F.sino(e === 'retirado' ? 0 : 1)}${F.sair()}</div></div>`;
+
+  if (e === 'sem-acesso') {
+    P.innerHTML = voltar + pasta + `<section class="col-leitura"><h1 class="titulo mt32">Pedido não encontrado</h1>
+      <p class="corpo mt8">Este pedido não existe ou não é seu. Veja os seus pedidos na página inicial.</p>
+      <div class="btn contorno principal mt24">Ver os meus pedidos</div></section>`;
+    return;
+  }
+  if (e === 'a-carregar') {
+    P.innerHTML = voltar + pasta + `<div class="col-leitura" aria-busy="true" aria-label="A carregar o pedido">
+      <div class="esq l-titulo w40 mt32"></div><div class="esq l-corpo w60 mt8"></div><div class="esq l-peq w50 mt8"></div>
+      <div class="etapas mt32">${[1, 2, 3, 4].map(() => `<div class="et"><div class="esq l-corpo w30"></div><div class="esq l-peq w80 mt8"></div></div>`).join('')}</div>
+      <div class="esq l-peq w30 mt48"></div><div class="esq l-corpo w90 mt8"></div><div class="esq l-corpo w70 mt8"></div>
+      <div class="esq l-titulo w50 mt48"></div>
+      <div class="itens mt16">${[80, 40, 60, 70, 50, 40].map((w) => `<div class="item sem-acao"><div class="esq l-peq w80"></div><div class="esq l-corpo" style="width:${w}%"></div></div>`).join('')}</div></div>`;
+    return;
+  }
+  if (e === 'erro') {
+    P.innerHTML = voltar + pasta + `<div class="col-leitura"><h1 class="titulo mt32">Automóvel</h1>
+      <div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível abrir este pedido. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div></div>`;
+    return;
+  }
+
+  const t = tipo('Automóvel');
+  const itens = t.itens.filter(([, x]) => !x.startsWith('Franquias')).map(([k, x]) => ({ k, x }));
+  itens.push({ k: 'D', x: 'Fotografias do veículo (frente, traseira e lados)' });
+  const nD = itens.filter((i) => i.k === 'D').length;
+  const nI = itens.length - nD;
+  const retirado = e === 'retirado';
+
+  const quem = med
+    ? `<p class="corpoForte mt4">Para Maria do Carmo Figueiredo</p>
+       <div class="meta mt8"><span class="corpoPequeno media">Criado por Ana Martins</span><span class="registo tenue">27 nov 2026, 10:14</span><span class="etiqueta">Origem: mediador</span><span class="etiqueta">Condições particulares</span></div>`
+    : `<p class="corpoForte mt4">Pedido do escritório Ribeira Seguros</p>
+       <div class="meta mt8"><span class="corpoPequeno media">Enviado por Ana Martins, mediadora</span><span class="registo tenue">27 nov 2026, 10:14</span></div>`;
+  const avisoRetirado = retirado ? `<div class="mt24"><div class="estado">${F.carimbo('inativo', 'Acesso retirado', IC.retirado)}<span class="registo tenue">Retirado a 26 nov 2026, 15:02</span></div>
+      <p class="corpo mt12">O escritório Ribeira Seguros já não vê este pedido nem os seus dados. Se voltar a dar acesso, o pedido continua onde estava.</p></div>` : '';
+  const interino = !med && !retirado ? `<div class="aviso mt24"><div class="linha"><span class="ic g">${IC.info}</span><p class="corpo">Para já, aqui só pode ver o que lhe pedem. Combine o envio com o escritório.</p></div></div>` : '';
+
+  P.innerHTML = voltar + pasta + `<article class="col-leitura">
+    <h1 class="titulo mt32">Automóvel</h1>
+    ${quem}
+    ${retirado ? '' : `<div class="mt12">${F.trilho(1, 'Etapa 1 de 4: Pedido criado')}</div>`}
+    ${avisoRetirado}
+    ${interino}
+    <section class="mt32"><h2 class="rotulo media">Mensagem de Ana Martins</h2>
+      <p class="corpo mt8 msg">Bom dia, D. Maria. Para a renovação do seguro automóvel e para o novo seguro de vida, preciso destes elementos até ao fim do mês. Qualquer dúvida, ligue-me.</p></section>
+    <section class="mt48">
+      <div class="meta"><h2 class="subtitulo">${med ? 'Lista pedida' : 'O que lhe pedem'}</h2><span class="registo tenue">${nD} documentos · ${nI} dados</span></div>
+      <div class="nota mt12"><span class="ic">${IC.info}</span><p class="corpoPequeno media">${med ? 'O cliente pode' : 'Pode'} enviar as condições particulares da apólice atual em vez dos documentos um a um.</p></div>
+      <div class="nota mt8"><span class="ic">${IC.info}</span><p class="corpoPequeno media">${t.nota}</p></div>
+      <div class="itens mt16">${itens.map((it) => `<div class="item sem-acao">${F.natureza(it.k)}<p class="corpo txt">${it.x}</p></div>`).join('')}</div>
+    </section>
+    <section class="mt48"><h2 class="subtitulo">Etapas</h2><div class="mt16">${F.etapas('27 nov 2026')}</div>
+      <p class="corpoPequeno media mt24">${med ? 'Só leitura: um pedido não se altera depois de criado.' : 'Os documentos que enviar ficam no seu dossiê; só os vê quem tem acesso aos seus dados.'}</p>
+    </section></article>`;
+})();
+</script>
+<script src="colofao.js"></script>
+</body>
+</html>

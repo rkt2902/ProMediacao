@@ -19,6 +19,7 @@ enum ClientStatus {
 class OfficeClient {
   const OfficeClient({
     required this.grantId,
+    required this.clientId,
     required this.fullName,
     required this.email,
     required this.status,
@@ -26,6 +27,9 @@ class OfficeClient {
   });
 
   final String grantId;
+
+  /// Cliente (chave do resumo de pedidos e da ficha).
+  final String clientId;
   final String fullName;
   final String email;
   final ClientStatus status;

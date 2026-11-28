@@ -1,0 +1,168 @@
+/* Referência visual da feature 002 (Novo pedido). Por cima de base.css (copiado da 001).
+   Só tokens de docs/design/DESIGN.md e os propostos em 03-design.md ("Tokens propostos"). */
+
+:root {
+  /* Propostos na 002 (ainda não estão em DESIGN.md nem em tokens.dart) */
+  --colunaEtapa: 200px;      /* AppSize.colunaEtapa: coluna Pedidos (Clientes) e Etapa (ficha) */
+  --segmentoEtapa: 16px;     /* AppSize.segmentoEtapa: largura de cada um dos 4 segmentos do trilho */
+  --alturaEtapa: 4px;        /* AppStroke.etapa: espessura do trilho */
+  --colunaNatureza: 120px;   /* AppSize.colunaNatureza: "Documento" / "Dado" à esquerda do item */
+  --campoMensagem: 128px;    /* AppSize.campoMensagem: altura mínima do campo de mensagem (4 linhas) */
+  --marcaNaoLida: 8px;       /* AppSize.marcaNaoLida: quadrado a tinta das notificações por ler */
+}
+
+/* Ligação de regresso, por cima da linha do separador (como no consentimento da 001) */
+.voltar { margin-bottom: var(--s8); }
+
+/* Cabeçalho de página com ação à direita */
+.cabeca { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s24); }
+.cabeca .botoes-cab { display: flex; gap: var(--s12); flex: none; }
+@media (max-width: 639px) { .cabeca .botoes-cab { display: none; } }
+
+/* Nome que é ligação: sublinhado reguaForte sempre visível (não só no hover) */
+.ligacao { text-decoration: underline; text-decoration-color: var(--reguaForte); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+/* Etiqueta neutra (não é estado): "Condições particulares", "Origem: mediador" */
+.etiqueta { display: inline-flex; align-items: center; gap: var(--s4); padding: 0 var(--s8); border: var(--fino) solid var(--reguaForte); border-radius: var(--r-carimbo); font-size: 14px; line-height: 20px; font-weight: 600; letter-spacing: 0.2px; color: var(--tintaMedia); white-space: nowrap; }
+
+/* Trilho de etapas (StageTrack): 4 segmentos, os feitos a tinta; sempre com a palavra ao lado */
+.trilho { display: inline-flex; align-items: center; gap: var(--s8); }
+.trilho .seg { display: inline-flex; gap: var(--s4); flex: none; }
+.trilho .seg i { display: block; width: var(--segmentoEtapa); height: var(--alturaEtapa); background: var(--regua); }
+.trilho .seg i.f { background: var(--tinta); }
+
+/* Faixa de etapas (StageStrip): 4 colunas com réguas, como as contagens do admin */
+.etapas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: var(--fino) solid var(--regua); border-bottom: var(--fino) solid var(--regua); }
+.etapas .et { padding: var(--s16) var(--s16) var(--s16) 0; border-top: var(--alturaEtapa) solid var(--regua); margin-top: -1px; }
+.etapas .et + .et { padding-left: var(--s16); border-left: var(--fino) solid var(--regua); }
+.etapas .et.feita { border-top-color: var(--tinta); }
+.etapas .n { font-family: var(--serif); font-size: 21px; line-height: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.etapas .et:not(.feita) .n { color: var(--tintaTenue); }
+.etapas .nome { font-size: 15px; line-height: 22px; font-weight: 600; margin-top: var(--s4); }
+.etapas .et:not(.feita) .nome { font-weight: 400; color: var(--tintaMedia); }
+.etapas .quando { display: flex; gap: var(--s4); align-items: center; margin-top: var(--s8); }
+@media (max-width: 639px) {
+  .etapas { grid-template-columns: 1fr; border-bottom: 0; }
+  .etapas .et, .etapas .et + .et { display: grid; grid-template-columns: var(--s24) minmax(0, 1fr); column-gap: var(--s12); padding: var(--s12) 0; border-left: 0; border-top: 0; border-bottom: var(--fino) solid var(--regua); margin: 0; }
+  .etapas .et.feita { border-left: var(--alturaEtapa) solid var(--tinta); padding-left: var(--s12); }
+  .etapas .et:not(.feita) { padding-left: calc(var(--s12) + var(--alturaEtapa)); }
+  .etapas .n { grid-row: span 2; }
+  .etapas .nome { margin-top: 0; }
+  .etapas .quando { margin-top: var(--s4); }
+}
+
+/* Caixa de seleção própria (24, contorno reguaForte 1.5, cheia a tinta quando escolhida) */
+.ck { width: var(--icone); height: var(--icone); flex: none; border: var(--controlo) solid var(--reguaForte); border-radius: var(--r-carimbo); background: var(--folha); display: inline-flex; align-items: center; justify-content: center; color: var(--sobreTinta); }
+.ck.on { background: var(--tinta); border-color: var(--tinta); }
+.ck.off-dis { background: var(--esqueleto); border-color: var(--regua); }
+.rad { width: var(--iconePequeno); height: var(--iconePequeno); }
+
+/* Secções numeradas do formulário */
+.sec { padding-top: var(--s32); }
+.sec:first-child { padding-top: 0; }
+.sec-cab { display: flex; align-items: baseline; gap: var(--s12); }
+.sec-cab .num { font-family: var(--serif); font-size: 21px; line-height: 28px; font-weight: 600; color: var(--tintaTenue); font-variant-numeric: tabular-nums; width: var(--s16); flex: none; }
+.sec-corpo { margin-left: calc(var(--s16) + var(--s12)); }
+@media (max-width: 639px) { .sec-corpo { margin-left: 0; } }
+
+/* Lista de tipos (checklist com réguas) */
+.tipos { border-top: var(--fino) solid var(--regua); display: grid; grid-template-columns: 1fr; }
+@media (min-width: 640px) and (max-width: 1100px) { .tipos { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, auto); grid-auto-flow: column; column-gap: var(--s24); } }
+.tipo { display: flex; gap: var(--s12); align-items: flex-start; min-height: var(--alvoMinimo); padding: var(--s12) 0; border-bottom: var(--fino) solid var(--regua); }
+.tipo .ck { margin-top: 1px; }
+.tipo .tx { min-width: 0; flex: 1; }
+.tipo.on .tx > .corpo { font-weight: 600; }
+.tipo .aviso { margin-top: var(--s12); }
+.tipo.esq-l { align-items: center; }
+.tipo-aviso { grid-column: 1 / -1; }
+
+/* Cliente escolhido / escolher cliente */
+.escolhido { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s16); padding: var(--s12) var(--s16); background: var(--folha); border: var(--fino) solid var(--regua); border-radius: var(--r-controlo); }
+.escolhido .tx { min-width: 0; }
+.um { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.opcoes { margin-top: var(--s8); background: var(--folha); border: var(--controlo) solid var(--reguaForte); border-radius: var(--r-controlo); }
+.opcoes .op { padding: var(--s12) var(--s16); border-bottom: var(--fino) solid var(--regua); min-height: var(--alvoMinimo); }
+.opcoes .op:last-of-type { border-bottom: 0; }
+.opcoes .op.foco-op { background: var(--realce); }
+.opcoes .rodape-op { padding: var(--s12) var(--s16); border-top: var(--fino) solid var(--regua); }
+.caixa.ativa { border-color: var(--tinta); }
+
+/* Campo de mensagem com contador */
+.caixa.area { min-height: var(--campoMensagem); align-items: flex-start; }
+.campo .pe { display: flex; justify-content: space-between; gap: var(--s16); align-items: flex-start; }
+
+/* Pré-visualização: a folha que vai para a pasta do cliente */
+.previa { background: var(--folha); border: var(--fino) solid var(--regua); border-radius: var(--r-superficie); padding: var(--s24); }
+@media (max-width: 639px) { .previa { padding: var(--s16); } }
+.previa + .previa { margin-top: var(--s24); }
+.previa-cab { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s16); flex-wrap: wrap; }
+.nota { display: flex; gap: var(--s8); align-items: flex-start; }
+.nota .ic { margin-top: 2px; color: var(--tintaMedia); }
+
+/* Lista de itens: natureza (Documento / Dado), texto, ação */
+.itens { border-top: var(--fino) solid var(--regua); }
+.item { display: grid; grid-template-columns: var(--colunaNatureza) minmax(0, 1fr) auto; column-gap: var(--s16); align-items: start; padding: var(--s12) 0; border-bottom: var(--fino) solid var(--regua); }
+.item.sem-acao { grid-template-columns: var(--colunaNatureza) minmax(0, 1fr); }
+.item .acao { margin: calc(-1 * var(--s12)) 0; }
+.natureza { display: inline-flex; align-items: center; gap: var(--s4); font-size: 14px; line-height: 26px; font-weight: 600; letter-spacing: 0.2px; color: var(--tintaMedia); white-space: nowrap; }
+.natureza .ic { color: var(--tintaMedia); }
+@media (max-width: 639px) {
+  .item { grid-template-columns: minmax(0, 1fr) auto; }
+  .item .natureza { grid-column: 1; line-height: 20px; }
+  .item .txt { grid-column: 1; grid-row: 2; margin-top: var(--s4); }
+  .item .acao { grid-column: 2; grid-row: 1 / span 2; align-self: center; margin: 0; }
+  .item.sem-acao { grid-template-columns: 1fr; }
+}
+.pe-lista { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; column-gap: var(--s24); margin-top: var(--s8); }
+.novo-item { margin-top: var(--s12); padding: var(--s16); border: var(--controlo) solid var(--reguaForte); border-radius: var(--r-controlo); }
+.escolha2 { display: flex; gap: var(--s24); flex-wrap: wrap; }
+.escolha2 > span { display: inline-flex; gap: var(--s8); align-items: center; min-height: var(--alvoMinimo); }
+
+/* Novo pedido: duas zonas em largo (escolhas 400 + folha), empilhado em médio e compacto */
+.np { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--s48); }
+@media (min-width: 1101px) { .np { grid-template-columns: var(--larguraFormulario) minmax(0, 1fr); column-gap: var(--s48); } }
+
+/* Barra fixa com resumo + ação (fundo à largura da janela, conteúdo na moldura) */
+.barra-fixa .in { display: flex; justify-content: space-between; align-items: center; gap: var(--s24); }
+.barra-fixa .resumo { min-width: 0; }
+.barra-fixa .lado { display: flex; flex-direction: column; align-items: flex-end; gap: var(--s4); flex: none; }
+@media (max-width: 639px) {
+  .barra-fixa .in { flex-direction: column; align-items: stretch; gap: var(--s12); }
+  .barra-fixa .lado { align-items: stretch; }
+  .barra-fixa .lado .btn { width: 100%; min-height: var(--alvoPrincipal); }
+}
+.spin { width: var(--iconePequeno); height: var(--iconePequeno); border: var(--focoW) solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; margin-right: var(--s8); flex: none; }
+
+/* Tabela genérica com cabeçalho e réguas */
+.tabela .lin { display: grid; align-items: center; min-height: var(--linhaTabela); border-bottom: var(--fino) solid var(--regua); column-gap: var(--s16); padding: var(--s12) 0; }
+.tabela .cab { min-height: 0; padding: 0 0 var(--s8); align-items: end; }
+.tabela .acao-cel { justify-self: end; text-align: right; }
+.tabela .pilha { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s4); }
+
+/* Sino (NotificationBell): ícone + contador retangular a tinta, nunca bolinha sobreposta */
+.sino { display: inline-flex; align-items: center; gap: var(--s4); min-height: var(--alvoMinimo); min-width: var(--alvoMinimo); padding: 0 var(--s4); font-size: 15px; line-height: 22px; font-weight: 600; color: var(--tinta); }
+.sino .ic.g { color: var(--tinta); }
+.sino .palavra + .contador { margin-left: var(--s4); }
+.contador { min-width: var(--iconePequeno); height: var(--iconePequeno); padding: 0 var(--s4); background: var(--tinta); color: var(--sobreTinta); border-radius: var(--r-carimbo); font-size: 13px; line-height: 18px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.sino .palavra { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+@media (max-width: 639px) { .sino .palavra { display: none; } }
+.pasta .conta .sino { margin: calc((var(--separadorAltura) - var(--alvoMinimo)) / 2) 0; }
+.pasta .conta { gap: var(--s8); }
+
+/* Notificações */
+.notif { display: grid; grid-template-columns: var(--marcaNaoLida) minmax(0, 1fr) var(--iconePequeno); column-gap: var(--s12); align-items: start; padding: var(--s16) 0; border-bottom: var(--fino) solid var(--regua); min-height: var(--linhaTabela); }
+.notif .marca { width: var(--marcaNaoLida); height: var(--marcaNaoLida); background: var(--tinta); margin-top: 9px; }
+.notif.lida .marca { background: transparent; }
+.notif.lida .t1 { font-weight: 400; color: var(--tintaMedia); }
+.notif .ic { align-self: center; color: var(--tintaMedia); }
+.folha-lateral .cab-folha { display: flex; justify-content: space-between; align-items: center; gap: var(--s16); padding: var(--s16) var(--s24); border-bottom: var(--fino) solid var(--regua); }
+.folha-lateral .corpo-folha { padding-top: 0; }
+
+/* Linhas de pedido do cliente */
+.ped { display: flex; gap: var(--s24); align-items: flex-start; padding: var(--s16) 0; border-bottom: var(--fino) solid var(--regua); }
+.ped .texto { flex: 1 1 auto; min-width: 0; }
+.ped .acoes { flex: none; }
+@media (max-width: 639px) { .ped { flex-direction: column; gap: var(--s16); align-items: stretch; } .ped .acoes .btn { width: 100%; } }
+.meta { display: flex; flex-wrap: wrap; column-gap: var(--s12); row-gap: var(--s4); align-items: center; }
+
+[data-folha="nenhuma"] .folha, [data-folha="nenhuma"] .veu { display: none; }

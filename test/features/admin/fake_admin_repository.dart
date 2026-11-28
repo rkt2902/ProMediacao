@@ -41,6 +41,7 @@ class FakeAdminRepository implements AdminRepository {
           offices: offices.length,
           mediators: offices.fold(0, (a, o) => a + o.mediatorCount),
           clients: 12,
+          requests: 6,
         );
   }
 

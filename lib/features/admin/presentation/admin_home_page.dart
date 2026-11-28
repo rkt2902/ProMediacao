@@ -14,7 +14,7 @@ import '../domain/admin_repository.dart';
 import 'admin_copy.dart';
 import 'admin_forms.dart';
 
-/// Painel do admin (03-design.md, ecrã 6): 3 contagens, escritórios, criar
+/// Painel do admin (03-design.md, ecrã 6): 4 contagens, escritórios, criar
 /// escritório e convidar mediador. Nunca lê nem mostra nomes ou emails de
 /// pessoas. [repository] só serve aos testes; por defeito usa o Supabase.
 class AdminHomePage extends StatefulWidget {
@@ -315,7 +315,7 @@ class _OfficeRow extends StatelessWidget {
   }
 }
 
-/// Faixa de 3 contagens (não 3 cartões): colunas iguais com réguas
+/// Faixa de 4 contagens (não 3 cartões): colunas iguais com réguas
 /// verticais; em compacto, empilhadas com o número à esquerda e o rótulo à
 /// direita. Sem dados (`counts == null`): blocos `esqueleto`, nunca "0".
 class _CountsStrip extends StatelessWidget {
@@ -336,6 +336,7 @@ class _CountsStrip extends StatelessWidget {
       (AdminCopy.offices, c?.offices),
       (AdminCopy.mediators, c?.mediators),
       (AdminCopy.clients, c?.clients),
+      (AdminCopy.requests, c?.requests),
     ];
 
     final Widget strip;

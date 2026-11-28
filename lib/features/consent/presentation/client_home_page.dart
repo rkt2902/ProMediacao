@@ -9,7 +9,7 @@ import '../../../core/design/typography.dart';
 import '../../../core/format/dates.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../auth/presentation/client_account_section.dart';
-import '../../auth/presentation/session_colophon.dart';
+import '../../notifications/presentation/client_frame.dart';
 import '../application/consent_scope.dart';
 import '../domain/consent_models.dart';
 import '../domain/consent_repository.dart';
@@ -205,12 +205,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
       listenable: connectivity,
       builder: (context, _) {
         final online = connectivity.online;
-        return PageFrame(
-          tabLabel: ConsentCopy.tabMyData,
-          maxWidth: AppSize.larguraLeitura,
-          onSignOut: services.session.signOut,
-          banner: OfflineBar(visible: !online),
-          colophon: const SessionColophon(),
+        return ClientFrame(
+          backLabel: ConsentCopy.backToRequests,
+          backTo: AppRoutes.client,
           child: Padding(
             padding: const EdgeInsets.only(top: AppSpace.s32),
             child: Column(
@@ -317,7 +314,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           const SizedBox(height: AppSpace.s24),
           Focus(
             focusNode: _pendingFocus,
-            child: _PendingBlock(
+            child: PendingConsentBlock(
               grants: pending,
               online: online,
               onRespond: (g) =>
@@ -372,8 +369,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
 }
 
 /// Bloco "À espera da sua resposta": a única superfície de cor do ecrã.
-class _PendingBlock extends StatelessWidget {
-  const _PendingBlock({
+/// Também aparece no topo de "Os meus pedidos" (002).
+class PendingConsentBlock extends StatelessWidget {
+  const PendingConsentBlock({
+    super.key,
     required this.grants,
     required this.online,
     required this.onRespond,

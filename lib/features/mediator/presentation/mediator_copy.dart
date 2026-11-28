@@ -8,6 +8,9 @@ abstract final class MediatorCopy {
   static const String colState = 'Estado';
   static const String colDate = 'Data';
   static const String colAction = 'Ação';
+  static const String colRequests = 'Pedidos';
+  static const String colStateAndRequests = 'Estado e pedidos';
+  static const String newRequest = 'Novo pedido';
 
   static const String resend = 'Reenviar pedido';
   static const String resending = 'A enviar…';
@@ -106,6 +109,7 @@ abstract final class MediatorCopy {
     required int declined,
     bool partial = false,
     int? officeTotal,
+    int? openRequests,
   }) {
     String plural(int n, String one, String many) =>
         n == 1 ? '$n $one' : '$n $many';
@@ -116,6 +120,8 @@ abstract final class MediatorCopy {
       '${partial ? 'A mostrar ' : ''}${plural(total, 'cliente', 'clientes')}',
       if (pending > 0) plural(pending, 'pendente', 'pendentes'),
       if (declined > 0) plural(declined, 'recusado', 'recusados'),
+      if (openRequests != null && openRequests > 0)
+        plural(openRequests, 'pedido em curso', 'pedidos em curso'),
     ];
     return parts.join(' · ');
   }

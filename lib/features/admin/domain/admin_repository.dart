@@ -3,7 +3,7 @@ import 'admin_models.dart';
 /// Contrato de dados do admin. A UI só fala com esta interface (os testes
 /// usam um fake). Lança [AdminFailure].
 abstract interface class AdminRepository {
-  /// As 3 contagens (função `admin_counts`).
+  /// As 4 contagens (função `admin_counts`).
   Future<AdminCounts> loadCounts();
 
   /// Escritórios, o mais recente primeiro, com o nº de mediadores.

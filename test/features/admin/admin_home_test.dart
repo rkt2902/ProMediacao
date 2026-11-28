@@ -83,6 +83,8 @@ void main() {
       expect(find.text('3'), findsOneWidget);
       expect(find.text('4'), findsOneWidget);
       expect(find.text('12'), findsOneWidget);
+      expect(find.text('Pedidos'), findsOneWidget);
+      expect(find.text('6'), findsOneWidget);
       expect(find.textContaining('Só contagens'), findsOneWidget);
       expect(find.text('3 mediadores'), findsOneWidget);
       expect(find.text('1 mediador'), findsOneWidget);
@@ -102,14 +104,19 @@ void main() {
         tester,
         FakeAdminRepository(
           offices: [],
-          counts: const AdminCounts(offices: 0, mediators: 0, clients: 0),
+          counts: const AdminCounts(
+            offices: 0,
+            mediators: 0,
+            clients: 0,
+            requests: 0,
+          ),
         ),
         size: e.value,
       );
       expect(find.text('Ainda não há escritórios.'), findsOneWidget);
       expect(find.textContaining('Crie o primeiro escritório'), findsOneWidget);
       expect(find.text('Criar escritório'), findsOneWidget);
-      expect(find.text('0'), findsNWidgets(3));
+      expect(find.text('0'), findsNWidgets(4));
       expect(tester.takeException(), isNull);
     });
 
@@ -274,6 +281,8 @@ void main() {
     ) async {
       final repo = FakeAdminRepository();
       await _pump(tester, repo, size: e.value);
+      await tester.ensureVisible(find.text('Convidar mediador').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Convidar mediador').first);
       await tester.pumpAndSettle();
       expect(find.byType(InviteMediatorForm), findsOneWidget);

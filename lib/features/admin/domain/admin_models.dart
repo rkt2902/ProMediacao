@@ -6,11 +6,15 @@ class AdminCounts {
     required this.offices,
     required this.mediators,
     required this.clients,
+    required this.requests,
   });
 
   final int offices;
   final int mediators;
   final int clients;
+
+  /// Total de pedidos (só a contagem agregada, nunca o conteúdo).
+  final int requests;
 }
 
 /// Escritório com o nº de mediadores (contado por `office_members`, só ids).

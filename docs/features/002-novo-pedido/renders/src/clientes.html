@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clientes (com pedidos) · referência 002</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="pedidos.css">
+<style>
+  /* Largo: Cliente flexível | Estado (carimbo + data, 248) | Pedidos (200) | Ação (160) */
+  .tc .lin { grid-template-columns: minmax(0, 1fr) var(--colunaData) var(--colunaEtapa) var(--colunaAcao); }
+  .tc .um { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Médio: Pedidos entra na coluna Estado, por baixo do carimbo */
+  @media (max-width: 1100px) {
+    .tc .lin { grid-template-columns: minmax(0, 1fr) var(--colunaData) var(--colunaAcao); }
+    .tc .c-ped { display: none; }
+    .tc .ped-em-estado { display: flex !important; }
+  }
+  .tc .ped-em-estado { display: none; }
+  /* Compacto: empilhado */
+  @media (max-width: 639px) {
+    .tc .lin.cab { display: none; }
+    .tc { border-top: var(--fino) solid var(--regua); }
+    .tc .lin { display: block; padding: var(--s16) 0; }
+    .tc .um { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .tc .email { overflow-wrap: anywhere; }
+    .tc .pilha { margin-top: var(--s8); }
+    .tc .estado-l { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--s12); row-gap: var(--s4); }
+    .tc .acao-cel { text-align: left; margin-top: var(--s8); }
+    .tc .acao-cel:empty { display: none; }
+  }
+  .espera { display: flex; flex-direction: column; align-items: flex-end; }
+  @media (max-width: 639px) { .espera { align-items: flex-start; } }
+  .cab-compacto { display: none; }
+  @media (max-width: 639px) { .cab-compacto { display: block; } }
+</style>
+</head>
+<!-- Estados: normal, a-carregar, erro, offline -->
+<body data-colofao="mediador">
+<div id="offline"></div>
+<main class="frame"><div class="in" id="pagina"></div></main>
+<script src="catalogo.js"></script>
+<script src="estado.js"></script>
+<script>
+(function () {
+  const e = document.body.dataset.estado;
+  const off = e === 'offline';
+  if (off) document.getElementById('offline').innerHTML = F.offline();
+  const C = [
+    // nome, email, estado, data, pedidos em curso, ação
+    ['João Pedro Albuquerque de Vasconcelos Sampaio', 'joao.pedro.albuquerque.vasconcelos@correio-exemplo.pt', 'pendente', 'Enviado a 26 nov 2026, 15:04', null],
+    ['Maria do Carmo Figueiredo', 'maria.figueiredo@exemplo.pt', 'ativo', 'Desde 12 nov 2026', 3],
+    ['Construções Teixeira &amp; Irmão, Unipessoal Lda.', 'geral@construcoes-teixeira-exemplo.pt', 'pendente', 'Enviado a 25 nov 2026, 15:04', null],
+    ['Café Central Exemplo, Lda.', 'cafe.central@exemplo.pt', 'ativo', 'Desde 3 nov 2026', 1],
+    ['Rita Fonseca (exemplo)', 'rita.fonseca@exemplo.pt', 'recusado', 'Recusado a 20 nov 2026, 09:12', null],
+    ['Paulo Santos (exemplo)', 'paulo.santos@exemplo.pt', 'ativo', 'Desde 10 nov 2026', 0],
+    ['Teresa Moura (exemplo)', 'teresa.moura@exemplo.pt', 'ativo', 'Desde 28 out 2026', 0],
+  ];
+  const carimbo = { ativo: F.carimbo('ativo', 'Ativo', IC.ok), pendente: F.carimbo('pendente', 'Pendente', IC.pendente), recusado: F.carimbo('inativo', 'Recusado', IC.recusado) };
+  const ped = (n) => n === null ? '' : n === 0 ? `<span class="corpoPequeno media">Sem pedidos</span>` : `<div class="meta" style="column-gap:var(--s12);row-gap:0"><span class="corpoPequeno"><strong>${n}</strong> em curso</span>${F.trilho(1, 'Criado')}</div>`;
+  const acao = (c) => {
+    if (c[2] === 'ativo') return `<span class="acao ${off ? 'off' : ''}"><span class="ic">${IC.acrescentar}</span><span class="t">Novo pedido</span></span>`;
+    if (c[2] === 'pendente') return `<span class="acao ${off ? 'off' : ''}"><span class="t">Reenviar pedido</span></span>`;
+    return '';
+  };
+  const linha = (c) => `<div class="lin">
+    <div><p class="corpoForte um">${c[2] === 'ativo' ? `<span class="ligacao">${c[0]}</span>` : c[0]}</p><p class="corpoPequeno media um email">${c[1]}</p></div>
+    <div class="pilha"><div class="estado-l pilha" style="gap:var(--s4)">${carimbo[c[2]]}<span class="registo tenue">${c[3]}</span></div><div class="ped-em-estado">${ped(c[4])}</div></div>
+    <div class="c-ped">${ped(c[4])}</div>
+    <div class="acao-cel">${acao(c)}</div></div>`;
+  const skel = Array.from({ length: 6 }, (_, i) => `<div class="lin"><div><div class="esq l-corpo w${[60, 50, 70, 40, 60, 50][i]}"></div><div class="esq l-peq w${[80, 70, 60, 60, 50, 70][i]} mt8"></div></div><div class="pilha"><div class="esq l-carimbo"></div><div class="esq l-peq w70"></div></div><div class="c-ped"><div class="esq l-peq w60"></div><div class="esq l-peq w40 mt8"></div></div><div></div></div>`).join('');
+  const cabecalho = `<div class="lin cab rotulo media"><span>Cliente</span><span><span class="c-ped">Estado</span><span class="ped-em-estado">Estado e pedidos</span></span><span class="c-ped">Pedidos</span><span aria-label="Ação"></span></div>`;
+
+  let corpo;
+  if (e === 'a-carregar') corpo = `<div class="tabela tc mt32" aria-busy="true">${cabecalho}${skel}</div>`;
+  else if (e === 'erro') corpo = `<div class="aviso erro mt24" role="alert"><div class="linha"><span class="ic g">${IC.erro}</span><p class="corpo">Não foi possível carregar os clientes. Tente de novo.</p></div><div class="acoes mt12"><div class="btn contorno">Tentar de novo</div></div></div>`;
+  else corpo = `<div class="tabela tc mt32">${cabecalho}${C.map(linha).join('')}</div><div class="btn contorno mt24">Mostrar mais 25</div>`;
+
+  const bp = off ? 'desativado' : 'cheio';
+  const bs = off ? 'desativado' : 'contorno';
+  document.getElementById('pagina').innerHTML = `
+    <div class="pasta"><div class="separador rotulo">Ribeira Seguros</div><div class="conta"><span class="rotulo nome">Ana Martins</span>${F.sair()}</div></div>
+    <div class="cabeca mt32">
+      <div><h1 class="titulo">Clientes</h1>${e === 'a-carregar' || e === 'erro' ? '' : `<p class="registo tenue mt4"><span style="white-space:nowrap">12 clientes</span> · <span style="white-space:nowrap">3 pendentes</span> · <span style="white-space:nowrap">1 recusado</span> · <span style="white-space:nowrap">6 pedidos em curso</span></p>`}</div>
+      <div class="botoes-cab"><div class="btn ${bs}">Criar cliente</div><div class="btn ${bp}">Novo pedido</div></div>
+    </div>
+    <div class="cab-compacto"><div class="btn ${bp} principal largo mt16">Novo pedido</div><div class="btn ${bs} largo mt12">Criar cliente</div></div>
+    ${off ? `<p class="razao mt8">Sem ligação. Criar, pedir e reenviar ficam disponíveis quando a ligação voltar.</p>` : ''}
+    ${corpo}`;
+})();
+</script>
+<script src="colofao.js"></script>
+</body>
+</html>

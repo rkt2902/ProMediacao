@@ -115,7 +115,7 @@ class _ConsentPageState extends State<ConsentPage> {
   /// respondido). Não regista nada.
   void _leave(String notice) {
     AppScope.of(context).session.setNotice(notice);
-    context.go(AppRoutes.client);
+    context.go(AppRoutes.clientSharing);
   }
 
   void _goHome() {
@@ -128,7 +128,7 @@ class _ConsentPageState extends State<ConsentPage> {
             : ConsentCopy.declinedResult(result.officeName),
       );
     }
-    context.go(AppRoutes.client);
+    context.go(AppRoutes.clientSharing);
   }
 
   Future<void> _respond(_Answer answer) async {

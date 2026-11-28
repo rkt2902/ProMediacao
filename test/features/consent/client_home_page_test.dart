@@ -7,7 +7,9 @@ import 'package:promediacao/core/widgets/widgets.dart';
 import 'package:promediacao/features/consent/domain/consent_models.dart';
 import 'package:promediacao/features/consent/presentation/consent_copy.dart';
 import 'package:promediacao/features/consent/presentation/consent_page.dart';
+import 'package:promediacao/features/notifications/domain/notification_models.dart';
 
+import '../notifications/fake_notifications_repository.dart';
 import 'consent_test_helpers.dart';
 
 List<ConsentGrant> _all() => [
@@ -150,7 +152,11 @@ void main() {
   testWidgets('sem rede ao carregar: faixa e erro', (tester) async {
     final repo = FakeConsentRepository(grants: _all())
       ..listFailure = const ConsentFailure(ConsentFailureKind.network);
-    await pumpClientApp(tester, repo);
+    // Sem rede para tudo: o contador do sino também falha (uma resposta com
+    // sucesso voltaria a marcar a app como online).
+    final bell = FakeNotificationsRepository()
+      ..failure = const NotificationFailure(NotificationFailureKind.network);
+    await pumpClientApp(tester, repo, notifications: bell);
     expect(find.textContaining('Sem ligação à internet'), findsOneWidget);
     expect(find.text(ConsentCopy.loadFailed), findsOneWidget);
   });

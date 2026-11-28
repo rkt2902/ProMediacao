@@ -23,6 +23,7 @@ class SupabaseAdminRepository implements AdminRepository {
         offices: _int(row['offices']),
         mediators: _int(row['mediators']),
         clients: _int(row['clients']),
+        requests: _int(row['requests']),
       );
     } on Object catch (e) {
       throw _map(e);
