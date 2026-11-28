@@ -182,6 +182,10 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Admin: nunca mostrar nome nem email de pessoas, nem em tooltips.
 - Palavra-passe: mínimo 10 caracteres com maiúscula, minúscula, número e carácter especial, sem campo de confirmação ("Mostrar" no campo). As regras estão sempre visíveis por baixo do campo e mudam em tempo real com ícone + texto (por cumprir `circle_outlined`, cumprida `check_circle`, em erro `error_outline` a `erro`). O botão de guardar nunca fica desativado por causa das regras: ao carregar, o erro diz quantas faltam.
 - Mudança de ecrã: cross-fade `base` (entra `entrar`, sai `sair`); nada desliza entre ecrãs. Só folhas laterais e inferiores se deslocam, porque têm um sítio de onde vêm.
+- O separador de pasta nunca leva reticências (polimento da 002, 2026-11-28). Quando a linha do separador não cabe (320, escala 1.3), encolhe primeiro a conta: "Sair" perde o ícone e fica a palavra (alvo 48), o sino fica só ícone + contador; só depois o separador passa a duas linhas.
+- O alvo de 48 não soma ao espaço da linha: numa linha com ação, o padding vertical é `s4` (o alvo dá o ar); `s12` só em linhas sem ação. Ligações de nome em tabelas usam o bloco nome + email como alvo, em vez de acrescentar altura entre os dois.
+- As ações de um aviso (`InlineNotice`) vivem dentro da caixa do aviso, recuadas como o texto; nunca soltas em `papel` por baixo dele.
+- Elementos pequenos dentro de um alvo maior (contador do sino, carimbos) têm altura própria e nunca esticam com o alvo nem atravessam réguas.
 - Entrada: um só formulário (email + palavra-passe) para todos os perfis; o link mágico é alternativa do cliente, com `SecondaryButton` à largura da coluna e "Só para clientes." escrito, nunca um link pequeno. Convites opcionais (ex.: criar palavra-passe) têm "Agora não" como `SecondaryButton` do mesmo tamanho, e nunca aparecem antes de uma decisão de consentimento.
 
 ## Referências
