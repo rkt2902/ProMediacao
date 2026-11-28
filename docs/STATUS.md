@@ -4,7 +4,7 @@ Atualizado: 2026-11-28 (**feature 002 Novo pedido fechada no gate 4**; PR para o
 
 ## Agora
 
-- **002 Novo pedido + clientes com o estado dos pedidos: PASSA COM RESSALVAS** (`docs/features/002-novo-pedido/05-qa.md`). Gates 1 a 4 aprovados (27 e 28/11). PR do branch `claude/stoic-euler-i4bbpo` para o `main` (o merge é do Henrique).
+- **002 Novo pedido + clientes com o estado dos pedidos: PASSA COM RESSALVAS** (`docs/features/002-novo-pedido/05-qa.md`). Gates 1 a 4 aprovados (27 e 28/11). PR https://github.com/rkt2902/ProMediacao/pull/4 (o merge é do Henrique).
   - Mediador: Novo pedido (cliente com concessão ativa, N tipos, lista editável, condições particulares, mensagem, aviso de repetido), Clientes com a coluna "Pedidos" e "Novo pedido" como ação principal, ficha do cliente, pedido em só leitura; admin com a 4.ª contagem.
   - Cliente: "Os meus pedidos" é o ecrã inicial (4 etapas, "Acesso retirado"), detalhe só leitura, sino e notificações; "Com quem partilho" em `/cliente/partilhas`.
   - Supabase ao vivo: migração `20261127120000_002_requests.sql` aplicada (matriz 002 35/0, casos-limite 002b 13/0, regressão 001 66/0/1 RISCO, 001de 15/0); função `send-request-email` publicada (401 sem sessão; 503 `email_unavailable` sem fornecedor).
