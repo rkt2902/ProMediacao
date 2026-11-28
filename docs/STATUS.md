@@ -1,22 +1,22 @@
 # Estado do projeto
 
-Atualizado: 2026-11-28 (**feature 002 Novo pedido fechada no gate 4**; PR para o `main` à espera do merge do Henrique)
+Atualizado: 2026-11-28 (**feature 002 Novo pedido fechada**: PR #4 com merge no `main`; polimento e goldens feitos, PR do polimento por fazer merge)
 
 ## Agora
 
-- **002 Novo pedido + clientes com o estado dos pedidos: PASSA COM RESSALVAS** (`docs/features/002-novo-pedido/05-qa.md`). Gates 1 a 4 aprovados (27 e 28/11). PR https://github.com/rkt2902/ProMediacao/pull/4 (o merge é do Henrique).
+- **002 Novo pedido + clientes com o estado dos pedidos: PASSA COM RESSALVAS** (`docs/features/002-novo-pedido/05-qa.md`). Gates 1 a 4 aprovados (27 e 28/11). PR https://github.com/rkt2902/ProMediacao/pull/4 com merge no `main`. Polimento visual e goldens (`test/design_review/002_novo_pedido/`) feitos a 28/11, num PR à parte.
   - Mediador: Novo pedido (cliente com concessão ativa, N tipos, lista editável, condições particulares, mensagem, aviso de repetido), Clientes com a coluna "Pedidos" e "Novo pedido" como ação principal, ficha do cliente, pedido em só leitura; admin com a 4.ª contagem.
   - Cliente: "Os meus pedidos" é o ecrã inicial (4 etapas, "Acesso retirado"), detalhe só leitura, sino e notificações; "Com quem partilho" em `/cliente/partilhas`.
   - Supabase ao vivo: migração `20261127120000_002_requests.sql` aplicada (matriz 002 35/0, casos-limite 002b 13/0, regressão 001 66/0/1 RISCO, 001de 15/0); função `send-request-email` publicada (401 sem sessão; 503 `email_unavailable` sem fornecedor).
-  - `flutter analyze` limpo; `flutter test --exclude-tags design-review` 479 a passar.
+  - `flutter analyze` limpo; `flutter test --exclude-tags design-review` 482 a passar; goldens 001 e 002 regenerados (133).
 - **001 Fundação:** no `main` (PR #3). Roadmap dos pedidos 002 a 007 em `docs/business/roadmap.md`.
 - Regras do Henrique no `CLAUDE.md`, incluindo a nova regra de uso: perguntar a % em cada paragem, registar em `docs/usage-log.md`, parar perto dos 90%.
 
 ## Como retomar (chat novo)
 
 1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md`, `docs/usage-log.md` e `docs/business/roadmap.md`. Se o Flutter faltar: `bash docs/cloud/setup-flutter.sh`. Pergunta ao Henrique a % de uso antes de lançar trabalho Opus.
-2. Se o PR da 002 ainda não tiver merge, lembra o Henrique.
-3. **Polimento e goldens da 002 (tarefa 7 do `04-plan.md`, pendente):** `designer` (opus) em modo 2: goldens em `test/design_review/002_novo_pedido/`, comparar com `docs/features/002-novo-pedido/renders/`; os pedidos de correção vão ao flutter-dev (sonnet) e depois `qa` só nos ecrãs mexidos. Pendentes conhecidos do design: animações de saída de folhas/itens tirados e entrada `lento` das linhas novas na ficha; escala 1.3 e largura 320 nos goldens.
+2. Se o PR do polimento da 002 ainda não tiver merge, lembra o Henrique.
+3. Pendente menor do polimento: a animação de saída (`ExitingList`) não aparece em nenhum golden (o teste `tirar-meio` tira um item fora da janela); rever com a 003.
 4. **Publicar a app no Cloudflare Pages** (adiado a 27/11 até o Henrique criar a conta). Token: My Profile > API Tokens > Custom Token com só Account > Cloudflare Pages > Edit, pedido por `request_credential` para `api.cloudflare.com`. Projeto `promediacao` criado pelo lead (upload direto). Chave publishable: API de gestão, `GET /v1/projects/aboducqavmsmlzslrseu/api-keys`. Depois: `flutter build web` com `SUPABASE_URL`, `SUPABASE_ANON_KEY` (publishable) e `AUTH_REDIRECT_URL`; trocar `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` e `APP_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
 5. **Fornecedor de email (Brevo recomendado) + domínio:** sem ele o email do pedido não sai (o cliente vê o pedido na app e no sino). Segredos `NOTICE_EMAIL_API_KEY`, `NOTICE_EMAIL_FROM`, `NOTICE_EMAIL_API_URL` (Brevo); detalhe em `supabase/functions/README.md`.
 6. Com a app online: checklists manuais do Henrique, a da 001 (`docs/features/001-fundacao/05-qa.md`) e a da 002 (8 passos em `docs/features/002-novo-pedido/05-qa.md`). Testar o email com sessão real quando houver fornecedor.
