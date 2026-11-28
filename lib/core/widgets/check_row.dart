@@ -23,6 +23,7 @@ class CheckRow extends StatefulWidget {
     required this.checked,
     required this.onChanged,
     this.description,
+    this.meta,
     this.trailing,
     this.below,
     this.autofocus = false,
@@ -32,6 +33,10 @@ class CheckRow extends StatefulWidget {
   final bool checked;
   final ValueChanged<bool>? onChanged;
   final String? description;
+
+  /// Registo por baixo do texto, em `registo` (datas, ex.: "Em curso desde
+  /// 20 nov 2026").
+  final String? meta;
   final Widget? trailing;
   final Widget? below;
   final bool autofocus;
@@ -52,9 +57,7 @@ class _CheckRowState extends State<CheckRow> {
   Widget build(BuildContext context) {
     final dur = AppMotion.resolve(context, AppMotion.rapido);
     final textColor = _enabled ? AppColors.tinta : AppColors.tintaTenue;
-    final spoken = widget.description == null
-        ? widget.label
-        : '${widget.label}. ${widget.description}';
+    final spoken = [widget.label, ?widget.description, ?widget.meta].join('. ');
 
     final row = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: AppSize.alvoMinimo),
@@ -82,6 +85,15 @@ class _CheckRowState extends State<CheckRow> {
                     style: (widget.checked ? AppType.corpoForte : AppType.corpo)
                         .copyWith(color: textColor),
                   ),
+                  if (widget.meta != null)
+                    Text(
+                      widget.meta!,
+                      style: AppType.registo.copyWith(
+                        color: _enabled
+                            ? AppColors.tintaMedia
+                            : AppColors.tintaTenue,
+                      ),
+                    ),
                   if (widget.description != null)
                     Text(
                       widget.description!,

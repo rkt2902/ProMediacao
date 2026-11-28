@@ -401,6 +401,11 @@ class _CountsStrip extends StatelessWidget {
       duration: AppMotion.resolve(context, AppMotion.base),
       switchInCurve: AppMotion.entrar,
       switchOutCurve: AppMotion.sair,
+      // Alinhado ao início: o número nunca fica a meio da caixa.
+      layoutBuilder: (current, previous) => Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: [...previous, ?current],
+      ),
       child: value == null
           ? const _NumberSkeleton(key: ValueKey('skeleton'))
           : Text('$value', key: const ValueKey('value'), style: AppType.numero),
@@ -417,6 +422,7 @@ class _CountsStrip extends StatelessWidget {
                   ),
                   child: number,
                 ),
+                const SizedBox(width: AppSpace.s16),
                 labelText,
               ],
             )

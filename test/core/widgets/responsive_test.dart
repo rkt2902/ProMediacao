@@ -71,7 +71,11 @@ void main() {
         );
         // "Sair" na linha do separador, centrado com ele.
         final sair = tester.getRect(find.byType(AppPressable));
-        expect(sair.center.dy, closeTo(tab.center.dy, 0.5));
+        // (se o separador passar a duas linhas, "Sair" fica com a 1.ª linha).
+        expect(
+          sair.center.dy,
+          closeTo(tab.top + AppSize.separadorAltura / 2, 0.5),
+        );
         expect(sair.height, greaterThanOrEqualTo(AppSize.alvoMinimo));
         // Régua por baixo do separador à largura da moldura.
         final frameWidth = bp == Breakpoint.largo

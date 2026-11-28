@@ -22,7 +22,8 @@ class AppRule extends StatelessWidget {
 }
 
 /// Separador de pasta colado ao topo da área de conteúdo: diz em nome de
-/// quem se está a ver. `cartolina`, cantos superiores arredondados.
+/// quem se está a ver. Nunca leva reticências: se a linha não cabe, o texto
+/// passa a duas linhas e a altura cresce. `cartolina`, cantos superiores arredondados.
 /// Por baixo, uma régua de largura total (a "pasta" é o ecrã); com
 /// [showRule] a `false` é só o separador (o `PageFrame` desenha a régua à
 /// largura da moldura).
@@ -38,20 +39,18 @@ class FolderTab extends StatelessWidget {
       container: true,
       header: true,
       child: Container(
-        height: AppSize.separadorAltura,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpace.s16),
+        constraints: const BoxConstraints(minHeight: AppSize.separadorAltura),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpace.s16,
+          vertical: AppSpace.s4,
+        ),
         decoration: const BoxDecoration(
           color: AppColors.cartolina,
           borderRadius: AppRadius.separadorBorda,
         ),
         child: Center(
           widthFactor: 1,
-          child: Text(
-            label,
-            style: AppType.rotulo,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          child: Text(label, style: AppType.rotulo),
         ),
       ),
     );

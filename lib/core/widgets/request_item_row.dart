@@ -164,20 +164,34 @@ class RequestItemRow extends StatelessWidget {
             ],
           );
         } else {
+          // Com ação, a natureza e o texto alinham pelo topo (1.ª linha) e a
+          // linha tem `s4` de padding: o alvo de 48 já dá o ar. O texto desce
+          // `s8` para ficar a meio do alvo quando é de uma linha só.
+          final textInset = hasAction ? AppSpace.s8 : 0.0;
           content = Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: hasAction
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               ConstrainedBox(
                 constraints: const BoxConstraints(
                   minWidth: AppSize.colunaNatureza,
                 ),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: nature,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: textInset),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: nature,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpace.s16),
-              Expanded(child: body),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: textInset),
+                  child: body,
+                ),
+              ),
               if (button != null) ...[
                 const SizedBox(width: AppSpace.s16),
                 button,
@@ -187,7 +201,10 @@ class RequestItemRow extends StatelessWidget {
         }
 
         Widget row = Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpace.s12),
+          // Com ação o alvo de 48 dá o ar (`s4`); sem ação, `s12`.
+          padding: EdgeInsets.symmetric(
+            vertical: hasAction ? AppSpace.s4 : AppSpace.s12,
+          ),
           child: content,
         );
         if (highlight) {

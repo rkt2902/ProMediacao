@@ -278,29 +278,27 @@ class _ClientCell extends StatelessWidget {
       return truncates ? Tooltip(message: s, child: t) : t;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (onOpen != null)
-          truncates
-              ? Tooltip(
-                  message: item.fullName,
-                  child: NameLink(
-                    label: item.fullName,
-                    maxLines: 1,
-                    onPressed: onOpen,
-                  ),
-                )
-              : NameLink(label: item.fullName, onPressed: onOpen)
-        else
+    if (onOpen == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
           text(item.fullName, AppType.corpoForte),
-        text(
-          item.email,
-          AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
-        ),
-      ],
+          text(
+            item.email,
+            AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
+          ),
+        ],
+      );
+    }
+    // O alvo da ligação é o bloco nome + email; o sublinhado fica no nome.
+    final link = NameLink(
+      label: item.fullName,
+      detail: item.email,
+      maxLines: truncates ? 1 : null,
+      onPressed: onOpen,
     );
+    return truncates ? Tooltip(message: item.fullName, child: link) : link;
   }
 }
 

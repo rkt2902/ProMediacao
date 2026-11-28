@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../design/tokens.dart';
 import '../design/typography.dart';
 import 'app_buttons.dart';
+import 'exiting_list.dart';
 import 'ruled_list.dart';
 
 /// Folha de um pedido (002): cabeçalho, notas, itens ([RequestItemRow]) e
@@ -116,10 +117,14 @@ class RequestSheet extends StatelessWidget {
               ],
             ),
           ),
-        if (items.isEmpty && emptyNotice != null)
+        if (editable)
+          // Os itens tirados saem com animação (`base` / `sair`).
+          ExitingList(ruled: true, children: items)
+        else if (items.isEmpty && emptyNotice != null)
           emptyNotice!
         else
           RuledList(children: items),
+        if (editable && items.isEmpty && emptyNotice != null) emptyNotice!,
         if (belowItems != null)
           Padding(
             padding: const EdgeInsets.only(top: AppSpace.s12),

@@ -27,10 +27,14 @@ class NotificationsBody extends StatelessWidget {
     super.key,
     required this.controller,
     required this.onOpen,
+    this.topRule = true,
   });
 
   final NotificationsController controller;
   final void Function(AppNotification n) onOpen;
+
+  /// Régua por cima da 1.ª linha; o painel já tem a do cabeçalho.
+  final bool topRule;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +84,7 @@ class NotificationsBody extends StatelessWidget {
               const SizedBox(height: AppSpace.s16),
             ],
             RuledList(
+              topRule: topRule,
               children: [
                 for (final n in controller.items)
                   NotificationRow(
@@ -129,6 +134,9 @@ class NotificationRow extends StatelessWidget {
   final AppNotification notification;
   final VoidCallback onTap;
 
+  /// Altura da linha do título (`corpoForte`, 17/26).
+  static const double _titleLine = 26;
+
   @override
   Widget build(BuildContext context) {
     final n = notification;
@@ -151,12 +159,15 @@ class NotificationRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpace.s16),
           child: ExcludeSemantics(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
                   width: AppSize.marcaNaoLida,
-                  child: Align(
-                    alignment: AlignmentDirectional.topStart,
+                  // A marca fica a meio da 1.ª linha do título (26 de linha).
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: (_titleLine - AppSize.marcaNaoLida) / 2,
+                    ),
                     child: AnimatedOpacity(
                       opacity: unread ? 1 : 0,
                       duration: dur,
@@ -209,10 +220,15 @@ class NotificationRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpace.s12),
-                const Icon(
-                  Icons.chevron_right,
-                  size: AppSize.iconePequeno,
-                  color: AppColors.tintaMedia,
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: (_titleLine - AppSize.iconePequeno) / 2,
+                  ),
+                  child: Icon(
+                    Icons.chevron_right,
+                    size: AppSize.iconePequeno,
+                    color: AppColors.tintaMedia,
+                  ),
                 ),
               ],
             ),

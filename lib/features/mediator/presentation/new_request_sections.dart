@@ -265,6 +265,7 @@ class _Option extends StatelessWidget {
       borderRadius: BorderRadius.zero,
       semanticsLabel: '${client.fullName}, ${client.email}',
       builder: (context, s) => Container(
+        width: double.infinity,
         constraints: const BoxConstraints(minHeight: AppSize.alvoPrincipal),
         color: active || s.hovered ? AppColors.realce : AppColors.nenhuma,
         padding: const EdgeInsets.symmetric(
@@ -303,7 +304,7 @@ class TypeChoices extends StatelessWidget {
     final open = c.openTypeFor(t.code);
     final isOpen = c.isOpen(t.code);
     final selected = c.isSelected(t.code);
-    final String? description = !isOpen
+    final String? meta = !isOpen
         ? null
         : (open == null
               ? RequestCopy.openSinceUnknown
@@ -326,7 +327,7 @@ class TypeChoices extends StatelessWidget {
       key: ValueKey('tipo-${t.code}'),
       label: t.name,
       checked: selected,
-      description: description,
+      meta: meta,
       onChanged: c.submitting ? null : (_) => c.toggleType(t.code),
       below: below == null ? null : _Appearing(child: below),
     );
@@ -402,35 +403,33 @@ class _RepeatNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final busy = controller.submitting;
+    // Recuado até ao texto do tipo (caixa de seleção `icone` + `s12`).
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpace.s12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          InlineNotice(
-            kind: NoticeKind.aviso,
-            message: RequestCopy.repeatTitle(type.name),
-            detail: RequestCopy.repeatDetail(open),
-          ),
-          const SizedBox(height: AppSpace.s8),
-          Wrap(
-            spacing: AppSpace.s16,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              SecondaryButton(
-                label: RequestCopy.createAnyway,
-                onPressed: busy
-                    ? null
-                    : () => controller.confirmRepeat(type.code),
-              ),
-              TextAction(
-                label: RequestCopy.removeType,
-                semanticsLabel: '${RequestCopy.removeType} ${type.name}',
-                onPressed: busy ? null : () => controller.removeType(type.code),
-              ),
-            ],
-          ),
-        ],
+      padding: const EdgeInsetsDirectional.only(
+        start: AppSize.icone + AppSpace.s12,
+        bottom: AppSpace.s12,
+      ),
+      child: InlineNotice(
+        kind: NoticeKind.aviso,
+        message: RequestCopy.repeatTitle(type.name),
+        detail: RequestCopy.repeatDetail(open),
+        actions: Wrap(
+          spacing: AppSpace.s16,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            SecondaryButton(
+              label: RequestCopy.createAnyway,
+              onPressed: busy
+                  ? null
+                  : () => controller.confirmRepeat(type.code),
+            ),
+            TextAction(
+              label: RequestCopy.removeType,
+              semanticsLabel: '${RequestCopy.removeType} ${type.name}',
+              onPressed: busy ? null : () => controller.removeType(type.code),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -470,7 +469,7 @@ class _MessageFieldState extends State<MessageField> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(RequestCopy.messageLabel, style: AppType.rotulo),
+        const FieldLabel(RequestCopy.messageLabelBase, optional: true),
         const SizedBox(height: AppSpace.s8),
         ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.campoMensagem),
@@ -568,22 +567,28 @@ class _SheetsZoneState extends State<SheetsZone> {
           style: AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
         ),
         const SizedBox(height: AppSpace.s16),
-        if (selected.isEmpty)
-          DashedBox(
-            child: Text(
-              RequestCopy.noTypesBox,
-              style: AppType.corpo.copyWith(color: AppColors.tintaMedia),
-            ),
-          )
-        else
-          for (final (i, t) in selected.indexed)
-            Padding(
-              padding: EdgeInsets.only(top: i == 0 ? 0 : AppSpace.s24),
-              child: Entering(
+        // Chave no widget de topo de cada folha: escolher um tipo anterior no
+        // catálogo desliza as seguintes em vez de as recriar; as retiradas
+        // saem com animação (`base` / `sair`).
+        ExitingList(
+          gap: AppSpace.s24,
+          children: [
+            for (final t in selected)
+              Entering(
                 key: ValueKey('folha-${t.code}'),
                 child: _sheet(t, toCreate, busy),
               ),
+          ],
+        ),
+        if (selected.isEmpty)
+          DashedBox(
+            child: Text(
+              c.client == null
+                  ? RequestCopy.noClientNoTypesBox
+                  : RequestCopy.noTypesBox,
+              style: AppType.corpo.copyWith(color: AppColors.tintaMedia),
             ),
+          ),
       ],
     );
   }
@@ -595,26 +600,31 @@ class _SheetsZoneState extends State<SheetsZone> {
     return RequestSheet(
       editable: true,
       title: t.name,
+      // À espera de confirmação ocupa o lugar de "Pedido 1 de 2", em `registo`.
       indexLabel: waiting
-          ? null
+          ? RequestCopy.awaitingYou
           : RequestCopy.requestIndex(index, toCreate.length),
-      subtitle: waiting ? RequestCopy.awaitingYou : null,
       notes: [
         if (c.allowPolicyConditions) RequestCopy.policyNoteSheet,
         ?t.note,
       ],
       items: [
         for (final l in lines)
-          RequestItemRow(
+          // Itens acrescentados ou repostos entram com `lento` / `entrar`,
+          // além do `realce`.
+          Entering(
             key: ValueKey('${t.code}/${l.key}'),
-            kind: l.kind == ItemKind.document
-                ? RequestItemKind.documento
-                : RequestItemKind.dado,
-            text: l.label,
-            free: l.isFree,
-            highlight: _highlight.contains('${t.code}/${l.key}'),
-            contextLabel: 'do pedido de ${t.name}',
-            onAction: busy ? null : () => c.removeLine(t.code, l.key),
+            enabled: _highlight.contains('${t.code}/${l.key}'),
+            child: RequestItemRow(
+              kind: l.kind == ItemKind.document
+                  ? RequestItemKind.documento
+                  : RequestItemKind.dado,
+              text: l.label,
+              free: l.isFree,
+              highlight: _highlight.contains('${t.code}/${l.key}'),
+              contextLabel: 'do pedido de ${t.name}',
+              onAction: busy ? null : () => c.removeLine(t.code, l.key),
+            ),
           ),
       ],
       emptyNotice: InlineNotice(

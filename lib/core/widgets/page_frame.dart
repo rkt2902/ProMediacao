@@ -2,7 +2,9 @@ import 'package:material_ui/material_ui.dart';
 
 import '../design/tokens.dart';
 import 'account_actions.dart';
+import '../design/typography.dart';
 import 'app_buttons.dart';
+import 'notification_bell.dart';
 import 'folder_tab.dart';
 
 /// Moldura de ecrã (03-design.md, "Estrutura comum"): fundo `papel`, sem
@@ -127,13 +129,14 @@ class PageFrame extends StatelessWidget {
     );
 
     final hasBell = onSignOut != null && onNotifications != null;
-    final account = onSignOut != null
+    Widget? accountWidget({bool dense = false}) => onSignOut != null
         ? AccountActions(
             name: accountName,
             onSignOut: onSignOut,
             onNotifications: onNotifications,
             unreadNotifications: unreadNotifications,
             notificationsOpen: notificationsOpen,
+            dense: dense,
           )
         : trailing;
     final top =
@@ -148,18 +151,61 @@ class PageFrame extends StatelessWidget {
 
     final tabRow = LayoutBuilder(
       builder: (context, c) {
-        // Compacto: o separador deixa 2 × alvoMinimo para "Sair" (ou s48 sem
-        // conta). Médio/largo: separador até 400; a conta usa o resto.
+        final scaler = MediaQuery.textScalerOf(context);
+        double textWidth(String t, TextStyle st) {
+          final tp = TextPainter(
+            text: TextSpan(text: t, style: st),
+            textDirection: Directionality.of(context),
+            textScaler: scaler,
+          )..layout();
+          return tp.width;
+        }
+
+        var account = accountWidget();
         final double tabMax;
         final double accountMax;
-        if (compact) {
-          // O texto de "Sair" cresce com a escala do sistema (nunca encolhe).
-          final scale = MediaQuery.textScalerOf(context).scale(1);
-          final wanted =
-              (hasBell ? 4 : 2) *
-              AppSize.alvoMinimo *
-              (scale < 1 ? 1.0 : scale);
-          // Nunca mais do que a largura útil menos um mínimo do separador.
+        if (compact && onSignOut != null) {
+          // Conta com a largura natural; só se o separador não couber inteiro
+          // é que a conta encolhe ("Sair" sem ícone, sino sem padding). Só
+          // depois disso o separador passa a duas linhas (nunca reticências).
+          final sairText =
+              textWidth(
+                'Sair',
+                AppType.corpoPequeno.copyWith(fontWeight: FontWeight.w600),
+              ) +
+              2 * AppSpace.s4;
+          final counter = NotificationBell.counterText(unreadNotifications);
+          final counterW = counter == null
+              ? 0.0
+              : AppSpace.s4 +
+                    (textWidth(counter, AppType.carimbo) + 2 * AppSpace.s4)
+                        .clamp(AppSize.iconePequeno, double.infinity);
+          double atLeast48(double v) =>
+              v < AppSize.alvoMinimo ? AppSize.alvoMinimo : v;
+          final sairFull = atLeast48(
+            sairText + AppSize.iconePequeno + AppSpace.s8,
+          );
+          final sairDense = atLeast48(sairText);
+          final bellFull = atLeast48(
+            2 * AppSpace.s4 + AppSize.icone + counterW,
+          );
+          final bellDense = atLeast48(AppSize.icone + counterW);
+          final bellGap = hasBell ? AppSpace.s8 : 0.0;
+          // +1: folga para arredondamentos de medição do texto.
+          final full = (hasBell ? bellFull : 0.0) + bellGap + sairFull + 1;
+          final dense = (hasBell ? bellDense : 0.0) + bellGap + sairDense + 1;
+          final tabNatural =
+              textWidth(tabLabel!, AppType.rotulo) + 2 * AppSpace.s16;
+          final fitsFull = tabNatural + AppSpace.s8 + full <= c.maxWidth;
+          if (!fitsFull) account = accountWidget(dense: true);
+          accountMax = (fitsFull ? full : dense).clamp(0.0, c.maxWidth);
+          tabMax = (c.maxWidth - accountMax - AppSpace.s8).clamp(
+            0.0,
+            double.infinity,
+          );
+        } else if (compact) {
+          final scale = scaler.scale(1);
+          final wanted = 2 * AppSize.alvoMinimo * (scale < 1 ? 1.0 : scale);
           accountMax = account == null
               ? wanted
               : wanted.clamp(
@@ -173,24 +219,37 @@ class PageFrame extends StatelessWidget {
           tabMax = hasBell
               ? (c.maxWidth -
                         AppSpace.s16 -
-                        _bellAccountWidth *
-                            MediaQuery.textScalerOf(context).scale(1))
+                        _bellAccountWidth * scaler.scale(1))
                     .clamp(AppSize.textoMinimo / 2, AppSize.larguraFormulario)
               : AppSize.larguraFormulario;
           accountMax = c.maxWidth - tabMax - AppSpace.s16;
         }
+        // Altura do separador: cresce com o texto em duas linhas (nunca corta).
+        final tabPainter = TextPainter(
+          text: TextSpan(text: tabLabel, style: AppType.rotulo),
+          textDirection: Directionality.of(context),
+          textScaler: scaler,
+        )..layout(maxWidth: (tabMax - 2 * AppSpace.s16).clamp(1.0, 4000.0));
+        final tabHeight = (tabPainter.height + 2 * AppSpace.s4).clamp(
+          AppSize.separadorAltura,
+          double.infinity,
+        );
+        final rowHeight = (_tabInset + tabHeight).clamp(
+          AppSize.alvoMinimo,
+          double.infinity,
+        );
         // A linha tem a altura do alvo de "Sair" (48), porque um filho fora
         // da caixa do Stack não recebe toques. O separador fica encostado à
         // régua (que se desenha no Stack), com `_tabInset` livres por cima.
         return SizedBox(
-          height: AppSize.alvoMinimo,
+          height: rowHeight,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               PositionedDirectional(
                 start: 0,
                 end: 0,
-                top: _tabInset + AppSize.separadorAltura,
+                top: _tabInset + tabHeight,
                 child: const AppRule(),
               ),
               PositionedDirectional(

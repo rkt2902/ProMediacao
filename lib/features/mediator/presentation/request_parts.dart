@@ -23,6 +23,7 @@ class NameLink extends StatelessWidget {
     this.semanticsLabel,
     this.maxLines,
     this.minHeight = AppSize.alvoMinimo,
+    this.detail,
   });
 
   final String label;
@@ -30,6 +31,10 @@ class NameLink extends StatelessWidget {
   final String? semanticsLabel;
   final int? maxLines;
   final double minHeight;
+
+  /// Linha por baixo do nome (ex.: o email) que faz parte do alvo, sem
+  /// sublinhado: o alvo passa os 48 sem acrescentar espaço entre os dois.
+  final String? detail;
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +48,34 @@ class NameLink extends StatelessWidget {
           child: Align(
             alignment: AlignmentDirectional.centerStart,
             widthFactor: 1,
-            child: Text(
-              label,
-              maxLines: maxLines,
-              overflow: maxLines == null ? null : TextOverflow.ellipsis,
-              style: AppType.corpoForte.copyWith(
-                decoration: TextDecoration.underline,
-                decorationColor: strong
-                    ? AppColors.tinta
-                    : AppColors.reguaForte,
-                decorationThickness: strong ? AppStroke.foco : AppStroke.fino,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  maxLines: maxLines,
+                  overflow: maxLines == null ? null : TextOverflow.ellipsis,
+                  style: AppType.corpoForte.copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationColor: strong
+                        ? AppColors.tinta
+                        : AppColors.reguaForte,
+                    decorationThickness: strong
+                        ? AppStroke.foco
+                        : AppStroke.fino,
+                  ),
+                ),
+                if (detail != null)
+                  Text(
+                    detail!,
+                    maxLines: maxLines,
+                    overflow: maxLines == null ? null : TextOverflow.ellipsis,
+                    style: AppType.corpoPequeno.copyWith(
+                      color: AppColors.tintaMedia,
+                    ),
+                  ),
+              ],
             ),
           ),
         );
