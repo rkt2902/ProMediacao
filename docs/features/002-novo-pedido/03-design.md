@@ -310,3 +310,37 @@ O outro pendente, **entrada `lento` das linhas novas na ficha, está feito** (`E
 - **Realce das linhas novas da ficha** dentro das margens da coluna (o render saía 12 para cada lado): mantém o alinhamento da moldura.
 - **Parte coincidente sublinhada também no email** na escolha do cliente: ajuda a ver porque é que o resultado apareceu.
 - **Aviso de sucesso da ficha em duas linhas** ("2 pedidos criados" + detalhe), e não numa só: o mesmo padrão do aviso de email não enviado.
+
+### Estado depois da correção (revisão de 2026-11-28, commit `f6a278c`)
+
+Goldens regenerados pelo flutter-dev (001 e 002) e lidos de novo, sobretudo `*-320`, `*-telemovel-1.3`, `novo-pedido-*`, `clientes-*`, `notificacoes-*` e os da 001 com `PageFrame`.
+
+| Item | Estado | Verificado em |
+| --- | --- | --- |
+| C1 contador do sino | Feito: 18 × 18, já não toca na régua | `meus-pedidos-telemovel`, `notificacoes-*` |
+| C2 título do painel | Feito: "Notificações" numa linha, cabeçalho com ~96 de altura | `notificacoes-tablet`, `-desktop` |
+| M1 separador sem reticências (opção A) | Feito: "Os meus dados" inteiro a 320 e a 390 com 1.3; a 320 com 1.3 o "Sair" perde o ícone e fica a palavra | `meus-pedidos-320`, `-telemovel-1.3`; 001 `com-quem-partilho-320-1.3` |
+| M2 altura dos itens editáveis | Feito: 57 numa linha (era 73). O alinhamento ainda não está certo (ver N2) | `novo-pedido-completo-desktop` |
+| M3 realce da opção ativa | Feito: a linha toda | `novo-pedido-escolher-cliente-desktop` |
+| M4 ações dentro do aviso | Feito: repetido e "Reenviar email" dentro da caixa, recuados como o texto; o aviso do repetido alinha com o nome do tipo | `novo-pedido-repetido-desktop`, `ficha-email-falhou-telemovel` |
+| M5 faixa offline do Novo pedido | Feito: "Pode continuar a escolher; criar fica disponível quando a ligação voltar." | `novo-pedido-offline-desktop` |
+| M6 palavra do trilho | Feito: desce para baixo dos segmentos numa linha. Fica uma inconsistência pequena (ver N3) | `clientes-desktop`, `ficha-desktop` |
+| M7 números do admin em compacto | Feito: alinhados ao início, com `s16` até ao rótulo | `admin-320` |
+| M8 resumo da barra em compacto | Feito: uma linha de tipos com reticências | `novo-pedido-320` |
+| M9 motion de folhas e itens | Feito no código: `ExitingList` (`base` / `sair`) nas folhas e nos itens, e a chave da folha no widget de topo. O golden `novo-pedido-tirar-meio-desktop` não apanha a saída porque o scroll do `ensureVisible` a deixa fora da janela; o frame fica por ver | código (`exiting_list.dart`, `request_sheet.dart`, `new_request_sections.dart`) |
+| m1 "Em curso desde" em `registo` | Feito | `novo-pedido-completo-desktop` |
+| m2 "À espera da sua confirmação" | Feito: à direita, no lugar de "Pedido x de n" | `novo-pedido-repetido-desktop` |
+| m3 nome → email nas linhas ativas | Feito, mas a correção passou do ponto (ver N1) | `clientes-desktop` |
+| m4 copy sem cliente | Feito: caixa e 2.ª linha da barra | `novo-pedido-escolher-cliente-desktop` |
+| m5 marca de não lida e régua dupla | Feito | `notificacoes-*` |
+| m6 apoio do acesso retirado | Feito: `corpoPequeno` `tintaMedia` | `notificacoes-tablet` (fundo) |
+| m7 data na faixa de etapas | Não revisto em PNG nesta passagem (o flutter-dev dá-o como feito) | n/a |
+| m8 "(opcional)" | Feito: 400 `tintaMedia` | `novo-pedido-completo-desktop` |
+
+Nada crítico novo. Ficam três itens novos:
+
+| # | Ecrã | O que está diferente | Ficheiro dono | Correção proposta |
+| --- | --- | --- | --- | --- |
+| N1 (médio) | Clientes, largo e médio (`clientes-desktop`, `-tablet`) | As linhas ativas passaram a padding vertical `s4` (`clients_list.dart`, `link == null ? s12 : s4`) e medem 60 a 64, enquanto as pendentes e recusadas medem 76. O carimbo "ATIVO" fica a 7 da régua de cima, contra 12 nas outras. A tabela perde o ritmo, agora no sentido oposto. A regra do `s4` só vale quando o alvo de 48 é o elemento mais alto da linha, o que aqui não acontece (carimbo + data + trilho já passam os 48). | `lib/features/mediator/presentation/clients_list.dart` | `s12` em todas as linhas da tabela. O bloco nome + email continua a ser o alvo (já passa os 48) e não precisa de padding próprio. Regra esclarecida em DESIGN.md. |
+| N2 (menor) | Folhas do Novo pedido, médio/largo | Na linha de item há três alturas diferentes: a natureza ("Documento", `rotulo` 14/20) está ~3 acima da 1.ª linha do texto (`corpo` 17/26) e o "Tirar" (alvo 48) está ~3 abaixo dela. | `lib/core/widgets/request_item_row.dart` | Alinhar pela linha de base: `Row` com `CrossAxisAlignment.baseline`, ou recuo de topo de 3 na natureza ((26 − 20) / 2) e o "Tirar" centrado na 1.ª linha (recuo negativo de (48 − 26) / 2 = 11 dentro do padding `s4`). |
+| N3 (menor) | Clientes, coluna Pedidos (largo) | Na mesma coluna, umas linhas têm a palavra ao lado dos segmentos ("Criado") e outras por baixo ("Documentos enviados"), conforme o comprimento. | `lib/core/widgets/stage_track.dart` (ou quem o chama em `clients_list.dart`) | Em colunas estreitas (`colunaEtapa` 200), a palavra vai sempre por baixo dos segmentos (parâmetro `stacked` decidido pela coluna, não pela palavra). Opcional: só se vê a partir da 003. |

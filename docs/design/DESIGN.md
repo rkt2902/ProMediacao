@@ -122,6 +122,8 @@ Princípio: só se move o que mudou de estado, e o movimento mostra de onde vem 
 | `AppMotion.sair` | `Curves.easeInCubic` | Tudo o que sai |
 | `AppMotion.mudar` | `Curves.easeInOutCubic` | Mudanças de estado e de posição |
 
+Padrão de saída de listas: `ExitingList` (ver "Componentes partilhados"); par de entrada: `Entering`.
+
 ## Componentes partilhados
 
 A criar em `lib/core/widgets/` na feature 001:
@@ -135,6 +137,7 @@ A criar em `lib/core/widgets/` na feature 001:
 - `RuledList` / `RuledRow` (lista com réguas), `SkeletonRows`.
 - `OfflineBar` (faixa a tinta no topo), `InlineNotice` (mensagem dentro do fluxo, com ação), `ConfirmSheet` (folha inferior em compacto, diálogo de `dialogo` 480 em médio/largo; variante só de leitura: folha alta em compacto, diálogo de `larguraLeitura` 640 em médio/largo).
 - `PageFrame` em largo: moldura de `larguraLista` 1040 centrada na janela; a barra fixa de baixo (`bottom`) tem o fundo à largura da janela e o conteúdo alinhado com a coluna do ecrã.
+- `ExitingList` (polimento da 002, `lib/core/widgets/exiting_list.dart`): o padrão de saída. É uma coluna em que o filho tirado de `children` fica no sítio a recolher (opacidade + altura, `base` / `sair`) e só depois sai da árvore; o espaço entre filhos anima em `base` / `mudar`. Cada filho tem `Key` (é pela chave que se sabe quem saiu); `ruled: true` desenha as réguas da `RuledList`, que saem com o filho. A entrada não é dela: os filhos novos vêm envolvidos em `Entering` (`lento` / `entrar`). Com "reduzir movimento", corte seco. Usar sempre que algo sai de uma lista por ação do utilizador (folhas e itens do Novo pedido; nas features seguintes, documentos retirados, notificações apagadas), em vez de remover a seco ou escrever outra animação de saída.
 - `Wordmark` ("ProDossier" em `AppType.marca`, com `semanticsLabel` "ProDossier") e `Colophon` (régua + wordmark + linha de identidade + registo opcional). O `PageFrame` desenha o `Colophon` como último elemento do scroll, depois do conteúdo; quando o conteúdo é mais curto do que a janela, o colofão fica encostado ao fundo dela. Regras em "Colofão".
 
 ## Colofão
@@ -183,7 +186,7 @@ Decisão de 2026-11-26: a app é usada no navegador. Regras para todos os ecrãs
 - Palavra-passe: mínimo 10 caracteres com maiúscula, minúscula, número e carácter especial, sem campo de confirmação ("Mostrar" no campo). As regras estão sempre visíveis por baixo do campo e mudam em tempo real com ícone + texto (por cumprir `circle_outlined`, cumprida `check_circle`, em erro `error_outline` a `erro`). O botão de guardar nunca fica desativado por causa das regras: ao carregar, o erro diz quantas faltam.
 - Mudança de ecrã: cross-fade `base` (entra `entrar`, sai `sair`); nada desliza entre ecrãs. Só folhas laterais e inferiores se deslocam, porque têm um sítio de onde vêm.
 - O separador de pasta nunca leva reticências (polimento da 002, 2026-11-28). Quando a linha do separador não cabe (320, escala 1.3), encolhe primeiro a conta: "Sair" perde o ícone e fica a palavra (alvo 48), o sino fica só ícone + contador; só depois o separador passa a duas linhas.
-- O alvo de 48 não soma ao espaço da linha: numa linha com ação, o padding vertical é `s4` (o alvo dá o ar); `s12` só em linhas sem ação. Ligações de nome em tabelas usam o bloco nome + email como alvo, em vez de acrescentar altura entre os dois.
+- O alvo de 48 não soma ao espaço da linha: quando o alvo é o elemento mais alto da linha (ex.: item da folha com "Tirar"), o padding vertical é `s4` (o alvo já dá o ar); quando a linha já passa os 48 por outros motivos (carimbo + data + trilho), fica o padding normal. Numa tabela, todas as linhas têm o mesmo padding, com ou sem ligação. Ligações de nome em tabelas usam o bloco nome + email como alvo, em vez de acrescentar altura entre os dois.
 - As ações de um aviso (`InlineNotice`) vivem dentro da caixa do aviso, recuadas como o texto; nunca soltas em `papel` por baixo dele.
 - Elementos pequenos dentro de um alvo maior (contador do sino, carimbos) têm altura própria e nunca esticam com o alvo nem atravessam réguas.
 - Entrada: um só formulário (email + palavra-passe) para todos os perfis; o link mágico é alternativa do cliente, com `SecondaryButton` à largura da coluna e "Só para clientes." escrito, nunca um link pequeno. Convites opcionais (ex.: criar palavra-passe) têm "Agora não" como `SecondaryButton` do mesmo tamanho, e nunca aparecem antes de uma decisão de consentimento.
