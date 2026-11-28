@@ -185,9 +185,7 @@ class ClientsList extends StatelessWidget {
         child: RuledRow(
           highlight: highlighted,
           padding: isTable
-              ? EdgeInsets.symmetric(
-                  vertical: link == null ? AppSpace.s12 : AppSpace.s4,
-                )
+              ? EdgeInsets.symmetric(vertical: AppSpace.s12)
               : const EdgeInsets.symmetric(vertical: AppSpace.s16),
           // Sem ação: a leitura de ecrã lê a linha toda e diz que não há ações.
           semanticsLabel: action == null
@@ -479,7 +477,11 @@ class _RequestsCell extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpace.s4),
-          StageTrack(stage: stage.number, label: RequestCopy.stageShort(stage)),
+          StageTrack(
+            stage: stage.number,
+            label: RequestCopy.stageShort(stage),
+            stacked: true,
+          ),
         ],
       ),
     );

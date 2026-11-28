@@ -178,7 +178,11 @@ class RequestItemRow extends StatelessWidget {
                   minWidth: AppSize.colunaNatureza,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: textInset),
+                  // +3: o centro da natureza (20) com o da 1.ª linha (26).
+                  padding: EdgeInsets.only(
+                    top: textInset + (hasAction ? 3 : 0),
+                    bottom: textInset,
+                  ),
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: nature,
@@ -194,7 +198,11 @@ class RequestItemRow extends StatelessWidget {
               ),
               if (button != null) ...[
                 const SizedBox(width: AppSpace.s16),
-                button,
+                // Centrado na 1.ª linha do texto (26), não no alvo de 48.
+                Transform.translate(
+                  offset: const Offset(0, -(AppSize.alvoMinimo - 26) / 2 + 8),
+                  child: button,
+                ),
               ],
             ],
           );

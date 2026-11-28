@@ -20,11 +20,16 @@ class StageTrack extends StatelessWidget {
     required this.stage,
     required this.label,
     this.semanticsLabel,
+    this.stacked = false,
   }) : assert(stage >= 0 && stage <= kStageCount);
 
   final int stage;
   final String label;
   final String? semanticsLabel;
+
+  /// A palavra fica sempre por baixo dos segmentos (colunas estreitas, para
+  /// a posição não depender do comprimento da palavra).
+  final bool stacked;
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +64,9 @@ class StageTrack extends StatelessWidget {
           // Se a palavra não cabe numa linha ao lado dos segmentos, desce
           // para baixo deles (nunca parte a meio ao lado do trilho).
           final below =
+              stacked ||
               c.hasBoundedWidth &&
-              trackWidth + AppSpace.s8 + painter.width > c.maxWidth;
+                  trackWidth + AppSpace.s8 + painter.width > c.maxWidth;
           final text = Text(label, style: AppType.corpoPequeno);
           if (below) {
             return Column(
