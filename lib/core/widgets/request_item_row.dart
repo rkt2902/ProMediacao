@@ -164,30 +164,55 @@ class RequestItemRow extends StatelessWidget {
             ],
           );
         } else {
+          // Com ação, a natureza e o texto alinham pelo topo (1.ª linha) e a
+          // linha tem `s4` de padding: o alvo de 48 já dá o ar. O texto desce
+          // `s8` para ficar a meio do alvo quando é de uma linha só.
+          final textInset = hasAction ? AppSpace.s8 : 0.0;
           content = Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: hasAction
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               ConstrainedBox(
                 constraints: const BoxConstraints(
                   minWidth: AppSize.colunaNatureza,
                 ),
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: nature,
+                child: Padding(
+                  // +3: o centro da natureza (20) com o da 1.ª linha (26).
+                  padding: EdgeInsets.only(
+                    top: textInset + (hasAction ? 3 : 0),
+                    bottom: textInset,
+                  ),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: nature,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpace.s16),
-              Expanded(child: body),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: textInset),
+                  child: body,
+                ),
+              ),
               if (button != null) ...[
                 const SizedBox(width: AppSpace.s16),
-                button,
+                // Centrado na 1.ª linha do texto (26), não no alvo de 48.
+                Transform.translate(
+                  offset: const Offset(0, -(AppSize.alvoMinimo - 26) / 2 + 8),
+                  child: button,
+                ),
               ],
             ],
           );
         }
 
         Widget row = Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpace.s12),
+          // Com ação o alvo de 48 dá o ar (`s4`); sem ação, `s12`.
+          padding: EdgeInsets.symmetric(
+            vertical: hasAction ? AppSpace.s4 : AppSpace.s12,
+          ),
           child: content,
         );
         if (highlight) {

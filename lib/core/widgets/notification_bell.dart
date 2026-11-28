@@ -22,6 +22,7 @@ class NotificationBell extends StatelessWidget {
     this.open = false,
     this.autofocus = false,
     this.focusNode,
+    this.dense = false,
   });
 
   final VoidCallback? onPressed;
@@ -29,6 +30,9 @@ class NotificationBell extends StatelessWidget {
   final bool open;
   final bool autofocus;
   final FocusNode? focusNode;
+
+  /// Sem o padding lateral `s4` (a linha do separador não cabe, 320 e 1.3).
+  final bool dense;
 
   /// Texto do contador, ou `null` quando não há nada por ler.
   static String? counterText(int? unread) {
@@ -64,7 +68,9 @@ class NotificationBell extends StatelessWidget {
               minHeight: AppSize.alvoMinimo,
               minWidth: AppSize.alvoMinimo,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
+            padding: dense
+                ? EdgeInsets.zero
+                : const EdgeInsets.symmetric(horizontal: AppSpace.s4),
             decoration: BoxDecoration(
               color: open
                   ? AppColors.cartolina
@@ -129,11 +135,10 @@ class _Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Altura própria (nunca estica com o alvo de 48 do sino).
     return Container(
-      constraints: const BoxConstraints(
-        minWidth: AppSize.iconePequeno,
-        minHeight: AppSize.iconePequeno,
-      ),
+      constraints: const BoxConstraints(minWidth: AppSize.iconePequeno),
+      height: AppSize.iconePequeno,
       padding: const EdgeInsets.symmetric(horizontal: AppSpace.s4),
       alignment: Alignment.center,
       decoration: const BoxDecoration(

@@ -138,7 +138,10 @@ class _NewRequestPageState extends State<NewRequestPage> {
               ? (c.client?.fullName ?? RequestCopy.backFallback)
               : RequestCopy.backClients,
           onBack: _back,
-          banner: OfflineBar(visible: !online),
+          banner: OfflineBar(
+            visible: !online,
+            message: RequestCopy.offlineBanner,
+          ),
           colophon: const SessionColophon(),
           bottom: showBar ? _bar(context, online) : null,
           child: Padding(
@@ -318,7 +321,7 @@ class _NewRequestPageState extends State<NewRequestPage> {
               if (types.isNotEmpty)
                 Text(
                   types,
-                  maxLines: 2,
+                  maxLines: compact ? 1 : 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppType.corpoPequeno.copyWith(
                     color: AppColors.tintaMedia,

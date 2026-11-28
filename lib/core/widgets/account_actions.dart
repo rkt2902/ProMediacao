@@ -17,6 +17,7 @@ class AccountActions extends StatelessWidget {
     this.onNotifications,
     this.unreadNotifications,
     this.notificationsOpen = false,
+    this.dense = false,
   });
 
   /// Sino (só cliente): aparece antes de "Sair", a `s8`, se não for nulo.
@@ -27,6 +28,9 @@ class AccountActions extends StatelessWidget {
 
   /// Painel de notificações aberto (fundo `cartolina`).
   final bool notificationsOpen;
+
+  /// Linha apertada: "Sair" perde o ícone e o sino perde o padding.
+  final bool dense;
 
   final VoidCallback? onSignOut;
 
@@ -57,12 +61,13 @@ class AccountActions extends StatelessWidget {
             onPressed: onNotifications,
             unread: unreadNotifications,
             open: notificationsOpen,
+            dense: dense,
           ),
           const SizedBox(width: AppSpace.s8),
         ],
         TextAction(
           label: signOutLabel,
-          icon: Icons.logout,
+          icon: dense ? null : Icons.logout,
           semanticsLabel: name == null
               ? null
               : '$signOutLabel da conta de $name',

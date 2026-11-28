@@ -268,7 +268,10 @@ class _Group extends StatelessWidget {
         ),
         if (help != null) ...[
           const SizedBox(height: AppSpace.s8),
-          Text(help!, style: AppType.corpo),
+          Text(
+            help!,
+            style: AppType.corpoPequeno.copyWith(color: AppColors.tintaMedia),
+          ),
         ],
         const SizedBox(height: AppSpace.s8),
         RuledList(

@@ -194,7 +194,7 @@ class _Reading extends StatelessWidget {
             for (var i = 0; i < kStageCount; i++)
               StageStripStep(
                 name: RequestCopy.stageNames[i],
-                date: dates[i] == null ? null : AppDates.dateTime(dates[i]!),
+                date: dates[i] == null ? null : AppDates.date(dates[i]!),
               ),
           ],
         ),

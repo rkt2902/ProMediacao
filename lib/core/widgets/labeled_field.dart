@@ -26,6 +26,7 @@ class LabeledField extends StatelessWidget {
     this.onSubmitted,
     this.trailing,
     this.autofocus = false,
+    this.optional = false,
   });
 
   final String label;
@@ -51,6 +52,9 @@ class LabeledField extends StatelessWidget {
   final Widget? trailing;
   final bool autofocus;
 
+  /// Acrescenta " (opcional)" ao rótulo, a 400 `tintaMedia`.
+  final bool optional;
+
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null;
@@ -58,7 +62,7 @@ class LabeledField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: AppType.rotulo),
+        FieldLabel(label, optional: optional),
         const SizedBox(height: AppSpace.s8),
         ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.campo),
@@ -143,6 +147,35 @@ class LabeledField extends StatelessWidget {
                     : const SizedBox(width: double.infinity)),
         ),
       ],
+    );
+  }
+}
+
+/// Rótulo de campo (`rotulo`); com [optional] leva " (opcional)" a 400
+/// `tintaMedia`.
+class FieldLabel extends StatelessWidget {
+  const FieldLabel(this.text, {super.key, this.optional = false});
+
+  final String text;
+  final bool optional;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!optional) return Text(text, style: AppType.rotulo);
+    return Text.rich(
+      TextSpan(
+        style: AppType.rotulo,
+        children: [
+          TextSpan(text: text),
+          TextSpan(
+            text: ' (opcional)',
+            style: AppType.rotulo.copyWith(
+              fontWeight: FontWeight.w400,
+              color: AppColors.tintaMedia,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

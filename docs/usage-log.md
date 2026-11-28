@@ -10,6 +10,7 @@ Regra no `CLAUDE.md` (secção "Limite de uso"): o lead pergunta a % ao Henrique
 | 2026-11-27 (2.º) | 100% (limite atingido; janela reiniciada às 15:30 UTC) | sim, depois do limite | De 64% a 100% na mesma janela: supabase-dev tarefa 2 (opus, ~280k), flutter-dev tarefa 3 (opus, ~280k), lead (aplicação e verificação ao vivo da migração, commits); o limite chegou logo a seguir a lançar as tarefas 4 e 5 (sonnet, em paralelo), que pararam a meio. **Falha da regra:** lancei trabalho sem confirmar a % depois das duas tarefas Opus |
 | 2026-11-27 (3.º) | menos de 40% | sim (nova janela depois do limite) | Na janela nova: retoma das tarefas 4 (sonnet, ~350k no total) e 5 (sonnet, ~280k no total), ligação das rotas, testes e commits pelo lead. A seguir: publicar a função e o QA (opus) |
 | 2026-11-28 (4.º, fecho da 002) | não indicado (o Henrique não escolheu) | n/d | Desde o 3.º: publicação da função, QA (opus, ~275k + reteste ~20k), correções dos bugs (sonnet, ~120k em 2 voltas), lead. Por prudência, o polimento (designer opus) ficou para a próxima janela |
+| 2026-11-28 (5.º) | menos de 70% | não indicado | Desde o 4.º: merge do PR #4, designer modo 2 da 002 (opus, ~245k, 76 goldens e lista de polimento). A seguir: correções do polimento (sonnet) |
 
 ## Estimativas (a afinar com os registos)
 

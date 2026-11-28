@@ -265,21 +265,35 @@ class _ClientFilePageState extends State<ClientFilePage> {
     final resent = email.status == BatchEmailStatus.resent;
     final until = email.lockUntil;
     final err = email.lastError;
+    final resend = SecondaryButton(
+      label: RequestCopy.resendEmail,
+      loadingLabel: RequestCopy.resendingEmail,
+      loading: email.sending,
+      onPressed: email.canResend ? email.resend : null,
+      disabledReason: !email.canResend && !email.sending
+          ? (until != null
+                ? RequestCopy.canResendAt(MediatorCopy.hhmm(until))
+                : MediatorCopy.needsConnection)
+          : null,
+    );
     return Column(
       key: ValueKey(resent ? 'criado-reenviado' : 'criado-por-enviar'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // O botão e a razão vivem dentro da caixa do aviso.
         if (resent)
           InlineNotice(
             icon: Icons.check_circle_outline,
             message: RequestCopy.resentEmail(email.recipientEmail),
+            actions: resend,
           )
         else
           InlineNotice(
             kind: NoticeKind.aviso,
             message: RequestCopy.createdNotSentTitle(count),
             detail: RequestCopy.createdNotSentDetail,
+            actions: resend,
           ),
         if (err != null) ...[
           const SizedBox(height: AppSpace.s12),
@@ -290,21 +304,6 @@ class _ClientFilePageState extends State<ClientFilePage> {
                 : RequestCopy.resendGeneric,
           ),
         ],
-        const SizedBox(height: AppSpace.s12),
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: SecondaryButton(
-            label: RequestCopy.resendEmail,
-            loadingLabel: RequestCopy.resendingEmail,
-            loading: email.sending,
-            onPressed: email.canResend ? email.resend : null,
-            disabledReason: !email.canResend && !email.sending
-                ? (until != null
-                      ? RequestCopy.canResendAt(MediatorCopy.hhmm(until))
-                      : MediatorCopy.needsConnection)
-                : null,
-          ),
-        ),
       ],
     );
   }

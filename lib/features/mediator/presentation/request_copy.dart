@@ -45,6 +45,10 @@ abstract final class RequestCopy {
       'Sem ligação. A sua escolha fica guardada neste ecrã; pode criar '
       'quando a ligação voltar.';
 
+  static const String offlineBanner =
+      'Sem ligação à internet. Pode continuar a escolher; criar fica '
+      'disponível quando a ligação voltar.';
+
   static const String policyConditions = 'Condições particulares';
   static const String policyNoteSheet =
       'Pode enviar as condições particulares da apólice atual em vez dos '
@@ -107,7 +111,8 @@ abstract final class RequestCopy {
       'O cliente pode enviar as condições particulares da apólice atual em '
       'vez dos documentos um a um. Vale para todos os tipos escolhidos.';
 
-  static const String messageLabel = 'Para o cliente (opcional)';
+  static const String messageLabelBase = 'Para o cliente';
+  static const String messageLabel = '$messageLabelBase (opcional)';
   static const String messageHelp =
       'Vai no email e na app. Não escreva dados de saúde.';
   static String messageCounter(int n) =>
@@ -122,6 +127,10 @@ abstract final class RequestCopy {
   static const String noTypesBox =
       'Escolha pelo menos um tipo de seguro para ver aqui a lista que o '
       'cliente vai receber.';
+  static const String noClientNoTypesBox =
+      'Escolha o cliente e pelo menos um tipo de seguro para ver aqui a lista '
+      'que o cliente vai receber.';
+  static const String noTypesYet = 'Ainda sem tipos de seguro';
   static String emptyListNotice(String type) =>
       'A lista de $type está vazia. Acrescente um item ou reponha a lista; '
       'sem itens, este pedido não é criado.';
@@ -159,7 +168,7 @@ abstract final class RequestCopy {
         '${names.join(', ')}${policy ? ' · com condições particulares' : ''}',
       for (final w in waiting) '$w à espera de confirmação',
     ];
-    return parts.join(' · ');
+    return parts.isEmpty ? noTypesYet : parts.join(' · ');
   }
 
   static String create(int n) => n <= 1

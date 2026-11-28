@@ -112,34 +112,35 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
-                child: Focus(
-                  autofocus: true,
-                  child: Semantics(
-                    header: true,
-                    child: Text(
-                      NotificationsCopy.title,
-                      style: AppType.subtitulo,
-                    ),
+              Focus(
+                autofocus: true,
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    NotificationsCopy.title,
+                    style: AppType.subtitulo,
                   ),
                 ),
               ),
               const SizedBox(width: AppSpace.s12),
-              ListenableBuilder(
-                listenable: controller,
-                builder: (context, _) {
-                  final summary = notificationsSummary(controller);
-                  return summary == null
-                      ? const SizedBox.shrink()
-                      : Text(
-                          summary,
-                          style: AppType.registo.copyWith(
-                            color: AppColors.tintaMedia,
-                          ),
-                        );
-                },
+              Expanded(
+                child: ListenableBuilder(
+                  listenable: controller,
+                  builder: (context, _) {
+                    final summary = notificationsSummary(controller);
+                    return summary == null
+                        ? const SizedBox.shrink()
+                        : Text(
+                            summary,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppType.registo.copyWith(
+                              color: AppColors.tintaMedia,
+                            ),
+                          );
+                  },
+                ),
               ),
-              const Spacer(),
               TextAction(
                 label: NotificationsCopy.close,
                 icon: Icons.close,
@@ -157,7 +158,11 @@ class _NotificationsPanelState extends State<NotificationsPanel> {
               AppSpace.s24,
               AppSpace.s24,
             ),
-            child: NotificationsBody(controller: controller, onOpen: _open),
+            child: NotificationsBody(
+              controller: controller,
+              onOpen: _open,
+              topRule: false,
+            ),
           ),
         ),
       ],

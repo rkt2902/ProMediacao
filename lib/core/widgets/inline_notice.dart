@@ -19,6 +19,7 @@ class InlineNotice extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.icon,
+    this.actions,
   });
 
   final String message;
@@ -30,6 +31,9 @@ class InlineNotice extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
   final IconData? icon;
+
+  /// Ações livres dentro da caixa, recuadas como o texto (`icone` + `s12`).
+  final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +113,17 @@ class InlineNotice extends StatelessWidget {
                     start: AppSize.icone + AppSpace.s12,
                   ),
                   child: TextAction(label: actionLabel!, onPressed: onAction),
+                ),
+              if (actions != null)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    start: AppSize.icone + AppSpace.s12,
+                    top: AppSpace.s4,
+                  ),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: actions,
+                  ),
                 ),
             ],
           ),
