@@ -15,7 +15,7 @@ Atualizado: 2026-11-28 (**feature 002 Novo pedido fechada**: PR #4 com merge no 
 ## Como retomar (chat novo)
 
 1. Lê `CLAUDE.md`, este ficheiro, `docs/decisions.md`, `docs/usage-log.md` e `docs/business/roadmap.md`. Se o Flutter faltar: `bash docs/cloud/setup-flutter.sh`. Pergunta ao Henrique a % de uso antes de lançar trabalho Opus.
-2. Se o PR do polimento da 002 ainda não tiver merge, lembra o Henrique.
+2. Se o PR do polimento da 002 (https://github.com/rkt2902/ProMediacao/pull/5) ainda não tiver merge, lembra o Henrique.
 3. Pendente menor do polimento: a animação de saída (`ExitingList`) não aparece em nenhum golden (o teste `tirar-meio` tira um item fora da janela); rever com a 003.
 4. **Publicar a app no Cloudflare Pages** (adiado a 27/11 até o Henrique criar a conta). Token: My Profile > API Tokens > Custom Token com só Account > Cloudflare Pages > Edit, pedido por `request_credential` para `api.cloudflare.com`. Projeto `promediacao` criado pelo lead (upload direto). Chave publishable: API de gestão, `GET /v1/projects/aboducqavmsmlzslrseu/api-keys`. Depois: `flutter build web` com `SUPABASE_URL`, `SUPABASE_ANON_KEY` (publishable) e `AUTH_REDIRECT_URL`; trocar `ALLOWED_ORIGINS`, `AUTH_REDIRECT_URL` e `APP_URL` (segredos das funções), `site_url` e Redirect URLs do Auth pelo endereço `*.pages.dev`.
 5. **Fornecedor de email (Brevo recomendado) + domínio:** sem ele o email do pedido não sai (o cliente vê o pedido na app e no sino). Segredos `NOTICE_EMAIL_API_KEY`, `NOTICE_EMAIL_FROM`, `NOTICE_EMAIL_API_URL` (Brevo); detalhe em `supabase/functions/README.md`.
