@@ -28,7 +28,7 @@ Pressupostos: recomendações A do bizdev nas 4 decisões do `01-business.md` (v
    - 1.9 Dado a criação concluída, Então cada pedido gera auditoria (quem, quando, cliente, tipo).
 
 2. Como mediador, quero que o pedido só exista com concessão ativa, para não contornar o consentimento.
-   - 2.1 Dado um cliente com concessão pendente, recusada ou retirada, Quando tento criar pedido (UI ou pedido direto à API), Então é recusado. Na UI, o cliente não aparece na escolha; se vier da ficha ou da lista, vejo o motivo: pendente ("Ainda não aceitou. Reenvie o pedido de partilha"), recusada ("Recusou a partilha. Não é possível criar pedidos"), retirada ("Retirou o acesso. Só volta a ser possível se aceitar de novo").
+   - 2.1 Dado um cliente com concessão pendente, recusada ou retirada, Quando tento criar pedido (UI ou pedido direto à API), Então é recusado. Na UI, o cliente não aparece na escolha; se vier da ficha ou da lista, vejo o motivo: pendente ("Ainda não aceitou. Reenvie o pedido de partilha"), recusada ("Recusou a partilha. Não é possível criar pedidos"), retirada: "Sem acesso" genérico, sem revelar o motivo (decidido no gate 4, 28/11, D1 = A).
    - 2.2 Dado um mediador de outro escritório, Quando tenta criar pedido para este cliente, Então é recusado sem revelar se o cliente existe.
    - 2.3 Dado a concessão passada a retirada com pedidos abertos, Então (decisão 26/11 ponto 2 da 001) o escritório deixa de ver esses pedidos de imediato (0 linhas, sem cache); não são apagados; se o cliente voltar a aceitar (nova concessão), os pedidos reaparecem com a etapa que tinham. Ver decisão A5.
 
